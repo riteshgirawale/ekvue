@@ -4,10 +4,14 @@ This project has two parts: **Static HTML pages** and a **React App**.
 
 ---
 
-## Option 1: Run Static HTML Files (Simplest)
+## Option 1: Run Static HTML Files from GitHub (Simplest)
 
-### Step 1: Navigate to Project Folder
-Open File Explorer and go to: `c:/vs code/m project/`
+### Step 1: Clone the Repository
+Open Terminal/Command Prompt and run:
+```
+git clone https://github.com/riteshgirawale/ekvue.git
+cd ekvue
+```
 
 ### Step 2: Open HTML Files
 Simply double-click any of these files to open in your browser:
@@ -18,34 +22,34 @@ Simply double-click any of these files to open in your browser:
 
 Or use VS Code:
 1. Open VS Code
-2. File → Open Folder → Select `c:/vs code/m project`
-3. Right-click any HTML file → "Open with Live Server" (if Live Server extension installed)
+2. File → Open Folder → Select the cloned `ekvue` folder
+3. Right-click any HTML file → "Open with Live Server"
 
 ---
 
-## Option 2: Run React App (my-app)
+## Option 2: Run React App from GitHub
 
 ### Prerequisites
 - **Node.js** must be installed (download from https://nodejs.org)
 
-### Step 1: Open Terminal
-Press `Win + R`, type `cmd`, press Enter
+### Step 1: Clone the Repository
+```
+git clone https://github.com/riteshgirawale/ekvue.git
+cd ekvue
+```
 
 ### Step 2: Navigate to React App
 ```
-bash
-cd c:/vs code/m project/my-app
+cd my-app
 ```
 
 ### Step 3: Install Dependencies (First Time Only)
 ```
-bash
 npm install
 ```
 
 ### Step 4: Start Development Server
 ```
-bash
 npm start
 ```
 
@@ -54,18 +58,25 @@ The browser will automatically open to: **http://localhost:3000**
 
 ---
 
-## Option 3: Run Both (Full Project)
+## Option 3: Deploy to Netlify (No Setup Required)
 
-### Part A: Run Static HTML Files
-1. Double-click `index.html` in the project folder
-2. This opens the EkVue landing page
-3. Navigate to login/signup/dashboard by clicking links
+### Step 1: Go to Netlify
+Visit https://app.netlify.com
 
-### Part B: Run React App
-1. Open a new terminal
-2. Run: `cd c:/vs code/m project/my-app`
-3. Run: `npm start`
-4. Browser opens to http://localhost:3000
+### Step 2: Sign Up/Login
+Sign up with your GitHub account
+
+### Step 3: Import Repository
+- Click "Add new site" → "Import an existing project"
+- Select "GitHub" and choose the "ekvue" repository
+
+### Step 4: Configure Build (For React App only)
+- Build command: `npm run build` (if deploying my-app)
+- Publish directory: `my-app/build` (if deploying my-app)
+- For static HTML: leave both fields empty
+
+### Step 5: Deploy
+Click "Deploy" - your site will be live at a URL like `https://your-site.netlify.app`
 
 ---
 
@@ -73,8 +84,9 @@ The browser will automatically open to: **http://localhost:3000**
 
 | Method | Command | URL |
 |--------|---------|-----|
-| Static HTML | Double-click file | file://... |
-| React App | `npm start` | http://localhost:3000 |
+| Clone & Open HTML | `git clone` + double-click | file://... |
+| Clone & Run React | `git clone` + `npm start` | http://localhost:3000 |
+| Netlify Deploy | Import from GitHub | https://app.netlify.com |
 
 ---
 
