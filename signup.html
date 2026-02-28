@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - EkVue</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary-color: #4F46E5; --primary-dark: #4338CA; --primary-light: #818CF8; --secondary-color: #10B981; --accent-color: #F59E0B; --dark-color: #111827; --dark-secondary: #1F2937; --gray-dark: #374151; --gray-medium: #6B7280; --gray-light: #9CA3AF; --white: #FFFFFF; --bg-light: #F9FAFB; --bg-gradient: linear-gradient(135deg, #667EEA 0%, #764BA2 100%); --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05); --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); --shadow-primary: 0 4px 14px 0 rgba(79, 70, 229, 0.39); --transition: all 0.3s ease; --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-family); color: var(--dark-color); background: var(--bg-light); min-height: 100vh; display: flex; flex-direction: column; }
+        .navbar { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); z-index: 1000; box-shadow: var(--shadow-sm); padding: 16px 0; }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
+        .nav-logo { display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+        .nav-logo i { font-size: 28px; }
+        .nav-back { display: flex; align-items: center; gap: 8px; color: var(--gray-dark); text-decoration: none; font-weight: 500; transition: var(--transition); }
+        .nav-back:hover { color: var(--primary-color); }
+        .signup-container { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 20px; background: var(--bg-gradient); position: relative; overflow: hidden; }
+        .signup-container::before { content: ''; position: absolute; width: 600px; height: 600px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; top: -200px; right: -200px; animation: float 8s ease-in-out infinite; }
+        .signup-container::after { content: ''; position: absolute; width: 400px; height: 400px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; bottom: -100px; left: -100px; animation: float 10s ease-in-out infinite reverse; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-30px); } }
+        .signup-wrapper { display: grid; grid-template-columns: 1fr 1.2fr; max-width: 950px; width: 100%; background: var(--white); border-radius: 24px; box-shadow: var(--shadow-xl); overflow: hidden; position: relative; z-index: 1; }
+        .signup-info { padding: 48px; background: var(--primary-color); display: flex; flex-direction: column; justify-content: center; color: var(--white); }
+        .signup-info h1 { font-size: 32px; font-weight: 700; margin-bottom: 16px; }
+        .signup-info p { font-size: 16px; opacity: 0.9; line-height: 1.7; }
+        .signup-info .benefits-list { margin-top: 32px; }
+        .signup-info .benefits-list li { display: flex; align-items: center; gap: 12px; padding: 12px 0; font-size: 15px; }
+        .signup-info .benefits-list li i { width: 24px; height: 24px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .signup-form-section { padding: 48px; }
+        .user-type-selector { display: flex; gap: 8px; margin-bottom: 32px; background: var(--bg-light); padding: 6px; border-radius: 12px; }
+        .user-type-btn { flex: 1; padding: 12px 16px; border: none; background: transparent; font-size: 14px; font-weight: 600; color: var(--gray-medium); cursor: pointer; border-radius: 8px; transition: var(--transition); font-family: var(--font-family); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .user-type-btn.active { background: var(--white); color: var(--primary-color); box-shadow: var(--shadow-sm); }
+        .user-type-btn:hover:not(.active) { color: var(--dark-color); }
+        .signup-form { display: none; }
+        .signup-form.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .form-title { font-size: 24px; font-weight: 700; color: var(--dark-color); margin-bottom: 8px; }
+        .form-subtitle { font-size: 14px; color: var(--gray-medium); margin-bottom: 24px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; color: var(--dark-color); margin-bottom: 8px; }
+        .form-group input, .form-group select { width: 100%; padding: 14px 16px; font-size: 15px; border: 2px solid #E5E7EB; border-radius: 10px; outline: none; transition: var(--transition); font-family: var(--font-family); background: var(--white); }
+        .form-group input:focus, .form-group select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        .form-group .input-icon { position: relative; }
+        .form-group .input-icon i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--gray-light); }
+        .form-group .input-icon input { padding-left: 44px; }
+        .checkbox-group { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 24px; }
+        .checkbox-group input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--primary-color); }
+        .checkbox-group label { font-size: 14px; color: var(--gray-medium); line-height: 1.5; }
+        .checkbox-group a { color: var(--primary-color); text-decoration: none; }
+        .checkbox-group a:hover { text-decoration: underline; }
+        .btn-signup { width: 100%; padding: 16px; background: var(--primary-color); color: var(--white); border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: var(--font-family); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-signup:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4); }
+        .login-link { text-align: center; margin-top: 24px; font-size: 14px; color: var(--gray-medium); }
+        .login-link a { color: var(--primary-color); text-decoration: none; font-weight: 600; }
+        .login-link a:hover { text-decoration: underline; }
+        .footer { background: var(--dark-color); padding: 24px 0; }
+        .footer-content { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+        .footer-logo { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 700; color: var(--white); }
+        .footer-logo i { color: var(--primary-color); }
+        .footer-content p { color: var(--gray-light); font-size: 14px; }
+        @media (max-width: 768px) { .signup-wrapper { grid-template-columns: 1fr; } .signup-info { display: none; } .signup-form-section { padding: 32px 24px; } .user-type-selector { flex-wrap: wrap; } .user-type-btn { min-width: calc(50% - 4px); } .form-row { grid-template-columns: 1fr; } .footer-content { flex-direction: column; gap: 12px; text-align: center; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo"><i class="fas fa-code"></i><span>EkVue</span></a>
+            <a href="login.html" class="nav-back"><i class="fas fa-arrow-left"></i>Back to Login</a>
+        </div>
+    </nav>
+    <div class="signup-container">
+        <div class="signup-wrapper">
+            <div class="signup-info">
+                <h1>Join EkVue!</h1>
+                <p>Create your account and start your journey to acing technical interviews.</p>
+                <ul class="benefits-list">
+                    <li><i class="fas fa-check"></i> Access 1000+ coding problems</li>
+                    <li><i class="fas fa-check"></i> Practice with mock interviews</li>
+                    <li><i class="fas fa-check"></i> Track your progress</li>
+                    <li><i class="fas fa-check"></i> Get AI-powered feedback</li>
+                    <li><i class="fas fa-check"></i> Join community of developers</li>
+                </ul>
+            </div>
+            <div class="signup-form-section">
+                <div class="user-type-selector">
+                    <button class="user-type-btn active" data-type="student"><i class="fas fa-graduation-cap"></i> Student</button>
+                    <button class="user-type-btn" data-type="interviewer"><i class="fas fa-user-tie"></i> Interviewer</button>
+                    <button class="user-type-btn" data-type="company"><i class="fas fa-building"></i> Company</button>
+                </div>
+                <form class="signup-form active" id="studentSignupForm">
+                    <h2 class="form-title">Student Sign Up</h2>
+                    <p class="form-subtitle">Create your student account</p>
+                    <div class="form-row">
+                        <div class="form-group"><label>First Name</label><input type="text" id="studentFirstName" placeholder="John" required></div>
+                        <div class="form-group"><label>Last Name</label><input type="text" id="studentLastName" placeholder="Doe" required></div>
+                    </div>
+                    <div class="form-group"><label>Email Address</label><div class="input-icon"><i class="fas fa-envelope"></i><input type="email" id="studentEmail" placeholder="student@example.com" required></div></div>
+                    <div class="form-group"><label>Password</label><div class="input-icon"><i class="fas fa-lock"></i><input type="password" id="studentPassword" placeholder="Create a password" required minlength="6"></div></div>
+                    <div class="form-group"><label>Confirm Password</label><div class="input-icon"><i class="fas fa-lock"></i><input type="password" id="studentConfirmPassword" placeholder="Confirm your password" required></div></div>
+                    <div class="checkbox-group"><input type="checkbox" id="studentTerms" required><label for="studentTerms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label></div>
+                    <button type="submit" class="btn-signup"><i class="fas fa-user-plus"></i> Create Student Account</button>
+                    <div class="login-link">Already have an account? <a href="login.html">Sign In</a></div>
+                </form>
+                <form class="signup-form" id="interviewerSignupForm">
+                    <h2 class="form-title">Apply as Interviewer</h2>
+                    <p class="form-subtitle">Join our network of interviewers</p>
+                    <div class="form-row">
+                        <div class="form-group"><label>First Name</label><input type="text" id="interviewerFirstName" placeholder="John" required></div>
+                        <div class="form-group"><label>Last Name</label><input type="text" id="interviewerLastName" placeholder="Doe" required></div>
+                    </div>
+                    <div class="form-group"><label>Email Address</label><div class="input-icon"><i class="fas fa-envelope"></i><input type="email" id="interviewerEmail" placeholder="interviewer@example.com" required></div></div>
+                    <div class="form-group"><label>Password</label><div class="input-icon"><i class="fas fa-lock"></i><input type="password" id="interviewerPassword" placeholder="Create a password" required minlength="6"></div></div>
+                    <div class="form-group"><label>Company</label><input type="text" id="interviewerCompany" placeholder="Your current company" required></div>
+                    <div class="form-group"><label>Years of Experience</label><select id="interviewerExperience" required><option value="">Select experience</option><option value="1-2">1-2 years</option><option value="3-5">3-5 years</option><option value="5-10">5-10 years</option><option value="10+">10+ years</option></select></div>
+                    <div class="checkbox-group"><input type="checkbox" id="interviewerTerms" required><label for="interviewerTerms">I agree to the <a href="#">Terms of Service</a>, <a href="#">Privacy Policy</a>, and <a href="#">Interviewer Agreement</a></label></div>
+                    <button type="submit" class="btn-signup"><i class="fas fa-paper-plane"></i> Submit Application</button>
+                    <div class="login-link">Already have an account? <a href="login.html">Sign In</a></div>
+                </form>
+                <form class="signup-form" id="companySignupForm">
+                    <h2 class="form-title">Partner with Us</h2>
+                    <p class="form-subtitle">Contact our sales team</p>
+                    <div class="form-group"><label>Company Name</label><input type="text" id="companyName" placeholder="Your Company Name" required></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Contact Person Name</label><input type="text" id="companyContactName" placeholder="John Doe" required></div>
+                        <div class="form-group"><label>Job Title</label><input type="text" id="companyJobTitle" placeholder="HR Manager" required></div>
+                    </div>
+                    <div class="form-group"><label>Work Email</label><div class="input-icon"><i class="fas fa-envelope"></i><input type="email" id="companyEmail" placeholder="hr@company.com" required></div></div>
+                    <div class="form-group"><label>Password</label><div class="input-icon"><i class="fas fa-lock"></i><input type="password" id="companyPassword" placeholder="Create a password" required minlength="6"></div></div>
+                    <div class="form-group"><label>Phone Number</label><div class="input-icon"><i class="fas fa-phone"></i><input type="tel" id="companyPhone" placeholder="+1 234 567 8900" required></div></div>
+                    <div class="form-group"><label>Company Size</label><select id="companySize" required><option value="">Select company size</option><option value="1-50">1-50 employees</option><option value="51-200">51-200 employees</option><option value="201-500">201-500 employees</option><option value="501-1000">501-1000 employees</option><option value="1000+">1000+ employees</option></select></div>
+                    <div class="form-group"><label>Message (Optional)</label><input type="text" id="companyMessage" placeholder="Tell us about your hiring needs..."></div>
+                    <div class="checkbox-group"><input type="checkbox" id="companyTerms" required><label for="companyTerms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label></div>
+                    <button type="submit" class="btn-signup"><i class="fas fa-paper-plane"></i> Contact Sales</button>
+                    <div class="login-link">Already have an account? <a href="login.html">Sign In</a></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo"><i class="fas fa-code"></i><span>EkVue</span></div>
+            <p>&copy; 2024 EkVue. All rights reserved.</p>
+        </div>
+    </footer>
+    <script>
+        const userTypeBtns = document.querySelectorAll('.user-type-btn');
+        const signupForms = document.querySelectorAll('.signup-form');
+        userTypeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                userTypeBtns.forEach(b => b.classList.remove('active'));
+                signupForms.forEach(f => f.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.type + 'SignupForm').classList.add('active');
+            });
+        });
+
+        const signupFormsAll = document.querySelectorAll('.signup-form');
+        signupFormsAll.forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const formType = form.id.replace('SignupForm', '');
+                let userData = { type: formType, signupTime: new Date().toISOString() };
+                const existingUsers = JSON.parse(localStorage.getItem('ekvue_users')) || [];
+
+                if (formType === 'student') {
+                    const firstName = document.getElementById('studentFirstName').value;
+                    const lastName = document.getElementById('studentLastName').value;
+                    const email = document.getElementById('studentEmail').value;
+                    const password = document.getElementById('studentPassword').value;
+                    const confirmPassword = document.getElementById('studentConfirmPassword').value;
+                    if (password !== confirmPassword) { alert('Passwords do not match!'); return; }
+                    if (existingUsers.some(user => user.email.toLowerCase() === email.toLowerCase())) { alert('An account with this email already exists!'); return; }
+                    userData.name = firstName + ' ' + lastName;
+                    userData.email = email;
+                    userData.password = password;
+                    existingUsers.push(userData);
+                    localStorage.setItem('ekvue_users', JSON.stringify(existingUsers));
+                    localStorage.setItem('ekvue_user', JSON.stringify(userData));
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+                    submitBtn.disabled = true;
+                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+                } else if (formType === 'interviewer') {
+                    const firstName = document.getElementById('interviewerFirstName').value;
+                    const lastName = document.getElementById('interviewerLastName').value;
+                    const email = document.getElementById('interviewerEmail').value;
+                    const password = document.getElementById('interviewerPassword').value;
+                    const company = document.getElementById('interviewerCompany').value;
+                    const experience = document.getElementById('interviewerExperience').value;
+                    if (existingUsers.some(user => user.email.toLowerCase() === email.toLowerCase())) { alert('An account with this email already exists!'); return; }
+                    userData.name = firstName + ' ' + lastName;
+                    userData.email = email;
+                    userData.password = password;
+                    userData.company = company;
+                    userData.experience = experience;
+                    existingUsers.push(userData);
+                    localStorage.setItem('ekvue_users', JSON.stringify(existingUsers));
+                    alert('Thank you for applying! Your account has been created. Please login.');
+                    setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+                } else if (formType === 'company') {
+                    const companyName = document.getElementById('companyName').value;
+                    const contactName = document.getElementById('companyContactName').value;
+                    const email = document.getElementById('companyEmail').value;
+                    const password = document.getElementById('companyPassword').value;
+                    const phone = document.getElementById('companyPhone').value;
+                    const size = document.getElementById('companySize').value;
+                    const message = document.getElementById('companyMessage').value;
+                    if (existingUsers.some(user => user.email.toLowerCase() === email.toLowerCase())) { alert('An account with this email already exists!'); return; }
+                    userData.companyName = companyName;
+                    userData.contactName = contactName;
+                    userData.email = email;
+                    userData.password = password;
+                    userData.phone = phone;
+                    userData.companySize = size;
+                    userData.message = message;
+                    existingUsers.push(userData);
+                    localStorage.setItem('ekvue_users', JSON.stringify(existingUsers));
+                    alert('Thank you! Our sales team will contact you shortly.');
+                    setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+                }
+            });
+        });
+
+        window.addEventListener('load', function() {
+            const user = localStorage.getItem('ekvue_user');
+            if (user) { window.location.href = 'dashboard.html'; }
+            const urlParams = new URLSearchParams(window.location.search);
+            const userType = urlParams.get('type');
+            if (userType && ['student', 'interviewer', 'company'].includes(userType)) {
+                document.querySelectorAll('.user-type-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.signup-form').forEach(form => form.classList.remove('active'));
+                const targetBtn = document.querySelector('.user-type-btn[data-type="' + userType + '"]');
+                const targetForm = document.getElementById(userType + 'SignupForm');
+                if (targetBtn && targetForm) { targetBtn.classList.add('active'); targetForm.classList.add('active'); }
+            }
+        });
+    </script>
+</body>
+</html>

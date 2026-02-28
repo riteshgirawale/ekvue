@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EkVue - Technical Interview Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-code"></i>
+                <span>EkVue</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#demo">Request Demo</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <a href="login.html" class="btn btn-primary">Get Started</a>
+            </div>
+            <div class="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-background">
+            <div class="hero-shape shape-1"></div>
+            <div class="hero-shape shape-2"></div>
+            <div class="hero-shape shape-3"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-rocket"></i>
+                <span>#1 Technical Interview Platform</span>
+            </div>
+            <h1 class="hero-title">
+                Ace Your Technical
+                <span class="gradient-text">Interviews</span>
+            </h1>
+            <p class="hero-description">
+                Practice real interview questions, get instant feedback, and land your dream job. Join thousands of developers who have successfully passed their technical interviews.
+            </p>
+            <div class="hero-buttons">
+                <a href="login.html" class="btn btn-primary btn-large">
+                    <i class="fas fa-play"></i>
+                    Start Free Trial
+                </a>
+                <a href="#features" class="btn btn-secondary btn-large">
+                    <i class="fas fa-info-circle"></i>
+                    Learn More
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">50K+</span>
+                    <span class="stat-label">Active Users</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">1000+</span>
+                    <span class="stat-label">Companies</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">95%</span>
+                    <span class="stat-label">Success Rate</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="code-window">
+                <div class="code-header">
+                    <div class="code-dots">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <span class="code-title">question.js</span>
+                </div>
+                <pre class="code-content"><code><span class="code-keyword">function</span> <span class="code-function">solveInterview</span>(problem) {
+  <span class="code-keyword">const</span> approach = analyze(problem);
+  <span class="code-keyword">const</span> solution = implement(approach);
+  
+  <span class="code-comment">// Time: O(n) Space: O(1)</span>
+  <span class="code-keyword">return</span> solution;
+}
+
+<span class="code-comment">// Result: ✅ Accepted</span></code></pre>
+            </div>
+            <div class="floating-card card-1">
+                <i class="fas fa-check-circle"></i>
+                <span>Question Solved!</span>
+            </div>
+            <div class="floating-card card-2">
+                <i class="fas fa-clock"></i>
+                <span>15 min left</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Features</span>
+                <h2 class="section-title">Everything You Need to Succeed</h2>
+                <p class="section-description">
+                    Our platform provides all the tools and resources you need to crack your technical interviews.
+                </p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>Code Editor</h3>
+                    <p>Full-featured code editor with syntax highlighting and auto-completion for multiple languages.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI-Powered Analysis</h3>
+                    <p>Get instant feedback on your code quality, time complexity, and space complexity.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Mock Interviews</h3>
+                    <p>Practice with real interview questions from top tech companies.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Progress Tracking</h3>
+                    <p>Track your progress and identify areas where you need more practice.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>Question Bank</h3>
+                    <p>Access 1000+ curated questions with solutions and explanations.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Responsive Design</h3>
+                    <p>Practice on any device - desktop, tablet, or mobile.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Request Section -->
+    <section id="demo" class="demo-section">
+        <div class="container">
+            <div class="demo-wrapper">
+                <div class="demo-content">
+                    <span class="section-tag">Request Demo</span>
+                    <h2 class="section-title">Ready to Transform Your Interview Preparation?</h2>
+                    <p class="section-description">
+                        Get a personalized demo of our platform and see how we can help you land your dream job.
+                    </p>
+                    <ul class="demo-benefits">
+                        <li><i class="fas fa-check"></i> Free 7-day trial access</li>
+                        <li><i class="fas fa-check"></i> Personalized onboarding session</li>
+                        <li><i class="fas fa-check"></i> Custom interview prep plan</li>
+                        <li><i class="fas fa-check"></i> 24/7 support</li>
+                    </ul>
+                </div>
+                <div class="demo-form-wrapper">
+                    <form id="demoForm" class="demo-form">
+                        <h3>Request Your Demo</h3>
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" name="fullName" placeholder="John Doe" required>
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Work Email</label>
+                            <input type="email" id="email" name="email" placeholder="john@company.com" required>
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="form-group">
+                            <label for="company">Company Name</label>
+                            <input type="text" id="company" name="company" placeholder="Your Company">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" placeholder="+1 234 567 8900">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="form-group">
+                            <label for="requirements">What are your requirements?</label>
+                            <textarea id="requirements" name="requirements" placeholder="Tell us about your interview preparation needs..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">
+                            <i class="fas fa-paper-plane"></i>
+                            Request Demo
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Contact</span>
+                <h2 class="section-title">Get in Touch</h2>
+                <p class="section-description">
+                    Have questions? We'd love to hear from you.
+                </p>
+            </div>
+            <div class="contact-wrapper">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Address</h4>
+                            <p>123 Tech Street, Silicon Valley, CA 94025</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p>hello@ekvue.io</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Phone</h4>
+                            <p>+1 (555) 123-4567</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-code"></i>
+                    <span>EkVue</span>
+                </div>
+                <p>&copy; 2024 EkVue. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="success-modal">
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>Thank You!</h3>
+            <p>Your demo request has been submitted successfully. We'll contact you shortly!</p>
+            <button onclick="closeSuccessMessage()" class="btn btn-primary">Close</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

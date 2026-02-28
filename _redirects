@@ -1,0 +1,4 @@
+# Redirect rules for Netlify
+# This prevents 404 errors when using client-side routing
+
+/*    /index.html   200
