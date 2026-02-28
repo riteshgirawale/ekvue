@@ -10,9 +10,17 @@ This guide covers how to deploy your project to GitHub and Netlify, with automat
 1. Create a `_redirects` file in the root directory (if using Single Page Application routing)
 2. Ensure your HTML files are in the root directory
 
-### Step 2: Push to GitHub
-1. Go to [GitHub](https://github.com) and create a new repository
-2. In VS Code terminal, run these commands:
+### Step 2: Create Empty GitHub Repository
+1. Go to [GitHub](https://github.com) and sign in
+2. Click the "+" icon in the top right → "New repository"
+3. Enter repository name (e.g., "my-website")
+4. Select "Public" or "Private"
+5. **IMPORTANT**: Do NOT check "Add a README file" - keep it completely empty
+6. Click "Create repository"
+7. You will see quick setup page - click the copy button next to the HTTPS URL
+   (It will look like: https://github.com/riteshgirawale/my-website.git)
+
+### Step 3: Push to GitHub
    
 ```
 bash
