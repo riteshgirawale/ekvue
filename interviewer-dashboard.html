@@ -162,75 +162,20 @@
                 <div class="content-grid">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Upcoming Interviews</h3>
-                            <a href="#" style="color: var(--primary-color); text-decoration: none; font-size: 14px;">View All</a>
+                            <h3 class="card-title">Registered Students</h3>
+                            <span style="color: var(--gray-medium); font-size: 14px;" id="studentCount">0 students</span>
                         </div>
-                        <div class="card-body">
-                            <div class="question-item">
-                                <div class="question-info">
-                                    <h4>Alice Johnson</h4>
-                                    <div class="question-meta">
-                                        <span><i class="fas fa-briefcase"></i> Senior Developer</span>
-                                        <span><i class="fas fa-clock"></i> 10:00 AM Today</span>
-                                    </div>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <span class="difficulty medium">Technical</span>
-                                    <button class="btn-practice" onclick="startInterview('Alice Johnson')">Start</button>
-                                </div>
-                            </div>
-                            <div class="question-item">
-                                <div class="question-info">
-                                    <h4>Bob Smith</h4>
-                                    <div class="question-meta">
-                                        <span><i class="fas fa-briefcase"></i> Full Stack Engineer</span>
-                                        <span><i class="fas fa-clock"></i> 2:00 PM Today</span>
-                                    </div>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <span class="difficulty easy">HR Round</span>
-                                    <button class="btn-practice" onclick="startInterview('Bob Smith')">Start</button>
-                                </div>
-                            </div>
-                            <div class="question-item">
-                                <div class="question-info">
-                                    <h4>Carol Davis</h4>
-                                    <div class="question-meta">
-                                        <span><i class="fas fa-briefcase"></i> Backend Developer</span>
-                                        <span><i class="fas fa-clock"></i> 11:00 AM Tomorrow</span>
-                                    </div>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <span class="difficulty hard">System Design</span>
-                                    <button class="btn-practice" onclick="viewDetails('Carol Davis')">View</button>
-                                </div>
-                            </div>
+                        <div class="card-body" id="studentsList">
+                            <!-- Students will be loaded here dynamically -->
                         </div>
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 24px;">
-                        <div class="card">
-                            <div class="card-header"><h3 class="card-title">Recent Candidates</h3></div>
-                            <div class="card-body">
-                                <div class="activity-item">
-                                    <div class="activity-icon interview"><i class="fas fa-user"></i></div>
-                                    <div class="activity-info"><p>David Wilson</p><span>Completed - Score: 85/100</span></div>
-                                </div>
-                                <div class="activity-item">
-                                    <div class="activity-icon solved"><i class="fas fa-check"></i></div>
-                                    <div class="activity-info"><p>Emma Brown</p><span>Hired - Offered position</span></div>
-                                </div>
-                                <div class="activity-item">
-                                    <div class="activity-icon attempted"><i class="fas fa-times"></i></div>
-                                    <div class="activity-info"><p>Frank Miller</p><span>Not selected</span></div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="card">
                             <div class="card-header"><h3 class="card-title">Quick Actions</h3></div>
                             <div class="card-body">
                                 <div class="quick-actions">
                                     <button class="quick-action" onclick="scheduleInterview()"><i class="fas fa-calendar-plus"></i><span>Schedule Interview</span></button>
-                                    <button class="quick-action" onclick="viewCandidates()"><i class="fas fa-search"></i><span>View Candidates</span></button>
+                                    <button class="quick-action" onclick="viewCandidates()"><i class="fas fa-search"></i><span>View All Candidates</span></button>
                                     <button class="quick-action" onclick="createAssessment()"><i class="fas fa-plus-circle"></i><span>Create Assessment</span></button>
                                 </div>
                             </div>
@@ -240,7 +185,7 @@
             </main>
         </div>
     </div>
-    <script>
+<script>
         function checkAuth() {
             const user = localStorage.getItem('ekvue_user');
             if (!user) { window.location.href = 'login.html'; return null; }
@@ -253,7 +198,55 @@
             document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
             document.getElementById('userName').textContent = user.name;
             document.getElementById('welcomeName').textContent = user.name.split(' ')[0];
+            loadStudents();
         }
+        
+        // Load all students from localStorage
+        function loadStudents() {
+            const allUsers = JSON.parse(localStorage.getItem('ekvue_users')) || [];
+            const students = allUsers.filter(u => u.type === 'student');
+            
+            // Update student count
+            document.getElementById('studentCount').textContent = students.length + ' students';
+            
+            const studentsList = document.getElementById('studentsList');
+            
+            if (students.length === 0) {
+                studentsList.innerHTML = '<p style="color: var(--gray-medium); text-align: center; padding: 20px;">No students registered yet.</p>';
+                return;
+            }
+            
+            let html = '';
+            students.forEach((student, index) => {
+                const initial = student.name ? student.name.charAt(0).toUpperCase() : '?';
+                const studentName = student.name || 'Unknown';
+                const studentEmail = student.email || 'No email';
+                const signupDate = student.signupTime ? new Date(student.signupTime).toLocaleDateString() : 'Unknown';
+                
+                html += `
+                    <div class="question-item">
+                        <div class="question-info">
+                            <h4>${studentName}</h4>
+                            <div class="question-meta">
+                                <span><i class="fas fa-envelope"></i> ${studentEmail}</span>
+                                <span><i class="fas fa-calendar"></i> ${signupDate}</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span class="difficulty easy">Student</span>
+                            <button class="btn-practice" onclick="viewStudentProfile('${studentEmail}')">View</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            studentsList.innerHTML = html;
+        }
+        
+        function viewStudentProfile(email) {
+            alert('Viewing profile for: ' + email);
+        }
+        
         function logout() { localStorage.removeItem('ekvue_user'); window.location.href = 'login.html'; }
         function startInterview(candidateName) { alert('Starting interview with ' + candidateName); }
         function viewDetails(candidateName) { alert('Viewing details for ' + candidateName); }
