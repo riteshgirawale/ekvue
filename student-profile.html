@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Profile - EkVue</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --primary-dark: #4338CA;
+            --primary-light: #818CF8;
+            --secondary-color: #10B981;
+            --accent-color: #F59E0B;
+            --danger-color: #EF4444;
+            --dark-color: #111827;
+            --dark-secondary: #1F2937;
+            --gray-dark: #374151;
+            --gray-medium: #6B7280;
+            --gray-light: #9CA3AF;
+            --white: #FFFFFF;
+            --bg-light: #F9FAFB;
+            --bg-gradient: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --transition: all 0.3s ease;
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-family); color: var(--dark-color); background: var(--bg-light); min-height: 100vh; }
+        .navbar { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); z-index: 1000; box-shadow: var(--shadow-sm); padding: 16px 0; position: fixed; top: 0; left: 0; right: 0; }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
+        .nav-logo { display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+        .nav-logo i { font-size: 28px; }
+        .main-content { padding-top: 80px; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 100px 20px 40px; background: var(--bg-gradient); position: relative; overflow: hidden; }
+        .main-content::before { content: ''; position: absolute; width: 600px; height: 600px; background: rgba(255, 255, 255, 0.05); border-radius: 50%; top: -200px; right: -200px; }
+        .main-content::after { content: ''; position: absolute; width: 400px; height: 400px; background: rgba(255, 255, 255, 0.05); border-radius: 50%; bottom: -100px; left: -100px; }
+        .profile-container { max-width: 700px; width: 100%; background: var(--white); border-radius: 24px; box-shadow: var(--shadow-xl); overflow: hidden; position: relative; z-index: 1; }
+        .profile-header { padding: 32px 40px; background: var(--primary-color); color: var(--white); text-align: center; }
+        .profile-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+        .profile-header p { font-size: 15px; opacity: 0.9; }
+        .profile-form { padding: 40px; }
+        .form-section { margin-bottom: 32px; }
+        .form-section-title { font-size: 18px; font-weight: 600; color: var(--dark-color); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .form-section-title i { color: var(--primary-color); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; color: var(--dark-color); margin-bottom: 8px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 14px 16px; font-size: 15px; border: 2px solid #E5E7EB; border-radius: 10px; outline: none; transition: var(--transition); font-family: var(--font-family); background: var(--white); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .form-group .input-icon { position: relative; }
+        .form-group .input-icon i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--gray-light); }
+        .form-group .input-icon input { padding-left: 44px; }
+        .skills-input-container { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; border: 2px solid #E5E7EB; border-radius: 10px; min-height: 50px; }
+        .skills-input-container:focus-within { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        .skill-tag { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--primary-color); color: var(--white); border-radius: 20px; font-size: 13px; font-weight: 500; }
+        .skill-tag button { background: none; border: none; color: var(--white); cursor: pointer; font-size: 12px; padding: 0; }
+        .skills-input { flex: 1; min-width: 120px; border: none !important; padding: 4px !important; outline: none; }
+        .checkbox-group { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 24px; }
+        .checkbox-group input[type="checkbox"] { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--primary-color); }
+        .checkbox-group label { font-size: 14px; color: var(--gray-medium); line-height: 1.5; }
+        .btn-submit { width: 100%; padding: 16px; background: var(--primary-color); color: var(--white); border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: var(--font-family); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-submit:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4); }
+        .skip-link { text-align: center; margin-top: 16px; font-size: 14px; }
+        .skip-link a { color: var(--gray-medium); text-decoration: none; }
+        .skip-link a:hover { color: var(--primary-color); text-decoration: underline; }
+        @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; } .profile-form { padding: 24px; } .profile-header { padding: 24px; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo"><i class="fas fa-code"></i><span>EkVue</span></a>
+        </div>
+    </nav>
+    <div class="main-content">
+        <div class="profile-container">
+            <div class="profile-header">
+                <h1><i class="fas fa-user-circle"></i> Complete Your Profile</h1>
+                <p>Help us know you better! This information will be visible to interviewers.</p>
+            </div>
+            <form class="profile-form" id="profileForm">
+                <div class="form-section">
+                    <h3 class="form-section-title"><i class="fas fa-graduation-cap"></i> Education</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>University/College</label>
+                            <input type="text" id="university" placeholder="e.g., MIT" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Degree</label>
+                            <input type="text" id="degree" placeholder="e.g., Computer Science" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Graduation Year</label>
+                            <select id="graduationYear" required>
+                                <option value="">Select year</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>CGPA/GPA</label>
+                            <input type="text" id="cgpa" placeholder="e.g., 3.8/4.0">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3 class="form-section-title"><i class="fas fa-code"></i> Technical Skills</h3>
+                    <div class="form-group">
+                        <label>Programming Languages</label>
+                        <div class="skills-input-container" id="languageSkills">
+                            <input type="text" class="skills-input" id="languageInput" placeholder="Type a language and press Enter">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Technologies/Frameworks</label>
+                        <div class="skills-input-container" id="techSkills">
+                            <input type="text" class="skills-input" id="techInput" placeholder="Type a technology and press Enter">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3 class="form-section-title"><i class="fas fa-briefcase"></i> Experience</h3>
+                    <div class="form-group">
+                        <label>Internships (if any)</label>
+                        <textarea id="internships" placeholder="Describe your internships, projects, or relevant experience..."></textarea>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3 class="form-section-title"><i class="fas fa-link"></i> Links</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>GitHub Profile</label>
+                            <div class="input-icon">
+                                <i class="fab fa-github"></i>
+                                <input type="url" id="github" placeholder="https://github.com/username">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>LinkedIn Profile</label>
+                            <div class="input-icon">
+                                <i class="fab fa-linkedin"></i>
+                                <input type="url" id="linkedin" placeholder="https://linkedin.com/in/username">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit"><i class="fas fa-check"></i> Save Profile</button>
+                <div class="skip-link">
+                    <a href="login.html">Skip for now</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        // Populate graduation year options
+        const graduationSelect = document.getElementById('graduationYear');
+        const currentYear = new Date().getFullYear();
+        for (let year = currentYear + 5; year >= currentYear - 10; year--) {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            graduationSelect.appendChild(option);
+        }
+
+        // Skills management
+        const skills = { languages: [], technologies: [] };
+        
+        function addSkill(container, skillList, input, type) {
+            const value = input.value.trim();
+            if (value && !skillList.includes(value.toLowerCase())) {
+                skillList.push(value.toLowerCase());
+                const tag = document.createElement('span');
+                tag.className = 'skill-tag';
+                tag.innerHTML = `${value} <button type="button" onclick="removeSkill(this, '${type}', '${value}')">&times;</button>`;
+                container.insertBefore(tag, input);
+                input.value = '';
+            }
+        }
+
+        function removeSkill(btn, type, value) {
+            btn.parentElement.remove();
+            if (type === 'language') {
+                skills.languages = skills.languages.filter(s => s !== value.toLowerCase());
+            } else {
+                skills.technologies = skills.technologies.filter(s => s !== value.toLowerCase());
+            }
+        }
+
+        document.getElementById('languageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addSkill(document.getElementById('languageSkills'), skills.languages, this, 'language');
+            }
+        });
+
+        document.getElementById('techInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addSkill(document.getElementById('techSkills'), skills.technologies, this, 'technology');
+            }
+        });
+
+        // Check if user is logged in
+        window.addEventListener('load', function() {
+            const user = localStorage.getItem('ekvue_user');
+            if (!user) {
+                window.location.href = 'signup.html';
+                return;
+            }
+            const userData = JSON.parse(user);
+            if (userData.type !== 'student') {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Form submission
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const user = JSON.parse(localStorage.getItem('ekvue_user'));
+            
+            // Update user profile
+            user.profileCompleted = true;
+            user.education = {
+                university: document.getElementById('university').value,
+                degree: document.getElementById('degree').value,
+                graduationYear: document.getElementById('graduationYear').value,
+                cgpa: document.getElementById('cgpa').value
+            };
+            user.skills = {
+                languages: skills.languages,
+                technologies: skills.technologies
+            };
+            user.experience = document.getElementById('internships').value;
+            user.github = document.getElementById('github').value;
+            user.linkedin = document.getElementById('linkedin').value;
+
+            // Update in localStorage users array
+            const existingUsers = JSON.parse(localStorage.getItem('ekvue_users')) || [];
+            const userIndex = existingUsers.findIndex(u => u.email === user.email);
+            if (userIndex !== -1) {
+                existingUsers[userIndex] = user;
+                localStorage.setItem('ekvue_users', JSON.stringify(existingUsers));
+            }
+            
+            localStorage.setItem('ekvue_user', JSON.stringify(user));
+
+            const submitBtn = this.querySelector('.btn-submit');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                alert('Profile saved successfully!');
+                window.location.href = 'login.html';
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
