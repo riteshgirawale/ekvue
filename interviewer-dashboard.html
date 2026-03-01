@@ -232,8 +232,9 @@ let html = '';
                 const signupDate = student.signupTime ? new Date(student.signupTime).toLocaleDateString() : 'Unknown';
                 
                 // Check if student has resume data
+                const hasNewProfile = student.education || student.skills || student.experience || student.github || student.linkedin;
                 const hasResume = student.resume && student.resume.personal && student.resume.personal.fullName;
-                const profileStatus = student.profileCompleted ? '<span class="difficulty easy">Profile Complete</span>' : '<span class="difficulty medium">Profile Incomplete</span>';
+                const profileStatus = (student.profileCompleted || hasNewProfile) ? '<span class="difficulty easy">Profile Complete</span>' : '<span class="difficulty medium">Profile Incomplete</span>';
                 
                 // Encode email for safe use in onclick
                 const encodedEmail = encodeURIComponent(student.email);
@@ -269,58 +270,86 @@ let html = '';
             
             let profileHtml = '';
             
-            if (student.resume && student.resume.personal) {
+            // Check for new profile data from student-profile.html first
+            const hasNewProfile = student.education || student.skills || student.experience || student.github || student.linkedin;
+            
+            if (hasNewProfile) {
+                // Show profile from student-profile.html
+                profileHtml = `<div style="padding: 20px; max-height: 500px; overflow-y: auto;">
+                    <h3 style="font-size: 24px; margin-bottom: 8px;">${student.name || 'N/A'}</h3>
+                    <p style="color: var(--gray-medium); margin-bottom: 16px;">${student.email || 'No email'}</p>`;
+                
+                if (student.education) {
+                    const edu = student.education;
+                    profileHtml += `<div style="margin-bottom: 20px; padding: 16px; background: var(--bg-light); border-radius: 12px;">
+                        <h4 style="margin-bottom: 12px; color: var(--primary-color);"><i class="fas fa-graduation-cap"></i> Education</h4>
+                        <p><strong>University:</strong> ${edu.university || 'N/A'}</p>
+                        <p><strong>Degree:</strong> ${edu.degree || 'N/A'}</p>
+                        <p><strong>Graduation Year:</strong> ${edu.graduationYear || 'N/A'}</p>
+                        ${edu.cgpa ? `<p><strong>CGPA:</strong> ${edu.cgpa}</p>` : ''}
+                    </div>`;
+                }
+                
+                if (student.skills) {
+                    if (student.skills.languages && student.skills.languages.length > 0) {
+                        profileHtml += `<div style="margin-bottom: 20px; padding: 16px; background: var(--bg-light); border-radius: 12px;">
+                            <h4 style="margin-bottom: 12px; color: var(--primary-color);"><i class="fas fa-code"></i> Programming Languages</h4>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">`;
+                        student.skills.languages.forEach(skill => {
+                            profileHtml += `<span class="difficulty easy">${skill}</span>`;
+                        });
+                        profileHtml += `</div></div>`;
+                    }
+                    
+                    if (student.skills.technologies && student.skills.technologies.length > 0) {
+                        profileHtml += `<div style="margin-bottom: 20px; padding: 16px; background: var(--bg-light); border-radius: 12px;">
+                            <h4 style="margin-bottom: 12px; color: var(--primary-color);"><i class="fas fa-tools"></i> Technologies/Frameworks</h4>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">`;
+                        student.skills.technologies.forEach(skill => {
+                            profileHtml += `<span class="difficulty medium">${skill}</span>`;
+                        });
+                        profileHtml += `</div></div>`;
+                    }
+                }
+                
+                if (student.experience) {
+                    profileHtml += `<div style="margin-bottom: 20px; padding: 16px; background: var(--bg-light); border-radius: 12px;">
+                        <h4 style="margin-bottom: 12px; color: var(--primary-color);"><i class="fas fa-briefcase"></i> Experience</h4>
+                        <p>${student.experience}</p>
+                    </div>`;
+                }
+                
+                if (student.github || student.linkedin) {
+                    profileHtml += `<div style="margin-bottom: 20px; padding: 16px; background: var(--bg-light); border-radius: 12px;">
+                        <h4 style="margin-bottom: 12px; color: var(--primary-color);"><i class="fas fa-link"></i> Links</h4>`;
+                    if (student.github) profileHtml += `<p><i class="fab fa-github"></i> <a href="${student.github}" target="_blank">${student.github}</a></p>`;
+                    if (student.linkedin) profileHtml += `<p><i class="fab fa-linkedin"></i> <a href="${student.linkedin}" target="_blank">${student.linkedin}</a></p>`;
+                    profileHtml += `</div>`;
+                }
+                
+                profileHtml += '</div>';
+            } else if (student.resume && student.resume.personal) {
+                // Fallback to resume data
                 const p = student.resume.personal;
-                profileHtml = `
-                    <div style="padding: 20px; max-height: 400px; overflow-y: auto;">
-                        <h3 style="font-size: 24px; margin-bottom: 8px;">${p.fullName || 'N/A'}</h3>
-                        <p style="color: var(--gray-medium); margin-bottom: 16px;">${p.jobTitle || 'No Job Title'}</p>
-                        
-                        <div style="margin-bottom: 16px;">
-                            <strong><i class="fas fa-envelope"></i> Email:</strong> ${p.email || 'N/A'}<br>
-                            <strong><i class="fas fa-phone"></i> Phone:</strong> ${p.phone || 'N/A'}<br>
-                            <strong><i class="fas fa-map-marker-alt"></i> Location:</strong> ${p.location || 'N/A'}<br>
-                            <strong><i class="fab fa-linkedin"></i> LinkedIn:</strong> ${p.linkedin || 'N/A'}
-                        </div>
-                        
-                        ${p.summary ? `<div style="margin-bottom: 16px;"><strong>Summary:</strong><p>${p.summary}</p></div>` : ''}
-                `;
+                profileHtml = `<div style="padding: 20px; max-height: 400px; overflow-y: auto;">
+                    <h3 style="font-size: 24px; margin-bottom: 8px;">${p.fullName || 'N/A'}</h3>
+                    <p style="color: var(--gray-medium); margin-bottom: 16px;">${p.jobTitle || 'No Job Title'}</p>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <strong>Email:</strong> ${p.email || 'N/A'}<br>
+                        <strong>Phone:</strong> ${p.phone || 'N/A'}<br>
+                        <strong>Location:</strong> ${p.location || 'N/A'}
+                    </div>`;
                 
                 if (student.resume.skills && student.resume.skills.length > 0) {
                     profileHtml += '<div style="margin-bottom: 16px;"><strong>Skills:</strong><div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">';
-                    student.resume.skills.forEach(skill => {
-                        profileHtml += `<span class="difficulty easy">${skill}</span>`;
-                    });
+                    student.resume.skills.forEach(skill => { profileHtml += `<span class="difficulty easy">${skill}</span>`; });
                     profileHtml += '</div></div>';
-                }
-                
-                if (student.resume.education && student.resume.education.length > 0) {
-                    profileHtml += '<div style="margin-bottom: 16px;"><strong>Education:</strong>';
-                    student.resume.education.forEach(edu => {
-                        profileHtml += `<p>${edu.degree} at ${edu.institution} (${edu.startDate ? edu.startDate : ''} - ${edu.endDate ? edu.endDate : 'Present'})</p>`;
-                    });
-                    profileHtml += '</div>';
-                }
-                
-                if (student.resume.experience && student.resume.experience.length > 0) {
-                    profileHtml += '<div style="margin-bottom: 16px;"><strong>Experience:</strong>';
-                    student.resume.experience.forEach(exp => {
-                        profileHtml += `<p>${exp.position} at ${exp.company} (${exp.startDate ? exp.startDate : ''} - ${exp.endDate ? exp.endDate : 'Present'})</p>`;
-                    });
-                    profileHtml += '</div>';
-                }
-                
-                if (student.resume.projects && student.resume.projects.length > 0) {
-                    profileHtml += '<div style="margin-bottom: 16px;"><strong>Projects:</strong>';
-                    student.resume.projects.forEach(proj => {
-                        profileHtml += `<p>${proj.name} - ${proj.tech || ''}</p>`;
-                    });
-                    profileHtml += '</div>';
                 }
                 
                 profileHtml += '</div>';
             } else {
-                profileHtml = '<p style="padding: 20px; text-align: center;">This student has not completed their profile yet. Please ask them to fill out their resume.</p>';
+                profileHtml = '<p style="padding: 20px; text-align: center;">This student has not completed their profile yet.</p>';
             }
             
 // Create modal
