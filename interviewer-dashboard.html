@@ -99,7 +99,16 @@
         .quick-action i { width: 40px; height: 40px; background: var(--white); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary-color); font-size: 18px; box-shadow: var(--shadow-sm); }
         .quick-action span { font-weight: 600; color: var(--dark-color); }
         @media (max-width: 1024px) { .sidebar { width: 80px; } .sidebar-menu a span { display: none; } .sidebar-menu a { justify-content: center; padding: 16px; } .dashboard-content { margin-left: 80px; } .content-grid { grid-template-columns: 1fr; } }
-        @media (max-width: 768px) { .sidebar { display: none; } .dashboard-content { margin-left: 0; } .nav-menu { display: none; } .stats-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .sidebar { display: none; } .dashboard-content { margin-left: 0; } .nav-menu { display: none; } .stats-grid { grid-template-columns: 1fr; } }
+        
+        /* Modal Styles */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.show { display: flex; }
+        .modal-content { background: var(--white); border-radius: 20px; padding: 32px; max-width: 600px; width: 100%; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .modal-header h2 { font-size: 24px; font-weight: 600; }
+        .modal-close { width: 36px; height: 36px; border: none; background: var(--bg-light); border-radius: 50%; cursor: pointer; font-size: 18px; }
+        .modal-close:hover { background: var(--danger-color); color: var(--white); }
     </style>
 </head>
 <body>
@@ -201,7 +210,7 @@
             loadStudents();
         }
         
-        // Load all students from localStorage
+// Load all students from localStorage
         function loadStudents() {
             const allUsers = JSON.parse(localStorage.getItem('ekvue_users')) || [];
             const students = allUsers.filter(u => u.type === 'student');
@@ -216,12 +225,18 @@
                 return;
             }
             
-            let html = '';
+let html = '';
             students.forEach((student, index) => {
-                const initial = student.name ? student.name.charAt(0).toUpperCase() : '?';
                 const studentName = student.name || 'Unknown';
                 const studentEmail = student.email || 'No email';
                 const signupDate = student.signupTime ? new Date(student.signupTime).toLocaleDateString() : 'Unknown';
+                
+                // Check if student has resume data
+                const hasResume = student.resume && student.resume.personal && student.resume.personal.fullName;
+                const profileStatus = student.profileCompleted ? '<span class="difficulty easy">Profile Complete</span>' : '<span class="difficulty medium">Profile Incomplete</span>';
+                
+                // Encode email for safe use in onclick
+                const encodedEmail = encodeURIComponent(student.email);
                 
                 html += `
                     <div class="question-item">
@@ -233,8 +248,8 @@
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            <span class="difficulty easy">Student</span>
-                            <button class="btn-practice" onclick="viewStudentProfile('${studentEmail}')">View</button>
+                            ${profileStatus}
+                            <button class="btn-practice" onclick="viewStudentProfile(decodeURIComponent('${encodedEmail}'))">View Profile</button>
                         </div>
                     </div>
                 `;
@@ -244,7 +259,88 @@
         }
         
         function viewStudentProfile(email) {
-            alert('Viewing profile for: ' + email);
+            const allUsers = JSON.parse(localStorage.getItem('ekvue_users')) || [];
+            const student = allUsers.find(u => u.email === email);
+            
+            if (!student) {
+                alert('Student not found');
+                return;
+            }
+            
+            let profileHtml = '';
+            
+            if (student.resume && student.resume.personal) {
+                const p = student.resume.personal;
+                profileHtml = `
+                    <div style="padding: 20px; max-height: 400px; overflow-y: auto;">
+                        <h3 style="font-size: 24px; margin-bottom: 8px;">${p.fullName || 'N/A'}</h3>
+                        <p style="color: var(--gray-medium); margin-bottom: 16px;">${p.jobTitle || 'No Job Title'}</p>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <strong><i class="fas fa-envelope"></i> Email:</strong> ${p.email || 'N/A'}<br>
+                            <strong><i class="fas fa-phone"></i> Phone:</strong> ${p.phone || 'N/A'}<br>
+                            <strong><i class="fas fa-map-marker-alt"></i> Location:</strong> ${p.location || 'N/A'}<br>
+                            <strong><i class="fab fa-linkedin"></i> LinkedIn:</strong> ${p.linkedin || 'N/A'}
+                        </div>
+                        
+                        ${p.summary ? `<div style="margin-bottom: 16px;"><strong>Summary:</strong><p>${p.summary}</p></div>` : ''}
+                `;
+                
+                if (student.resume.skills && student.resume.skills.length > 0) {
+                    profileHtml += '<div style="margin-bottom: 16px;"><strong>Skills:</strong><div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">';
+                    student.resume.skills.forEach(skill => {
+                        profileHtml += `<span class="difficulty easy">${skill}</span>`;
+                    });
+                    profileHtml += '</div></div>';
+                }
+                
+                if (student.resume.education && student.resume.education.length > 0) {
+                    profileHtml += '<div style="margin-bottom: 16px;"><strong>Education:</strong>';
+                    student.resume.education.forEach(edu => {
+                        profileHtml += `<p>${edu.degree} at ${edu.institution} (${edu.startDate ? edu.startDate : ''} - ${edu.endDate ? edu.endDate : 'Present'})</p>`;
+                    });
+                    profileHtml += '</div>';
+                }
+                
+                if (student.resume.experience && student.resume.experience.length > 0) {
+                    profileHtml += '<div style="margin-bottom: 16px;"><strong>Experience:</strong>';
+                    student.resume.experience.forEach(exp => {
+                        profileHtml += `<p>${exp.position} at ${exp.company} (${exp.startDate ? exp.startDate : ''} - ${exp.endDate ? exp.endDate : 'Present'})</p>`;
+                    });
+                    profileHtml += '</div>';
+                }
+                
+                if (student.resume.projects && student.resume.projects.length > 0) {
+                    profileHtml += '<div style="margin-bottom: 16px;"><strong>Projects:</strong>';
+                    student.resume.projects.forEach(proj => {
+                        profileHtml += `<p>${proj.name} - ${proj.tech || ''}</p>`;
+                    });
+                    profileHtml += '</div>';
+                }
+                
+                profileHtml += '</div>';
+            } else {
+                profileHtml = '<p style="padding: 20px; text-align: center;">This student has not completed their profile yet. Please ask them to fill out their resume.</p>';
+            }
+            
+// Create modal
+            const modalDiv = document.createElement('div');
+            modalDiv.className = 'modal-overlay show';
+            modalDiv.onclick = function(e) {
+                if (e.target === modalDiv) {
+                    modalDiv.remove();
+                }
+            };
+            modalDiv.innerHTML = `
+                <div class="modal-content" style="max-width: 600px;">
+                    <div class="modal-header">
+                        <h2>${student.name || 'Student'} - Profile</h2>
+                        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+                    </div>
+                    ${profileHtml}
+                </div>
+            `;
+            document.body.appendChild(modalDiv);
         }
         
         function logout() { localStorage.removeItem('ekvue_user'); window.location.href = 'login.html'; }

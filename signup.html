@@ -178,13 +178,14 @@
                     userData.name = firstName + ' ' + lastName;
                     userData.email = email;
                     userData.password = password;
+                    userData.profileCompleted = false;
                     existingUsers.push(userData);
                     localStorage.setItem('ekvue_users', JSON.stringify(existingUsers));
                     localStorage.setItem('ekvue_user', JSON.stringify(userData));
                     const submitBtn = form.querySelector('button[type="submit"]');
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
                     submitBtn.disabled = true;
-                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+                    setTimeout(() => { window.location.href = 'resume-builder.html'; }, 1000);
                 } else if (formType === 'interviewer') {
                     const firstName = document.getElementById('interviewerFirstName').value;
                     const lastName = document.getElementById('interviewerLastName').value;

@@ -1512,7 +1512,7 @@
             }, 3000);
         }
 
-        // Save & Download
+// Save & Download
         function saveResume() {
             // Collect all form data
             resumeData.personal = {
@@ -1526,6 +1526,22 @@
             };
 
             localStorage.setItem('ekvue_resume', JSON.stringify(resumeData));
+            
+            // Also save to user's profile in ekvue_users
+            const currentUser = JSON.parse(localStorage.getItem('ekvue_user'));
+            if (currentUser) {
+                const allUsers = JSON.parse(localStorage.getItem('ekvue_users')) || [];
+                const userIndex = allUsers.findIndex(u => u.email === currentUser.email);
+                if (userIndex !== -1) {
+                    allUsers[userIndex].resume = resumeData;
+                    allUsers[userIndex].profileCompleted = true;
+                    localStorage.setItem('ekvue_users', JSON.stringify(allUsers));
+                    currentUser.resume = resumeData;
+                    currentUser.profileCompleted = true;
+                    localStorage.setItem('ekvue_user', JSON.stringify(currentUser));
+                }
+            }
+            
             showToast('Resume saved successfully!');
         }
 
