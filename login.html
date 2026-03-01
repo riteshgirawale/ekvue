@@ -193,8 +193,17 @@
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
                 submitBtn.disabled = true;
 
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
+setTimeout(() => {
+                    // Redirect to the appropriate dashboard based on user type
+                    if (formType === 'student') {
+                        window.location.href = 'student-dashboard.html';
+                    } else if (formType === 'interviewer') {
+                        window.location.href = 'interviewer-dashboard.html';
+                    } else if (formType === 'company') {
+                        window.location.href = 'company-dashboard.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
                 }, 1000);
             });
         });
@@ -202,7 +211,17 @@
         window.addEventListener('load', function() {
             const user = localStorage.getItem('ekvue_user');
             if (user) {
-                window.location.href = 'dashboard.html';
+                const userData = JSON.parse(user);
+                // Redirect to the appropriate dashboard based on user type
+                if (userData.type === 'student') {
+                    window.location.href = 'student-dashboard.html';
+                } else if (userData.type === 'interviewer') {
+                    window.location.href = 'interviewer-dashboard.html';
+                } else if (userData.type === 'company') {
+                    window.location.href = 'company-dashboard.html';
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
             }
         });
 
