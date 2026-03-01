@@ -33,449 +33,134 @@
             --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: var(--font-family);
-            color: var(--dark-color);
-            background: var(--bg-light);
-            min-height: 100vh;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-family); color: var(--dark-color); background: var(--bg-light); min-height: 100vh; }
 
         /* Navbar */
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            box-shadow: var(--shadow-sm);
-            padding: 16px 0;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .nav-logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        .nav-logo i {
-            font-size: 28px;
-        }
-
-        .nav-menu {
-            display: flex;
-            align-items: center;
-            gap: 32px;
-        }
-
-        .nav-menu a {
-            font-weight: 500;
-            color: var(--gray-dark);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .nav-menu a:hover, .nav-menu a.active {
-            color: var(--primary-color);
-        }
-
-        .nav-user {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            color: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-name {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .user-type {
-            font-size: 12px;
-            color: var(--gray-medium);
-            text-transform: capitalize;
-        }
-
-        .btn-logout {
-            padding: 8px 16px;
-            background: transparent;
-            border: 1px solid var(--gray-light);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            color: var(--gray-dark);
-            transition: var(--transition);
-        }
-
-        .btn-logout:hover {
-            background: var(--danger-color);
-            border-color: var(--danger-color);
-            color: var(--white);
-        }
+        .navbar { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); z-index: 1000; box-shadow: var(--shadow-sm); padding: 16px 0; position: fixed; top: 0; left: 0; right: 0; }
+        .nav-container { max-width: 1400px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
+        .nav-logo { display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 700; color: var(--primary-color); text-decoration: none; }
+        .nav-logo i { font-size: 28px; }
+        .nav-menu { display: flex; align-items: center; gap: 32px; }
+        .nav-menu a { font-weight: 500; color: var(--gray-dark); text-decoration: none; transition: var(--transition); }
+        .nav-menu a:hover, .nav-menu a.active { color: var(--primary-color); }
+        .nav-user { display: flex; align-items: center; gap: 16px; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 600; }
+        .user-info { display: flex; flex-direction: column; }
+        .user-name { font-weight: 600; font-size: 14px; }
+        .user-type { font-size: 12px; color: var(--gray-medium); text-transform: capitalize; }
+        .btn-logout { padding: 8px 16px; background: transparent; border: 1px solid var(--gray-light); border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--gray-dark); transition: var(--transition); }
+        .btn-logout:hover { background: var(--danger-color); border-color: var(--danger-color); color: var(--white); }
 
         /* Main Content */
-        .main-content {
-            padding-top: 80px;
-            min-height: 100vh;
-        }
+        .main-content { padding-top: 80px; min-height: 100vh; }
+        .dashboard-container { display: flex; min-height: calc(100vh - 80px); }
 
         /* Sidebar */
-        .dashboard-container {
-            display: flex;
-            min-height: calc(100vh - 80px);
-        }
-
-        .sidebar {
-            width: 260px;
-            background: var(--white);
-            border-right: 1px solid #E5E7EB;
-            padding: 24px 0;
-            position: fixed;
-            top: 80px;
-            left: 0;
-            bottom: 0;
-            overflow-y: auto;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-        }
-
-        .sidebar-menu li {
-            margin-bottom: 4px;
-        }
-
-        .sidebar-menu a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 24px;
-            color: var(--gray-dark);
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-        }
-
-        .sidebar-menu a:hover, .sidebar-menu a.active {
-            background: rgba(79, 70, 229, 0.1);
-            color: var(--primary-color);
-            border-right: 3px solid var(--primary-color);
-        }
-
-        .sidebar-menu a i {
-            width: 20px;
-            text-align: center;
-        }
+        .sidebar { width: 260px; background: var(--white); border-right: 1px solid #E5E7EB; padding: 24px 0; position: fixed; top: 80px; left: 0; bottom: 0; overflow-y: auto; }
+        .sidebar-menu { list-style: none; }
+        .sidebar-menu li { margin-bottom: 4px; }
+        .sidebar-menu a { display: flex; align-items: center; gap: 12px; padding: 12px 24px; color: var(--gray-dark); text-decoration: none; font-weight: 500; transition: var(--transition); }
+        .sidebar-menu a:hover, .sidebar-menu a.active { background: rgba(79, 70, 229, 0.1); color: var(--primary-color); border-right: 3px solid var(--primary-color); }
+        .sidebar-menu a i { width: 20px; text-align: center; }
 
         /* Dashboard Content */
-        .dashboard-content {
-            flex: 1;
-            margin-left: 260px;
-            padding: 32px;
-        }
-
-        .page-header {
-            margin-bottom: 32px;
-        }
-
-        .page-title {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .page-subtitle {
-            color: var(--gray-medium);
-        }
+        .dashboard-content { flex: 1; margin-left: 260px; padding: 32px; }
+        .page-header { margin-bottom: 32px; }
+        .page-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+        .page-subtitle { color: var(--gray-medium); }
 
         /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
-        }
-
-        .stat-card {
-            background: var(--white);
-            padding: 24px;
-            border-radius: 16px;
-            box-shadow: var(--shadow-md);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .stat-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 32px; }
+        .stat-card { background: var(--white); padding: 24px; border-radius: 16px; box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 16px; }
+        .stat-icon { width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
         .stat-icon.blue { background: rgba(79, 70, 229, 0.1); color: var(--primary-color); }
         .stat-icon.green { background: rgba(16, 185, 129, 0.1); color: var(--secondary-color); }
         .stat-icon.orange { background: rgba(245, 158, 11, 0.1); color: var(--accent-color); }
         .stat-icon.red { background: rgba(239, 68, 68, 0.1); color: var(--danger-color); }
-
-        .stat-info h3 {
-            font-size: 28px;
-            font-weight: 700;
-        }
-
-        .stat-info p {
-            color: var(--gray-medium);
-            font-size: 14px;
-        }
+        .stat-info h3 { font-size: 28px; font-weight: 700; }
+        .stat-info p { color: var(--gray-medium); font-size: 14px; }
 
         /* Content Grid */
-        .content-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 24px;
-        }
-
-        .card {
-            background: var(--white);
-            border-radius: 16px;
-            box-shadow: var(--shadow-md);
-            overflow: hidden;
-        }
-
-        .card-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #E5E7EB;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .card-body {
-            padding: 24px;
-        }
+        .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+        .card { background: var(--white); border-radius: 16px; box-shadow: var(--shadow-md); overflow: hidden; }
+        .card-header { padding: 20px 24px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between; }
+        .card-title { font-size: 18px; font-weight: 600; }
+        .card-body { padding: 24px; }
 
         /* Questions List */
-        .question-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 0;
-            border-bottom: 1px solid #F3F4F6;
-        }
-
-        .question-item:last-child {
-            border-bottom: none;
-        }
-
-        .question-info h4 {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .question-meta {
-            display: flex;
-            gap: 16px;
-            font-size: 13px;
-            color: var(--gray-medium);
-        }
-
-        .question-meta span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .difficulty {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
+        .question-item { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #F3F4F6; }
+        .question-item:last-child { border-bottom: none; }
+        .question-info h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+        .question-meta { display: flex; gap: 16px; font-size: 13px; color: var(--gray-medium); }
+        .question-meta span { display: flex; align-items: center; gap: 4px; }
+        .difficulty { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .difficulty.easy { background: rgba(16, 185, 129, 0.1); color: var(--secondary-color); }
         .difficulty.medium { background: rgba(245, 158, 11, 0.1); color: var(--accent-color); }
         .difficulty.hard { background: rgba(239, 68, 68, 0.1); color: var(--danger-color); }
-
-        .btn-practice {
-            padding: 8px 16px;
-            background: var(--primary-color);
-            color: var(--white);
-            border: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .btn-practice:hover {
-            background: var(--primary-dark);
-        }
+        .btn-practice { padding: 8px 16px; background: var(--primary-color); color: var(--white); border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition); }
+        .btn-practice:hover { background: var(--primary-dark); }
 
         /* Activity List */
-        .activity-item {
-            display: flex;
-            gap: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid #F3F4F6;
-        }
-
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-
-        .activity-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-        }
-
+        .activity-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F3F4F6; }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
         .activity-icon.solved { background: rgba(16, 185, 129, 0.1); color: var(--secondary-color); }
         .activity-icon.attempted { background: rgba(245, 158, 11, 0.1); color: var(--accent-color); }
-
-        .activity-info p {
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .activity-info span {
-            font-size: 12px;
-            color: var(--gray-medium);
-        }
+        .activity-icon.interview { background: rgba(79, 70, 229, 0.1); color: var(--primary-color); }
+        .activity-info p { font-size: 14px; font-weight: 500; }
+        .activity-info span { font-size: 12px; color: var(--gray-medium); }
 
         /* Quick Actions */
-        .quick-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        .quick-actions { display: flex; flex-direction: column; gap: 12px; }
+        .quick-action { display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--bg-light); border-radius: 12px; cursor: pointer; transition: var(--transition); border: none; width: 100%; text-align: left; }
+        .quick-action:hover { background: rgba(79, 70, 229, 0.1); }
+        .quick-action i { width: 40px; height: 40px; background: var(--white); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary-color); font-size: 18px; box-shadow: var(--shadow-sm); }
+        .quick-action span { font-weight: 600; color: var(--dark-color); }
 
-        .quick-action {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px;
-            background: var(--bg-light);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
-            width: 100%;
-            text-align: left;
-        }
+        /* Candidate Card */
+        .candidate-item { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #F3F4F6; }
+        .candidate-item:last-child { border-bottom: none; }
+        .candidate-info { display: flex; align-items: center; gap: 12px; }
+        .candidate-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 600; }
+        .candidate-details h4 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+        .candidate-details p { font-size: 13px; color: var(--gray-medium); }
+        .candidate-status { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .candidate-status.pending { background: rgba(245, 158, 11, 0.1); color: var(--accent-color); }
+        .candidate-status.scheduled { background: rgba(79, 70, 229, 0.1); color: var(--primary-color); }
+        .candidate-status.completed { background: rgba(16, 185, 129, 0.1); color: var(--secondary-color); }
 
-        .quick-action:hover {
-            background: rgba(79, 70, 229, 0.1);
-        }
+        /* Job Card */
+        .job-item { padding: 16px 0; border-bottom: 1px solid #F3F4F6; }
+        .job-item:last-child { border-bottom: none; }
+        .job-item h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+        .job-meta { display: flex; gap: 16px; font-size: 13px; color: var(--gray-medium); }
+        .job-meta span { display: flex; align-items: center; gap: 4px; }
 
-        .quick-action i {
-            width: 40px;
-            height: 40px;
-            background: var(--white);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary-color);
-            font-size: 18px;
-            box-shadow: var(--shadow-sm);
-        }
+        /* Table */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; color: var(--gray-medium); text-transform: uppercase; border-bottom: 2px solid #E5E7EB; }
+        .data-table td { padding: 16px; font-size: 14px; border-bottom: 1px solid #F3F4F6; }
+        .data-table tr:last-child td { border-bottom: none; }
 
-        .quick-action span {
-            font-weight: 600;
-            color: var(--dark-color);
-        }
+        /* User type specific sections */
+        .user-dashboard { display: none; }
+        .user-dashboard.active { display: block; }
 
         /* Responsive */
         @media (max-width: 1024px) {
-            .sidebar {
-                width: 80px;
-            }
-
-            .sidebar-menu a span {
-                display: none;
-            }
-
-            .sidebar-menu a {
-                justify-content: center;
-                padding: 16px;
-            }
-
-            .dashboard-content {
-                margin-left: 80px;
-            }
-
-            .content-grid {
-                grid-template-columns: 1fr;
-            }
+            .sidebar { width: 80px; }
+            .sidebar-menu a span { display: none; }
+            .sidebar-menu a { justify-content: center; padding: 16px; }
+            .dashboard-content { margin-left: 80px; }
+            .content-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                display: none;
-            }
-
-            .dashboard-content {
-                margin-left: 0;
-            }
-
-            .nav-menu {
-                display: none;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+            .sidebar { display: none; }
+            .dashboard-content { margin-left: 0; }
+            .nav-menu { display: none; }
+            .stats-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -511,8 +196,9 @@
     <div class="main-content">
         <div class="dashboard-container">
             <!-- Sidebar -->
-            <aside class="sidebar">
-                <ul class="sidebar-menu">
+            <aside class="sidebar" id="sidebar">
+                <!-- Student Sidebar -->
+                <ul class="sidebar-menu" id="studentSidebar">
                     <li><a href="dashboard.html" class="active"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
                     <li><a href="#"><i class="fas fa-code"></i><span>Problems</span></a></li>
                     <li><a href="#"><i class="fas fa-play-circle"></i><span>Practice</span></a></li>
@@ -522,176 +208,358 @@
                     <li><a href="resume-builder.html"><i class="fas fa-file-alt"></i><span>Resume Builder</span></a></li>
                     <li><a href="#"><i class="fas fa-cog"></i><span>Settings</span></a></li>
                 </ul>
+                <!-- Interviewer Sidebar -->
+                <ul class="sidebar-menu" id="interviewerSidebar" style="display: none;">
+                    <li><a href="dashboard.html" class="active"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+                    <li><a href="#"><i class="fas fa-user-plus"></i><span>Candidates</span></a></li>
+                    <li><a href="#"><i class="fas fa-calendar-alt"></i><span>Schedule</span></a></li>
+                    <li><a href="#"><i class="fas fa-clipboard-list"></i><span>Assessments</span></a></li>
+                    <li><a href="#"><i class="fas fa-video"></i><span>Interviews</span></a></li>
+                    <li><a href="#"><i class="fas fa-chart-bar"></i><span>Analytics</span></a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+                </ul>
+                <!-- Company Sidebar -->
+                <ul class="sidebar-menu" id="companySidebar" style="display: none;">
+                    <li><a href="dashboard.html" class="active"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+                    <li><a href="#"><i class="fas fa-briefcase"></i><span>Job Posts</span></a></li>
+                    <li><a href="#"><i class="fas fa-users"></i><span>Candidates</span></a></li>
+                    <li><a href="#"><i class="fas fa-calendar-check"></i><span>Interviews</span></a></li>
+                    <li><a href="#"><i class="fas fa-chart-pie"></i><span>Analytics</span></a></li>
+                    <li><a href="#"><i class="fas fa-file-contract"></i><span>Reports</span></a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+                </ul>
             </aside>
 
             <!-- Dashboard Content -->
             <main class="dashboard-content">
-                <div class="page-header">
-                    <h1 class="page-title">Welcome back, <span id="welcomeName">John</span>! 👋</h1>
-                    <p class="page-subtitle">Ready to ace your next interview? Let's practice some problems.</p>
-                </div>
+                <!-- Student Dashboard -->
+                <div class="user-dashboard active" id="studentDashboard">
+                    <div class="page-header">
+                        <h1 class="page-title">Welcome back, <span id="studentWelcomeName">John</span>! 👋</h1>
+                        <p class="page-subtitle">Ready to ace your next interview? Let's practice some problems.</p>
+                    </div>
 
-                <!-- Stats Grid -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon blue">
-                            <i class="fas fa-check-circle"></i>
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fas fa-check-circle"></i></div>
+                            <div class="stat-info"><h3 id="solvedCount">142</h3><p>Problems Solved</p></div>
                         </div>
-                        <div class="stat-info">
-                            <h3 id="solvedCount">142</h3>
-                            <p>Problems Solved</p>
+                        <div class="stat-card">
+                            <div class="stat-icon green"><i class="fas fa-fire"></i></div>
+                            <div class="stat-info"><h3 id="streakCount">12</h3><p>Day Streak</p></div>
                         </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon green">
-                            <i class="fas fa-fire"></i>
+                        <div class="stat-card">
+                            <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+                            <div class="stat-info"><h3>48h</h3><p>Practice Time</p></div>
                         </div>
-                        <div class="stat-info">
-                            <h3 id="streakCount">12</h3>
-                            <p>Day Streak</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon orange">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>48h</h3>
-                            <p>Practice Time</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon red">
-                            <i class="fas fa-ranking-star"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>#284</h3>
-                            <p>Global Rank</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Content Grid -->
-                <div class="content-grid">
-                    <!-- Recommended Questions -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Recommended Problems</h3>
-                            <a href="#" style="color: var(--primary-color); text-decoration: none; font-size: 14px;">View All</a>
-                        </div>
-                        <div class="card-body">
-                            <div class="question-item">
-                                <div class="question-info">
-                                    <h4>Two Sum</h4>
-                                    <div class="question-meta">
-                                        <span><i class="fas fa-tag"></i> Array</span>
-                                        <span><i class="fas fa-check"></i> 45.2k solved</span>
-                                    </div>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <span class="difficulty easy">Easy</span>
-                                    <button class="btn-practice" onclick="startPractice('Two Sum')">Solve</button>
-                                </div>
-                            </div>
-                            <div class="question-item">
-                                <div class="question-info">
-                                    <h4>Valid Parentheses</h4>
-                                    <div class="question-meta">
-                                        <span><i class="fas fa-tag"></i> Stack</span>
-                                        <span><i class="fas fa-check"></i> 38.1k solved</span>
-                                    </div>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <span class="difficulty easy">Easy</span>
-                                    <button class="btn-practice" onclick="startPractice('Valid Parentheses')">Solve</button>
-                                </div>
-                            </div>
-                            <div class="question-item">
-                                <div class="question-info">
-                                    <h4>Merge Two Sorted Lists</h4>
-                                    <div class="question-meta">
-                                        <span><i class="fas fa-tag"></i> Linked List</span>
-                                        <span><i class="fas fa-check"></i> 32.5k solved</span>
-                                    </div>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <span class="difficulty easy">Easy</span>
-                                    <button class="btn-practice" onclick="startPractice('Merge Two Sorted Lists')">Solve</button>
-                                </div>
-                            </div>
-                            <div class="question-item">
-                                <div class="question-info">
-                                    <h4>Maximum Subarray</h4>
-                                    <div class="question-meta">
-                                        <span><i class="fas fa-tag"></i> Dynamic Programming</span>
-                                        <span><i class="fas fa-check"></i> 28.9k solved</span>
-                                    </div>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <span class="difficulty medium">Medium</span>
-                                    <button class="btn-practice" onclick="startPractice('Maximum Subarray')">Solve</button>
-                                </div>
-                            </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red"><i class="fas fa-ranking-star"></i></div>
+                            <div class="stat-info"><h3>#284</h3><p>Global Rank</p></div>
                         </div>
                     </div>
 
-                    <!-- Sidebar Content -->
-                    <div style="display: flex; flex-direction: column; gap: 24px;">
-                        <!-- Recent Activity -->
+                    <!-- Content Grid -->
+                    <div class="content-grid">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Recent Activity</h3>
+                                <h3 class="card-title">Recommended Problems</h3>
+                                <a href="#" style="color: var(--primary-color); text-decoration: none; font-size: 14px;">View All</a>
                             </div>
                             <div class="card-body">
-                                <div class="activity-item">
-                                    <div class="activity-icon solved">
-                                        <i class="fas fa-check"></i>
+                                <div class="question-item">
+                                    <div class="question-info">
+                                        <h4>Two Sum</h4>
+                                        <div class="question-meta">
+                                            <span><i class="fas fa-tag"></i> Array</span>
+                                            <span><i class="fas fa-check"></i> 45.2k solved</span>
+                                        </div>
                                     </div>
-                                    <div class="activity-info">
-                                        <p>Solved "Reverse Linked List"</p>
-                                        <span>2 hours ago</span>
-                                    </div>
-                                </div>
-                                <div class="activity-item">
-                                    <div class="activity-icon solved">
-                                        <i class="fas fa-check"></i>
-                                    </div>
-                                    <div class="activity-info">
-                                        <p>Solved "Binary Tree Inorder Traversal"</p>
-                                        <span>Yesterday</span>
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <span class="difficulty easy">Easy</span>
+                                        <button class="btn-practice" onclick="startPractice('Two Sum')">Solve</button>
                                     </div>
                                 </div>
-                                <div class="activity-item">
-                                    <div class="activity-icon attempted">
-                                        <i class="fas fa-times"></i>
+                                <div class="question-item">
+                                    <div class="question-info">
+                                        <h4>Valid Parentheses</h4>
+                                        <div class="question-meta">
+                                            <span><i class="fas fa-tag"></i> Stack</span>
+                                            <span><i class="fas fa-check"></i> 38.1k solved</span>
+                                        </div>
                                     </div>
-                                    <div class="activity-info">
-                                        <p>Attempted "Longest Substring Without Repeating Characters"</p>
-                                        <span>2 days ago</span>
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <span class="difficulty easy">Easy</span>
+                                        <button class="btn-practice" onclick="startPractice('Valid Parentheses')">Solve</button>
+                                    </div>
+                                </div>
+                                <div class="question-item">
+                                    <div class="question-info">
+                                        <h4>Maximum Subarray</h4>
+                                        <div class="question-meta">
+                                            <span><i class="fas fa-tag"></i> Dynamic Programming</span>
+                                            <span><i class="fas fa-check"></i> 28.9k solved</span>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <span class="difficulty medium">Medium</span>
+                                        <button class="btn-practice" onclick="startPractice('Maximum Subarray')">Solve</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Quick Actions -->
+                        <div style="display: flex; flex-direction: column; gap: 24px;">
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Recent Activity</h3></div>
+                                <div class="card-body">
+                                    <div class="activity-item">
+                                        <div class="activity-icon solved"><i class="fas fa-check"></i></div>
+                                        <div class="activity-info"><p>Solved "Reverse Linked List"</p><span>2 hours ago</span></div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon solved"><i class="fas fa-check"></i></div>
+                                        <div class="activity-info"><p>Solved "Binary Tree Inorder Traversal"</p><span>Yesterday</span></div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon attempted"><i class="fas fa-times"></i></div>
+                                        <div class="activity-info"><p>Attempted "Longest Substring Without Repeating Characters"</p><span>2 days ago</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Quick Actions</h3></div>
+                                <div class="card-body">
+                                    <div class="quick-actions">
+                                        <button class="quick-action" onclick="startRandomProblem()">
+                                            <i class="fas fa-random"></i><span>Random Problem</span>
+                                        </button>
+                                        <button class="quick-action" onclick="startMockInterview()">
+                                            <i class="fas fa-user-friends"></i><span>Start Mock Interview</span>
+                                        </button>
+                                        <button class="quick-action" onclick="viewProgress()">
+                                            <i class="fas fa-chart-pie"></i><span>View Progress</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interviewer Dashboard -->
+                <div class="user-dashboard" id="interviewerDashboard">
+                    <div class="page-header">
+                        <h1 class="page-title">Welcome, <span id="interviewerWelcomeName">Interviewer</span>! 👋</h1>
+                        <p class="page-subtitle">Manage your interviews and candidates from here.</p>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+                            <div class="stat-info"><h3 id="totalCandidates">24</h3><p>Total Candidates</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green"><i class="fas fa-calendar-check"></i></div>
+                            <div class="stat-info"><h3 id="scheduledInterviews">8</h3><p>Scheduled Interviews</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orange"><i class="fas fa-clipboard-check"></i></div>
+                            <div class="stat-info"><h3 id="completedInterviews">45</h3><p>Completed</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red"><i class="fas fa-star"></i></div>
+                            <div class="stat-info"><h3>4.8</h3><p>Average Rating</p></div>
+                        </div>
+                    </div>
+
+                    <!-- Content Grid -->
+                    <div class="content-grid">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Quick Actions</h3>
+                                <h3 class="card-title">Upcoming Interviews</h3>
+                                <a href="#" style="color: var(--primary-color); text-decoration: none; font-size: 14px;">View All</a>
                             </div>
                             <div class="card-body">
-                                <div class="quick-actions">
-                                    <button class="quick-action" onclick="startRandomProblem()">
-                                        <i class="fas fa-random"></i>
-                                        <span>Random Problem</span>
-                                    </button>
-                                    <button class="quick-action" onclick="startMockInterview()">
-                                        <i class="fas fa-user-friends"></i>
-                                        <span>Start Mock Interview</span>
-                                    </button>
-                                    <button class="quick-action" onclick="viewProgress()">
-                                        <i class="fas fa-chart-pie"></i>
-                                        <span>View Progress</span>
-                                    </button>
+                                <div class="question-item">
+                                    <div class="question-info">
+                                        <h4>Alice Johnson</h4>
+                                        <div class="question-meta">
+                                            <span><i class="fas fa-briefcase"></i> Senior Developer</span>
+                                            <span><i class="fas fa-clock"></i> 10:00 AM Today</span>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <span class="difficulty medium">Technical</span>
+                                        <button class="btn-practice" onclick="startInterview('Alice Johnson')">Start</button>
+                                    </div>
+                                </div>
+                                <div class="question-item">
+                                    <div class="question-info">
+                                        <h4>Bob Smith</h4>
+                                        <div class="question-meta">
+                                            <span><i class="fas fa-briefcase"></i> Full Stack Engineer</span>
+                                            <span><i class="fas fa-clock"></i> 2:00 PM Today</span>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <span class="difficulty easy">HR Round</span>
+                                        <button class="btn-practice" onclick="startInterview('Bob Smith')">Start</button>
+                                    </div>
+                                </div>
+                                <div class="question-item">
+                                    <div class="question-info">
+                                        <h4>Carol Davis</h4>
+                                        <div class="question-meta">
+                                            <span><i class="fas fa-briefcase"></i> Backend Developer</span>
+                                            <span><i class="fas fa-clock"></i> 11:00 AM Tomorrow</span>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <span class="difficulty hard">System Design</span>
+                                        <button class="btn-practice" onclick="startInterview('Carol Davis')">View</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 24px;">
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Recent Candidates</h3></div>
+                                <div class="card-body">
+                                    <div class="activity-item">
+                                        <div class="activity-icon interview"><i class="fas fa-user"></i></div>
+                                        <div class="activity-info"><p>David Wilson</p><span>Interview completed - Score: 85/100</span></div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon solved"><i class="fas fa-check"></i></div>
+                                        <div class="activity-info"><p>Emma Brown</p><span>Hired - Offered position</span></div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon attempted"><i class="fas fa-times"></i></div>
+                                        <div class="activity-info"><p>Frank Miller</p><span>Not selected - Technical skills gap</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Quick Actions</h3></div>
+                                <div class="card-body">
+                                    <div class="quick-actions">
+                                        <button class="quick-action" onclick="scheduleInterview()">
+                                            <i class="fas fa-calendar-plus"></i><span>Schedule Interview</span>
+                                        </button>
+                                        <button class="quick-action" onclick="viewCandidates()">
+                                            <i class="fas fa-search"></i><span>View Candidates</span>
+                                        </button>
+                                        <button class="quick-action" onclick="createAssessment()">
+                                            <i class="fas fa-plus-circle"></i><span>Create Assessment</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Company Dashboard -->
+                <div class="user-dashboard" id="companyDashboard">
+                    <div class="page-header">
+                        <h1 class="page-title">Welcome, <span id="companyWelcomeName">Company</span>! 👋</h1>
+                        <p class="page-subtitle">Manage your hiring pipeline and job postings.</p>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fas fa-briefcase"></i></div>
+                            <div class="stat-info"><h3 id="activeJobs">5</h3><p>Active Jobs</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green"><i class="fas fa-user-plus"></i></div>
+                            <div class="stat-info"><h3 id="totalApplicants">156</h3><p>Total Applicants</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orange"><i class="fas fa-user-check"></i></div>
+                            <div class="stat-info"><h3 id="hiredThisMonth">12</h3><p>Hired This Month</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red"><i class="fas fa-clock"></i></div>
+                            <div class="stat-info"><h3 id="avgTimeToHire">14</h3><p>Avg. Days to Hire</p></div>
+                        </div>
+                    </div>
+
+                    <!-- Content Grid -->
+                    <div class="content-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Active Job Postings</h3>
+                                <a href="#" style="color: var(--primary-color); text-decoration: none; font-size: 14px;">View All</a>
+                            </div>
+                            <div class="card-body">
+                                <div class="job-item">
+                                    <h4>Senior Software Engineer</h4>
+                                    <div class="job-meta">
+                                        <span><i class="fas fa-users"></i> 45 applicants</span>
+                                        <span><i class="fas fa-clock"></i> Posted 5 days ago</span>
+                                        <span><i class="fas fa-check-circle"></i> 12 in interview</span>
+                                    </div>
+                                </div>
+                                <div class="job-item">
+                                    <h4>Product Manager</h4>
+                                    <div class="job-meta">
+                                        <span><i class="fas fa-users"></i> 32 applicants</span>
+                                        <span><i class="fas fa-clock"></i> Posted 3 days ago</span>
+                                        <span><i class="fas fa-check-circle"></i> 8 in interview</span>
+                                    </div>
+                                </div>
+                                <div class="job-item">
+                                    <h4>DevOps Engineer</h4>
+                                    <div class="job-meta">
+                                        <span><i class="fas fa-users"></i> 28 applicants</span>
+                                        <span><i class="fas fa-clock"></i> Posted 1 week ago</span>
+                                        <span><i class="fas fa-check-circle"></i> 5 in interview</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 24px;">
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Hiring Pipeline</h3></div>
+                                <div class="card-body">
+                                    <div class="activity-item">
+                                        <div class="activity-icon attempted"><i class="fas fa-file-alt"></i></div>
+                                        <div class="activity-info"><p>Applications</p><span>156 total</span></div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon interview"><i class="fas fa-eye"></i></div>
+                                        <div class="activity-info"><p>Screening</p><span>45 reviewed</span></div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon attempted"><i class="fas fa-user-tie"></i></div>
+                                        <div class="activity-info"><p>Interview</p><span>25 in process</span></div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon solved"><i class="fas fa-check"></i></div>
+                                        <div class="activity-info"><p>Offer Extended</p><span>15 offers</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Quick Actions</h3></div>
+                                <div class="card-body">
+                                    <div class="quick-actions">
+                                        <button class="quick-action" onclick="postJob()">
+                                            <i class="fas fa-plus"></i><span>Post New Job</span>
+                                        </button>
+                                        <button class="quick-action" onclick="viewAllApplicants()">
+                                            <i class="fas fa-users"></i><span>View All Applicants</span>
+                                        </button>
+                                        <button class="quick-action" onclick="generateReport()">
+                                            <i class="fas fa-chart-line"></i><span>Generate Report</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -712,24 +580,33 @@
             return JSON.parse(user);
         }
 
-        // Initialize dashboard
+        // Initialize dashboard based on user type
         const user = checkAuth();
         if (user) {
             document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
             document.getElementById('userName').textContent = user.name;
             document.getElementById('userType').textContent = user.type;
-            document.getElementById('welcomeName').textContent = user.name.split(' ')[0];
             
-            // Update stats based on user type
+            // Show appropriate dashboard based on user type
             if (user.type === 'student') {
+                document.getElementById('studentDashboard').classList.add('active');
+                document.getElementById('studentSidebar').style.display = 'block';
+                document.getElementById('studentWelcomeName').textContent = user.name.split(' ')[0];
                 document.getElementById('solvedCount').textContent = '142';
                 document.getElementById('streakCount').textContent = '12';
-            } else if (user.type === 'interviewer') {
-                document.getElementById('solvedCount').textContent = '—';
-                document.getElementById('streakCount').textContent = '—';
-            } else if (user.type === 'company') {
-                document.getElementById('solvedCount').textContent = '—';
-                document.getElementById('streakCount').textContent = '—';
+            } 
+            else if (user.type === 'interviewer') {
+                document.getElementById('interviewerDashboard').classList.add('active');
+                document.getElementById('interviewerSidebar').style.display = 'block';
+                document.getElementById('interviewerWelcomeName').textContent = user.name.split(' ')[0];
+                document.getElementById('totalCandidates').textContent = '24';
+                document.getElementById('scheduledInterviews').textContent = '8';
+                document.getElementById('completedInterviews').textContent = '45';
+            } 
+            else if (user.type === 'company') {
+                document.getElementById('companyDashboard').classList.add('active');
+                document.getElementById('companySidebar').style.display = 'block';
+                document.getElementById('companyWelcomeName').textContent = user.companyName || user.name;
             }
         }
 
@@ -739,7 +616,7 @@
             window.location.href = 'login.html';
         }
 
-        // Practice functions
+        // Student functions
         function startPractice(problemName) {
             alert(`Starting practice on: ${problemName}\n\n(This is a demo - actual code editor would open here)`);
         }
@@ -756,6 +633,36 @@
 
         function viewProgress() {
             alert('Viewing your progress report...\n\n- Total Problems Solved: 142\n- Easy: 85 | Medium: 50 | Hard: 7\n- Current Streak: 12 days\n- Total Practice Time: 48 hours');
+        }
+
+        // Interviewer functions
+        function startInterview(candidateName) {
+            alert(`Starting interview with ${candidateName}\n\nOpening video call and assessment panel...`);
+        }
+
+        function scheduleInterview() {
+            alert('Schedule New Interview\n\nThis would open a calendar to schedule a new interview with a candidate.');
+        }
+
+        function viewCandidates() {
+            alert('View All Candidates\n\nThis would show a list of all candidates with filters and search.');
+        }
+
+        function createAssessment() {
+            alert('Create New Assessment\n\nThis would open a form to create a new coding assessment.');
+        }
+
+        // Company functions
+        function postJob() {
+            alert('Post New Job\n\nThis would open a form to create a new job posting.');
+        }
+
+        function viewAllApplicants() {
+            alert('View All Applicants\n\nThis would show a comprehensive list of all applicants across all job postings.');
+        }
+
+        function generateReport() {
+            alert('Generate Hiring Report\n\nThis would generate a detailed report of your hiring metrics and pipeline.');
         }
 
         // Update navigation active state
