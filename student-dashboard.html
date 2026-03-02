@@ -39,7 +39,7 @@
         .nav-logo { display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 700; color: var(--primary-color); text-decoration: none; }
         .nav-logo i { font-size: 28px; }
         .nav-menu { display: flex; align-items: center; gap: 32px; }
-        .nav-menu a { font-weight: 500; color: var(--gray-dark); text-decoration: none; transition: var(--transition); }
+        .nav-menu a { font-weight: 500; color: var(--gray-dark); text-decoration: none; transition: var(--transition); cursor: pointer; }
         .nav-menu a:hover, .nav-menu a.active { color: var(--primary-color); }
         .nav-user { display: flex; align-items: center; gap: 16px; }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 600; }
@@ -53,11 +53,11 @@
         .sidebar { width: 260px; background: var(--white); border-right: 1px solid #E5E7EB; padding: 24px 0; position: fixed; top: 80px; left: 0; bottom: 0; overflow-y: auto; }
         .sidebar-menu { list-style: none; }
         .sidebar-menu li { margin-bottom: 4px; }
-        .sidebar-menu a { display: flex; align-items: center; gap: 12px; padding: 12px 24px; color: var(--gray-dark); text-decoration: none; font-weight: 500; transition: var(--transition); }
+        .sidebar-menu a { display: flex; align-items: center; gap: 12px; padding: 12px 24px; color: var(--gray-dark); text-decoration: none; font-weight: 500; transition: var(--transition); cursor: pointer; }
         .sidebar-menu a:hover, .sidebar-menu a.active { background: rgba(79, 70, 229, 0.1); color: var(--primary-color); border-right: 3px solid var(--primary-color); }
         .sidebar-menu a i { width: 20px; text-align: center; }
         .dashboard-content { flex: 1; margin-left: 260px; padding: 32px; }
-        .page-header { margin-bottom: 32px; }
+        .page-header { margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; }
         .page-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
         .page-subtitle { color: var(--gray-medium); }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 32px; }
@@ -74,6 +74,10 @@
         .card-header { padding: 20px 24px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between; }
         .card-title { font-size: 18px; font-weight: 600; }
         .card-body { padding: 24px; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th, .table td { padding: 16px; text-align: left; border-bottom: 1px solid #E5E7EB; }
+        .table th { font-weight: 600; color: var(--gray-dark); background: var(--bg-light); }
+        .table tr:hover { background: var(--bg-light); }
         .question-item { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #F3F4F6; }
         .question-item:last-child { border-bottom: none; }
         .question-info h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
@@ -97,6 +101,34 @@
         .quick-action:hover { background: rgba(79, 70, 229, 0.1); }
         .quick-action i { width: 40px; height: 40px; background: var(--white); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary-color); font-size: 18px; box-shadow: var(--shadow-sm); }
         .quick-action span { font-weight: 600; color: var(--dark-color); }
+        .section { display: none; }
+        .section.active { display: block; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; color: var(--dark-color); margin-bottom: 8px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; font-size: 15px; border: 2px solid #E5E7EB; border-radius: 10px; outline: none; transition: var(--transition); font-family: var(--font-family); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary-color); }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
+        .modal.show { display: flex; }
+        .modal-content { background: var(--white); border-radius: 16px; padding: 32px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .modal-header h2 { font-size: 20px; font-weight: 700; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--gray-medium); }
+        .btn-primary { padding: 12px 24px; background: var(--primary-color); color: var(--white); border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: var(--transition); }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .empty-state { text-align: center; padding: 48px; color: var(--gray-medium); }
+        .empty-state i { font-size: 48px; margin-bottom: 16px; }
+        .progress-bar { height: 8px; background: #E5E7EB; border-radius: 4px; overflow: hidden; margin-top: 8px; }
+        .progress-fill { height: 100%; background: var(--primary-color); border-radius: 4px; transition: width 0.3s ease; }
+        .tag { padding: 4px 10px; border-radius: 6px; font-size: 12px; background: var(--bg-light); color: var(--gray-dark); margin-right: 4px; display: inline-block; margin-bottom: 4px; }
+        .leaderboard-item { display: flex; align-items: center; gap: 16px; padding: 12px 0; border-bottom: 1px solid #F3F4F6; }
+        .leaderboard-item:last-child { border-bottom: none; }
+        .leaderboard-rank { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .rank-1 { background: #FFD700; color: #000; }
+        .rank-2 { background: #C0C0C0; color: #000; }
+        .rank-3 { background: #CD7F32; color: #fff; }
+        .chart-container { height: 200px; display: flex; align-items: flex-end; justify-content: space-around; padding: 20px 0; }
+        .chart-bar { width: 40px; background: var(--primary-color); border-radius: 8px 8px 0 0; position: relative; }
+        .chart-bar::after { content: attr(data-label); position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-size: 10px; color: var(--gray-medium); }
         @media (max-width: 1024px) { .sidebar { width: 80px; } .sidebar-menu a span { display: none; } .sidebar-menu a { justify-content: center; padding: 16px; } .dashboard-content { margin-left: 80px; } .content-grid { grid-template-columns: 1fr; } }
         @media (max-width: 768px) { .sidebar { display: none; } .dashboard-content { margin-left: 0; } .nav-menu { display: none; } .stats-grid { grid-template-columns: 1fr; } }
     </style>
@@ -106,16 +138,16 @@
         <div class="nav-container">
             <a href="student-dashboard.html" class="nav-logo"><i class="fas fa-code"></i><span>EkVue</span></a>
             <div class="nav-menu">
-                <a href="student-dashboard.html" class="active">Dashboard</a>
-                <a href="#">Problems</a>
-                <a href="#">Practice</a>
-                <a href="#">Mock Interviews</a>
-                <a href="#">Progress</a>
+                <a onclick="showSection('dashboard')" class="active">Dashboard</a>
+                <a onclick="showSection('problems')">Problems</a>
+                <a onclick="showSection('practice')">Practice</a>
+                <a onclick="showSection('interviews')">Mock Interviews</a>
+                <a onclick="showSection('progress')">Progress</a>
             </div>
             <div class="nav-user">
                 <div class="user-avatar" id="userAvatar">JD</div>
                 <div class="user-info">
-                    <span class="user-name" id="userName">John Doe</span>
+                    <span class="user-name" id="userName">Student</span>
                     <span class="user-type">Student</span>
                 </div>
                 <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -126,112 +158,679 @@
         <div class="dashboard-container">
             <aside class="sidebar">
                 <ul class="sidebar-menu">
-                    <li><a href="student-dashboard.html" class="active"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
-                    <li><a href="#"><i class="fas fa-code"></i><span>Problems</span></a></li>
-                    <li><a href="#"><i class="fas fa-play-circle"></i><span>Practice</span></a></li>
-                    <li><a href="#"><i class="fas fa-user-friends"></i><span>Mock Interviews</span></a></li>
-                    <li><a href="#"><i class="fas fa-chart-line"></i><span>Progress</span></a></li>
-                    <li><a href="#"><i class="fas fa-trophy"></i><span>Leaderboard</span></a></li>
+                    <li><a onclick="showSection('dashboard')" class="active"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+                    <li><a onclick="showSection('problems')"><i class="fas fa-code"></i><span>Problems</span></a></li>
+                    <li><a onclick="showSection('practice')"><i class="fas fa-play-circle"></i><span>Practice</span></a></li>
+                    <li><a onclick="showSection('interviews')"><i class="fas fa-user-friends"></i><span>Mock Interviews</span></a></li>
+                    <li><a onclick="showSection('progress')"><i class="fas fa-chart-line"></i><span>Progress</span></a></li>
+                    <li><a onclick="showSection('leaderboard')"><i class="fas fa-trophy"></i><span>Leaderboard</span></a></li>
                     <li><a href="resume-builder.html"><i class="fas fa-file-alt"></i><span>Resume Builder</span></a></li>
-                    <li><a href="#"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+                    <li><a onclick="showSection('settings')"><i class="fas fa-cog"></i><span>Settings</span></a></li>
                 </ul>
             </aside>
             <main class="dashboard-content">
-                <div class="page-header">
-                    <h1 class="page-title">Welcome back, <span id="welcomeName">John</span>! 👋</h1>
-                    <p class="page-subtitle">Ready to ace your next interview? Let's practice some problems.</p>
+                <!-- Dashboard Section -->
+                <div id="dashboard" class="section active">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Welcome back, <span id="welcomeName">Student</span>! 👋</h1>
+                            <p class="page-subtitle">Ready to ace your next interview? Let's practice some problems.</p>
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fas fa-check-circle"></i></div>
+                            <div class="stat-info"><h3 id="problemsSolved">0</h3><p>Problems Solved</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green"><i class="fas fa-fire"></i></div>
+                            <div class="stat-info"><h3 id="dayStreak">0</h3><p>Day Streak</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+                            <div class="stat-info"><h3 id="practiceTime">0h</h3><p>Practice Time</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red"><i class="fas fa-ranking-star"></i></div>
+                            <div class="stat-info"><h3 id="globalRank">#--</h3><p>Global Rank</p></div>
+                        </div>
+                    </div>
+                    <div class="content-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Recommended Problems</h3>
+                                <button class="btn-practice" onclick="showSection('problems')">View All</button>
+                            </div>
+                            <div class="card-body" id="recommendedProblems">
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 24px;">
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Recent Activity</h3></div>
+                                <div class="card-body" id="recentActivity">
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Quick Actions</h3></div>
+                                <div class="card-body">
+                                    <div class="quick-actions">
+                                        <button class="quick-action" onclick="startRandomProblem()"><i class="fas fa-random"></i><span>Random Problem</span></button>
+                                        <button class="quick-action" onclick="showMockInterviewModal()"><i class="fas fa-user-friends"></i><span>Start Mock Interview</span></button>
+                                        <button class="quick-action" onclick="showSection('progress')"><i class="fas fa-chart-pie"></i><span>View Progress</span></button>
+                                        <button class="quick-action" onclick="showSection('practice')"><i class="fas fa-play-circle"></i><span>Practice Now</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon blue"><i class="fas fa-check-circle"></i></div>
-                        <div class="stat-info"><h3>142</h3><p>Problems Solved</p></div>
+
+                <!-- Problems Section -->
+                <div id="problems" class="section">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Problems</h1>
+                            <p class="page-subtitle">Practice coding problems</p>
+                        </div>
+                        <div style="display: flex; gap: 12px;">
+                            <select id="difficultyFilter" onchange="filterProblems()" style="padding: 8px 16px; border-radius: 8px; border: 1px solid #E5E7EB;">
+                                <option value="">All Difficulties</option>
+                                <option value="Easy">Easy</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Hard">Hard</option>
+                            </select>
+                            <select id="topicFilter" onchange="filterProblems()" style="padding: 8px 16px; border-radius: 8px; border: 1px solid #E5E7EB;">
+                                <option value="">All Topics</option>
+                                <option value="Array">Array</option>
+                                <option value="String">String</option>
+                                <option value="Linked List">Linked List</option>
+                                <option value="Tree">Tree</option>
+                                <option value="Dynamic Programming">Dynamic Programming</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon green"><i class="fas fa-fire"></i></div>
-                        <div class="stat-info"><h3>12</h3><p>Day Streak</p></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
-                        <div class="stat-info"><h3>48h</h3><p>Practice Time</p></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon red"><i class="fas fa-ranking-star"></i></div>
-                        <div class="stat-info"><h3>#284</h3><p>Global Rank</p></div>
-                    </div>
-                </div>
-                <div class="content-grid">
                     <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Recommended Problems</h3>
-                            <a href="#" style="color: var(--primary-color); text-decoration: none; font-size: 14px;">View All</a>
-                        </div>
-                        <div class="card-body">
-                            <div class="question-item">
-                                <div class="question-info">
-                                    <h4>Two Sum</h4>
-                                    <div class="question-meta"><span><i class="fas fa-tag"></i> Array</span><span><i class="fas fa-check"></i> 45.2k solved</span></div>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <span class="difficulty easy">Easy</span>
-                                    <button class="btn-practice" onclick="startPractice('Two Sum')">Solve</button>
-                                </div>
-                            </div>
-                            <div class="question-item">
-                                <div class="question-info">
-                                    <h4>Valid Parentheses</h4>
-                                    <div class="question-meta"><span><i class="fas fa-tag"></i> Stack</span><span><i class="fas fa-check"></i> 38.1k solved</span></div>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <span class="difficulty easy">Easy</span>
-                                    <button class="btn-practice" onclick="startPractice('Valid Parentheses')">Solve</button>
-                                </div>
-                            </div>
-                            <div class="question-item">
-                                <div class="question-info">
-                                    <h4>Maximum Subarray</h4>
-                                    <div class="question-meta"><span><i class="fas fa-tag"></i> Dynamic Programming</span><span><i class="fas fa-check"></i> 28.9k solved</span></div>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <span class="difficulty medium">Medium</span>
-                                    <button class="btn-practice" onclick="startPractice('Maximum Subarray')">Solve</button>
-                                </div>
-                            </div>
+                        <div class="card-body" id="problemsList">
                         </div>
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: 24px;">
+                </div>
+
+                <!-- Practice Section -->
+                <div id="practice" class="section">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Practice</h1>
+                            <p class="page-subtitle">Sharpen your skills</p>
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fas fa-code"></i></div>
+                            <div class="stat-info"><h3 id="practiceEasy">0</h3><p>Easy Solved</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orange"><i class="fas fa-code"></i></div>
+                            <div class="stat-info"><h3 id="practiceMedium">0</h3><p>Medium Solved</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red"><i class="fas fa-code"></i></div>
+                            <div class="stat-info"><h3 id="practiceHard">0</h3><p>Hard Solved</p></div>
+                        </div>
+                    </div>
+                    <div class="content-grid">
                         <div class="card">
-                            <div class="card-header"><h3 class="card-title">Recent Activity</h3></div>
-                            <div class="card-body">
-                                <div class="activity-item">
-                                    <div class="activity-icon solved"><i class="fas fa-check"></i></div>
-                                    <div class="activity-info"><p>Solved "Reverse Linked List"</p><span>2 hours ago</span></div>
-                                </div>
-                                <div class="activity-item">
-                                    <div class="activity-icon solved"><i class="fas fa-check"></i></div>
-                                    <div class="activity-info"><p>Solved "Binary Tree Inorder Traversal"</p><span>Yesterday</span></div>
-                                </div>
-                                <div class="activity-item">
-                                    <div class="activity-icon attempted"><i class="fas fa-times"></i></div>
-                                    <div class="activity-info"><p>Attempted "Longest Substring Without Repeating"</p><span>2 days ago</span></div>
-                                </div>
+                            <div class="card-header"><h3 class="card-title">Daily Challenge</h3></div>
+                            <div class="card-body" id="dailyChallenge">
                             </div>
                         </div>
                         <div class="card">
-                            <div class="card-header"><h3 class="card-title">Quick Actions</h3></div>
+                            <div class="card-header"><h3 class="card-title">Topic Practice</h3></div>
                             <div class="card-body">
                                 <div class="quick-actions">
-                                    <button class="quick-action" onclick="startRandomProblem()"><i class="fas fa-random"></i><span>Random Problem</span></button>
-                                    <button class="quick-action" onclick="startMockInterview()"><i class="fas fa-user-friends"></i><span>Start Mock Interview</span></button>
-                                    <button class="quick-action" onclick="viewProgress()"><i class="fas fa-chart-pie"></i><span>View Progress</span></button>
+                                    <button class="quick-action" onclick="practiceTopic('Array')"><i class="fas fa-list"></i><span>Array</span></button>
+                                    <button class="quick-action" onclick="practiceTopic('String')"><i class="fas fa-font"></i><span>String</span></button>
+                                    <button class="quick-action" onclick="practiceTopic('Linked List')"><i class="fas fa-link"></i><span>Linked List</span></button>
+                                    <button class="quick-action" onclick="practiceTopic('Tree')"><i class="fas fa-tree"></i><span>Tree</span></button>
+                                    <button class="quick-action" onclick="practiceTopic('Dynamic Programming')"><i class="fas fa-brain"></i><span>Dynamic Programming</span></button>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mock Interviews Section -->
+                <div id="interviews" class="section">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Mock Interviews</h1>
+                            <p class="page-subtitle">Practice with real interview scenarios</p>
+                        </div>
+                        <button class="btn-primary" onclick="showMockInterviewModal()"><i class="fas fa-plus"></i> Start Mock Interview</button>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fas fa-calendar-check"></i></div>
+                            <div class="stat-info"><h3 id="interviewsScheduled">0</h3><p>Scheduled</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green"><i class="fas fa-check"></i></div>
+                            <div class="stat-info"><h3 id="interviewsCompleted">0</h3><p>Completed</p></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">Upcoming Interviews</h3></div>
+                        <div class="card-body" id="upcomingInterviewsList">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Section -->
+                <div id="progress" class="section">
+                    <div">
+                        <div>
+                            <h class="page-header1 class="page-title">Progress</h1>
+                            <p class="page-subtitle">Track your learning journey</p>
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fas fa-percentage"></i></div>
+                            <div class="stat-info"><h3 id="overallProgress">0%</h3><p>Overall Progress</p></div>
+                        </div>
+                    </div>
+                    <div class="content-grid">
+                        <div class="card">
+                            <div class="card-header"><h3 class="card-title">Topic Progress</h3></div>
+                            <div class="card-body" id="topicProgress">
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header"><h3 class="card-title">Activity This Week</h3></div>
+                            <div class="card-body">
+                                <div class="chart-container" id="activityChart">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Leaderboard Section -->
+                <div id="leaderboard" class="section">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Leaderboard</h1>
+                            <p class="page-subtitle">See how you rank</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">Top Performers</h3></div>
+                        <div class="card-body" id="leaderboardList">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settings" class="section">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Settings</h1>
+                            <p class="page-subtitle">Manage your profile</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">Profile Settings</h3></div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="settingsName" placeholder="Your Name">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="settingsEmail" placeholder="your@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Preferred Topics</label>
+                                <input type="text" id="settingsTopics" placeholder="e.g., Arrays, Trees, DP">
+                            </div>
+                            <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
                         </div>
                     </div>
                 </div>
             </main>
         </div>
     </div>
+
+    <!-- Problem Modal -->
+    <div id="problemModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2 id="problemModalTitle">Problem Title</h2>
+                <button class="modal-close" onclick="closeProblemModal()">&times;</button>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <span id="problemDifficulty" class="difficulty">Easy</span>
+                <span id="problemTopic" class="tag">Array</span>
+            </div>
+            <div style="margin-bottom: 24px;">
+                <p id="problemDescription" style="line-height: 1.6; color: var(--gray-dark);"></p>
+            </div>
+            <div class="form-group">
+                <label>Your Solution (code)</label>
+                <textarea id="codeSolution" rows="10" placeholder="Write your code here..." style="font-family: monospace;"></textarea>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn-primary" onclick="submitSolution()" style="flex: 1;">Submit Solution</button>
+                <button class="btn-practice" onclick="closeProblemModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mock Interview Modal -->
+    <div id="mockInterviewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Start Mock Interview</h2>
+                <button class="modal-close" onclick="closeMockInterviewModal()">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>Interview Type</label>
+                <select id="interviewType">
+                    <option value="technical">Technical</option>
+                    <option value="behavioral">Behavioral</option>
+                    <option value="mixed">Mixed</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Difficulty</label>
+                <select id="interviewDifficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Duration (minutes)</label>
+                <select id="interviewDuration">
+                    <option value="15">15 minutes</option>
+                    <option value="30" selected>30 minutes</option>
+                    <option value="45">45 minutes</option>
+                    <option value="60">60 minutes</option>
+                </select>
+            </div>
+            <button class="btn-primary" onclick="startMockInterview()" style="width: 100%;">Start Interview</button>
+        </div>
+    </div>
+
     <script>
+        // Initialize student data
+        let studentData = {
+            problemsSolved: [],
+            dayStreak: 0,
+            practiceTime: 0,
+            settings: {},
+            mockInterviews: [],
+            activity: []
+        };
+
+        // Sample problems
+        const problems = [
+            { id: 1, title: 'Two Sum', difficulty: 'Easy', topic: 'Array', solved: 45200, description: 'Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.' },
+            { id: 2, title: 'Valid Parentheses', difficulty: 'Easy', topic: 'String', solved: 38100, description: 'Given a string s containing just the characters \'(\', \')\', \'{\', \'}\', \'[\' and \']\', determine if the input string is valid.' },
+            { id: 3, title: 'Maximum Subarray', difficulty: 'Medium', topic: 'Dynamic Programming', solved: 28900, description: 'Given an integer array nums, find the subarray with the largest sum, and return its sum.' },
+            { id: 4, title: 'Longest Substring Without Repeating', difficulty: 'Medium', topic: 'String', solved: 24500, description: 'Find the length of the longest substring without repeating characters.' },
+            { id: 5, title: 'Merge Two Sorted Lists', difficulty: 'Easy', topic: 'Linked List', solved: 31200, description: 'You are given the heads of two sorted linked lists list1 and list2.' },
+            { id: 6, title: 'Binary Tree Level Order', difficulty: 'Medium', topic: 'Tree', solved: 19800, description: 'Given the root of a binary tree, return the level order traversal of its nodes\' values.' },
+            { id: 7, title: 'Climbing Stairs', difficulty: 'Easy', topic: 'Dynamic Programming', solved: 35600, description: 'You are climbing a staircase. It takes n steps to reach the top. Each time you can either climb 1 or 2 steps.' },
+            { id: 8, title: 'Maximum Product Subarray', difficulty: 'Hard', topic: 'Dynamic Programming', solved: 8900, description: 'Given an integer array nums, find a subarray that has the largest product of its elements.' },
+            { id: 9, title: 'Word Search', difficulty: 'Hard', topic: 'Array', solved: 7200, description: 'Given an m x n grid of characters board and a string word, return true if word exists in the grid.' },
+            { id: 10, title: 'Serialize and Deserialize Tree', difficulty: 'Hard', topic: 'Tree', solved: 5400, description: 'Design an algorithm to serialize and deserialize a binary tree.' }
+        ];
+
+        // Load data
+        function loadData() {
+            const saved = localStorage.getItem('ekvue_student_data');
+            if (saved) {
+                studentData = JSON.parse(saved);
+            } else {
+                // Initialize with sample data
+                studentData = {
+                    problemsSolved: [1, 2, 5, 7],
+                    dayStreak: 12,
+                    practiceTime: 48,
+                    settings: {},
+                    mockInterviews: [
+                        { id: 1, type: 'Technical', difficulty: 'Medium', duration: 30, status: 'completed', date: '2024-01-20', score: 85 },
+                        { id: 2, type: 'Behavioral', difficulty: 'Easy', duration: 15, status: 'scheduled', date: '2024-01-28', score: null }
+                    ],
+                    activity: [
+                        { day: 'Mon', solved: 3 },
+                        { day: 'Tue', solved: 5 },
+                        { day: 'Wed', solved: 2 },
+                        { day: 'Thu', solved: 4 },
+                        { day: 'Fri', solved: 1 },
+                        { day: 'Sat', solved: 0 },
+                        { day: 'Sun', solved: 2 }
+                    ]
+                };
+                saveData();
+            }
+            updateDashboard();
+            updateProblemsList();
+            updatePracticeSection();
+            updateMockInterviews();
+            updateProgress();
+            updateLeaderboard();
+        }
+
+        function saveData() {
+            localStorage.setItem('ekvue_student_data', JSON.stringify(studentData));
+        }
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            
+            document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
+            document.querySelector(`.nav-menu a[onclick="showSection('${sectionId}')"]`).classList.add('active');
+            
+            document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+            document.querySelector(`.sidebar-menu a[onclick="showSection('${sectionId}')"]`).classList.add('active');
+        }
+
+        // Dashboard
+        function updateDashboard() {
+            document.getElementById('problemsSolved').textContent = studentData.problemsSolved.length;
+            document.getElementById('dayStreak').textContent = studentData.dayStreak;
+            document.getElementById('practiceTime').textContent = studentData.practiceTime + 'h';
+            document.getElementById('globalRank').textContent = '#' + (284 + Math.floor(Math.random() * 100));
+
+            // Recommended problems (not solved yet)
+            const unsolved = problems.filter(p => !studentData.problemsSolved.includes(p.id)).slice(0, 3);
+            document.getElementById('recommendedProblems').innerHTML = unsolved.map(p => `
+                <div class="question-item">
+                    <div class="question-info">
+                        <h4>${p.title}</h4>
+                        <div class="question-meta">
+                            <span><i class="fas fa-tag"></i> ${p.topic}</span>
+                            <span><i class="fas fa-check"></i> ${p.solved.toLocaleString()} solved</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="difficulty ${p.difficulty.toLowerCase()}">${p.difficulty}</span>
+                        <button class="btn-practice" onclick="openProblem(${p.id})">Solve</button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Recent activity
+            document.getElementById('recentActivity').innerHTML = `
+                <div class="activity-item">
+                    <div class="activity-icon solved"><i class="fas fa-check"></i></div>
+                    <div class="activity-info"><p>Solved "Two Sum"</p><span>2 hours ago</span></div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon solved"><i class="fas fa-check"></i></div>
+                    <div class="activity-info"><p>Solved "Valid Parentheses"</p><span>Yesterday</span></div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon attempted"><i class="fas fa-times"></i></div>
+                    <div class="activity-info"><p>Attempted "Longest Substring"</p><span>2 days ago</span></div>
+                </div>
+            `;
+        }
+
+        // Problems
+        function updateProblemsList() {
+            const difficultyFilter = document.getElementById('difficultyFilter').value;
+            const topicFilter = document.getElementById('topicFilter').value;
+            
+            let filtered = problems;
+            if (difficultyFilter) filtered = filtered.filter(p => p.difficulty === difficultyFilter);
+            if (topicFilter) filtered = filtered.filter(p => p.topic === topicFilter);
+
+            document.getElementById('problemsList').innerHTML = filtered.map(p => {
+                const solved = studentData.problemsSolved.includes(p.id);
+                return `
+                    <div class="question-item">
+                        <div class="question-info">
+                            <h4>${solved ? '✅ ' : ''}${p.title}</h4>
+                            <div class="question-meta">
+                                <span><i class="fas fa-tag"></i> ${p.topic}</span>
+                                <span><i class="fas fa-check"></i> ${p.solved.toLocaleString()} solved</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span class="difficulty ${p.difficulty.toLowerCase()}">${p.difficulty}</span>
+                            <button class="btn-practice" onclick="openProblem(${p.id})">${solved ? 'Review' : 'Solve'}</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterProblems() {
+            updateProblemsList();
+        }
+
+        function openProblem(problemId) {
+            const problem = problems.find(p => p.id === problemId);
+            if (problem) {
+                document.getElementById('problemModalTitle').textContent = problem.title;
+                document.getElementById('problemDifficulty').textContent = problem.difficulty;
+                document.getElementById('problemDifficulty').className = 'difficulty ' + problem.difficulty.toLowerCase();
+                document.getElementById('problemTopic').textContent = problem.topic;
+                document.getElementById('problemDescription').textContent = problem.description;
+                document.getElementById('problemModal').classList.add('show');
+            }
+        }
+
+        function closeProblemModal() {
+            document.getElementById('problemModal').classList.remove('show');
+        }
+
+        function submitSolution() {
+            const code = document.getElementById('codeSolution').value;
+            if (code.trim()) {
+                alert('Solution submitted successfully! 🎉');
+                studentData.practiceTime += Math.floor(Math.random() * 5) + 1;
+                saveData();
+                closeProblemModal();
+                updateDashboard();
+                updateProblemsList();
+            } else {
+                alert('Please write some code before submitting.');
+            }
+        }
+
+        // Practice
+        function updatePracticeSection() {
+            const easy = studentData.problemsSolved.filter(id => problems.find(p => p.id === id && p.difficulty === 'Easy')).length;
+            const medium = studentData.problemsSolved.filter(id => problems.find(p => p.id === id && p.difficulty === 'Medium')).length;
+            const hard = studentData.problemsSolved.filter(id => problems.find(p => p.id === id && p.difficulty === 'Hard')).length;
+
+            document.getElementById('practiceEasy').textContent = easy;
+            document.getElementById('practiceMedium').textContent = medium;
+            document.getElementById('practiceHard').textContent = hard;
+
+            // Daily challenge
+            const daily = problems[Math.floor(Math.random() * problems.length)];
+            document.getElementById('dailyChallenge').innerHTML = `
+                <div class="question-item">
+                    <div class="question-info">
+                        <h4>${daily.title}</h4>
+                        <div class="question-meta">
+                            <span><i class="fas fa-star" style="color: var(--accent-color);"></i> Daily Challenge</span>
+                        </div>
+                    </div>
+                    <span class="difficulty ${daily.difficulty.toLowerCase()}">${daily.difficulty}</span>
+                </div>
+                <button class="btn-practice" onclick="openProblem(${daily.id})" style="width: 100%; margin-top: 16px;">Start Challenge</button>
+            `;
+        }
+
+        function practiceTopic(topic) {
+            const topicProblems = problems.filter(p => p.topic === topic);
+            if (topicProblems.length > 0) {
+                openProblem(topicProblems[0].id);
+            } else {
+                alert('No problems found for this topic.');
+            }
+        }
+
+        function startRandomProblem() {
+            const unsolved = problems.filter(p => !studentData.problemsSolved.includes(p.id));
+            if (unsolved.length > 0) {
+                const random = unsolved[Math.floor(Math.random() * unsolved.length)];
+                openProblem(random.id);
+            } else {
+                alert('You have solved all problems! 🎉');
+            }
+        }
+
+        // Mock Interviews
+        function updateMockInterviews() {
+            const scheduled = studentData.mockInterviews.filter(i => i.status === 'scheduled').length;
+            const completed = studentData.mockInterviews.filter(i => i.status === 'completed').length;
+
+            document.getElementById('interviewsScheduled').textContent = scheduled;
+            document.getElementById('interviewsCompleted').textContent = completed;
+
+            document.getElementById('upcomingInterviewsList').innerHTML = studentData.mockInterviews.map(interview => `
+                <div class="question-item">
+                    <div class="question-info">
+                        <h4>${interview.type} Interview</h4>
+                        <div class="question-meta">
+                            <span><i class="fas fa-clock"></i> ${interview.duration} min</span>
+                            <span><i class="fas fa-calendar"></i> ${interview.date}</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="difficulty ${interview.difficulty}">${interview.difficulty}</span>
+                        <span class="difficulty ${interview.status === 'completed' ? 'easy' : 'medium'}">${interview.status}</span>
+                    </div>
+                </div>
+            `).join('') || '<div class="empty-state"><i class="fas fa-user-friends"></i><p>No mock interviews scheduled.</p></div>';
+        }
+
+        function showMockInterviewModal() {
+            document.getElementById('mockInterviewModal').classList.add('show');
+        }
+
+        function closeMockInterviewModal() {
+            document.getElementById('mockInterviewModal').classList.remove('show');
+        }
+
+        function startMockInterview() {
+            const type = document.getElementById('interviewType').value;
+            const difficulty = document.getElementById('interviewDifficulty').value;
+            const duration = document.getElementById('interviewDuration').value;
+
+            const interview = {
+                id: Date.now(),
+                type: type.charAt(0).toUpperCase() + type.slice(1),
+                difficulty: difficulty,
+                duration: parseInt(duration),
+                status: 'in-progress',
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            studentData.mockInterviews.push(interview);
+            saveData();
+            closeMockInterviewModal();
+            
+            // Simulate interview
+            alert(`Starting ${interview.type} Mock Interview (${interview.difficulty})...\n\nThis is a practice session. In a real interview, you would connect with an interviewer.`);
+            
+            // Mark as completed after a delay
+            setTimeout(() => {
+                const idx = studentData.mockInterviews.findIndex(i => i.id === interview.id);
+                if (idx !== -1) {
+                    studentData.mockInterviews[idx].status = 'completed';
+                    studentData.mockInterviews[idx].score = Math.floor(Math.random() * 30) + 70;
+                    saveData();
+                    updateMockInterviews();
+                    alert(`Mock Interview Complete!\nScore: ${studentData.mockInterviews[idx].score}/100`);
+                }
+            }, 3000);
+        }
+
+        // Progress
+        function updateProgress() {
+            const total = problems.length;
+            const solved = studentData.problemsSolved.length;
+            const progress = Math.round((solved / total) * 100);
+            
+            document.getElementById('overallProgress').textContent = progress + '%';
+
+            // Topic progress
+            const topics = ['Array', 'String', 'Linked List', 'Tree', 'Dynamic Programming'];
+            let topicHtml = '';
+            topics.forEach(topic => {
+                const topicProblems = problems.filter(p => p.topic === topic);
+                const solvedTopic = topicProblems.filter(p => studentData.problemsSolved.includes(p.id)).length;
+                const topicProgress = topicProblems.length > 0 ? Math.round((solvedTopic / topicProblems.length) * 100) : 0;
+                
+                topicHtml += `
+                    <div style="margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span>${topic}</span>
+                            <span>${solvedTopic}/${topicProblems.length}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${topicProgress}%;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('topicProgress').innerHTML = topicHtml;
+
+            // Activity chart
+            const maxActivity = Math.max(...studentData.activity.map(a => a.solved), 1);
+            document.getElementById('activityChart').innerHTML = studentData.activity.map(a => `
+                <div class="chart-bar" style="height: ${(a.solved / maxActivity) * 150}px;" data-label="${a.day}">
+                    <span style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 10px;">${a.solved}</span>
+                </div>
+            `).join('');
+        }
+
+        // Leaderboard
+        function updateLeaderboard() {
+            const leaders = [
+                { name: 'Alex Chen', solved: 245, rank: 1 },
+                { name: 'Sarah Kim', solved: 232, rank: 2 },
+                { name: 'Mike Johnson', solved: 218, rank: 3 },
+                { name: 'Emma Wilson', solved: 195, rank: 4 },
+                { name: 'David Lee', solved: 187, rank: 5 },
+                { name: 'Current User', solved: studentData.problemsSolved.length, rank: 284, isCurrent: true }
+            ];
+
+            document.getElementById('leaderboardList').innerHTML = leaders.map(leader => `
+                <div class="leaderboard-item" style="${leader.isCurrent ? 'background: rgba(79, 70, 229, 0.1); border-radius: 8px;' : ''}">
+                    <div class="leaderboard-rank ${leader.rank <= 3 ? 'rank-' + leader.rank : ''}" style="${leader.rank > 3 ? 'background: var(--bg-light); color: var(--gray-dark);' : ''}">
+                        ${leader.rank}
+                    </div>
+                    <div style="flex: 1;">
+                        <strong>${leader.name}</strong>
+                        ${leader.isCurrent ? ' (You)' : ''}
+                    </div>
+                    <div>${leader.solved} solved</div>
+                </div>
+            `).join('');
+        }
+
+        // Settings
+        function saveSettings() {
+            studentData.settings = {
+                name: document.getElementById('settingsName').value,
+                email: document.getElementById('settingsEmail').value,
+                topics: document.getElementById('settingsTopics').value
+            };
+            saveData();
+            alert('Settings saved!');
+        }
+
+        // Auth check
         function checkAuth() {
             const user = localStorage.getItem('ekvue_user');
             if (!user) { window.location.href = 'login.html'; return null; }
@@ -239,17 +838,30 @@
             if (userData.type !== 'student') { window.location.href = userData.type + '-dashboard.html'; return null; }
             return userData;
         }
+
+        // Initialize
         const user = checkAuth();
         if (user) {
             document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
             document.getElementById('userName').textContent = user.name;
             document.getElementById('welcomeName').textContent = user.name.split(' ')[0];
+            
+            if (studentData.settings) {
+                document.getElementById('settingsName').value = studentData.settings.name || user.name;
+                document.getElementById('settingsEmail').value = studentData.settings.email || user.email;
+                document.getElementById('settingsTopics').value = studentData.settings.topics || '';
+            }
         }
-        function logout() { localStorage.removeItem('ekvue_user'); window.location.href = 'login.html'; }
-        function startPractice(problemName) { alert('Starting practice on: ' + problemName); }
-        function startRandomProblem() { alert('Starting random problem...'); }
-        function startMockInterview() { alert('Starting Mock Interview...'); }
-        function viewProgress() { alert('Viewing your progress...'); }
+
+        function logout() { 
+            localStorage.removeItem('ekvue_user'); 
+            window.location.href = 'login.html'; 
+        }
+
+        function viewProgress() { showSection('progress'); }
+
+        // Load data on page load
+        loadData();
     </script>
 </body>
 </html>
