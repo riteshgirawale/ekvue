@@ -39,7 +39,7 @@
         .nav-logo { display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 700; color: var(--primary-color); text-decoration: none; }
         .nav-logo i { font-size: 28px; }
         .nav-menu { display: flex; align-items: center; gap: 32px; }
-        .nav-menu a { font-weight: 500; color: var(--gray-dark); text-decoration: none; transition: var(--transition); }
+        .nav-menu a { font-weight: 500; color: var(--gray-dark); text-decoration: none; transition: var(--transition); cursor: pointer; }
         .nav-menu a:hover, .nav-menu a.active { color: var(--primary-color); }
         .nav-user { display: flex; align-items: center; gap: 16px; }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 600; }
@@ -53,11 +53,11 @@
         .sidebar { width: 260px; background: var(--white); border-right: 1px solid #E5E7EB; padding: 24px 0; position: fixed; top: 80px; left: 0; bottom: 0; overflow-y: auto; }
         .sidebar-menu { list-style: none; }
         .sidebar-menu li { margin-bottom: 4px; }
-        .sidebar-menu a { display: flex; align-items: center; gap: 12px; padding: 12px 24px; color: var(--gray-dark); text-decoration: none; font-weight: 500; transition: var(--transition); }
+        .sidebar-menu a { display: flex; align-items: center; gap: 12px; padding: 12px 24px; color: var(--gray-dark); text-decoration: none; font-weight: 500; transition: var(--transition); cursor: pointer; }
         .sidebar-menu a:hover, .sidebar-menu a.active { background: rgba(79, 70, 229, 0.1); color: var(--primary-color); border-right: 3px solid var(--primary-color); }
         .sidebar-menu a i { width: 20px; text-align: center; }
         .dashboard-content { flex: 1; margin-left: 260px; padding: 32px; }
-        .page-header { margin-bottom: 32px; }
+        .page-header { margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; }
         .page-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
         .page-subtitle { color: var(--gray-medium); }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 32px; }
@@ -74,6 +74,10 @@
         .card-header { padding: 20px 24px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between; }
         .card-title { font-size: 18px; font-weight: 600; }
         .card-body { padding: 24px; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th, .table td { padding: 16px; text-align: left; border-bottom: 1px solid #E5E7EB; }
+        .table th { font-weight: 600; color: var(--gray-dark); background: var(--bg-light); }
+        .table tr:hover { background: var(--bg-light); }
         .question-item { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #F3F4F6; }
         .question-item:last-child { border-bottom: none; }
         .question-info h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
@@ -83,8 +87,20 @@
         .difficulty.easy { background: rgba(16, 185, 129, 0.1); color: var(--secondary-color); }
         .difficulty.medium { background: rgba(245, 158, 11, 0.1); color: var(--accent-color); }
         .difficulty.hard { background: rgba(239, 68, 68, 0.1); color: var(--danger-color); }
-        .btn-practice { padding: 8px 16px; background: var(--primary-color); color: var(--white); border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition); }
-        .btn-practice:hover { background: var(--primary-dark); }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-scheduled { background: rgba(79, 70, 229, 0.1); color: var(--primary-color); }
+        .status-completed { background: rgba(16, 185, 129, 0.1); color: var(--secondary-color); }
+        .status-cancelled { background: rgba(107, 114, 128, 0.1); color: var(--gray-medium); }
+        .status-pending { background: rgba(245, 158, 11, 0.1); color: var(--accent-color); }
+        .btn-action { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; transition: var(--transition); }
+        .btn-view { background: rgba(79, 70, 229, 0.1); color: var(--primary-color); }
+        .btn-view:hover { background: var(--primary-color); color: var(--white); }
+        .btn-edit { background: rgba(245, 158, 11, 0.1); color: var(--accent-color); }
+        .btn-edit:hover { background: var(--accent-color); color: var(--white); }
+        .btn-delete { background: rgba(239, 68, 68, 0.1); color: var(--danger-color); }
+        .btn-delete:hover { background: var(--danger-color); color: var(--white); }
+        .btn-primary { padding: 12px 24px; background: var(--primary-color); color: var(--white); border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: var(--transition); }
+        .btn-primary:hover { background: var(--primary-dark); }
         .activity-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F3F4F6; }
         .activity-item:last-child { border-bottom: none; }
         .activity-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
@@ -98,17 +114,28 @@
         .quick-action:hover { background: rgba(79, 70, 229, 0.1); }
         .quick-action i { width: 40px; height: 40px; background: var(--white); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary-color); font-size: 18px; box-shadow: var(--shadow-sm); }
         .quick-action span { font-weight: 600; color: var(--dark-color); }
-        @media (max-width: 1024px) { .sidebar { width: 80px; } .sidebar-menu a span { display: none; } .sidebar-menu a { justify-content: center; padding: 16px; } .dashboard-content { margin-left: 80px; } .content-grid { grid-template-columns: 1fr; } }
-@media (max-width: 768px) { .sidebar { display: none; } .dashboard-content { margin-left: 0; } .nav-menu { display: none; } .stats-grid { grid-template-columns: 1fr; } }
-        
-        /* Modal Styles */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
-        .modal-overlay.show { display: flex; }
-        .modal-content { background: var(--white); border-radius: 20px; padding: 32px; max-width: 600px; width: 100%; max-height: 80vh; overflow-y: auto; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; color: var(--dark-color); margin-bottom: 8px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; font-size: 15px; border: 2px solid #E5E7EB; border-radius: 10px; outline: none; transition: var(--transition); font-family: var(--font-family); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary-color); }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
+        .modal.show { display: flex; }
+        .modal-content { background: var(--white); border-radius: 16px; padding: 32px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .modal-header h2 { font-size: 24px; font-weight: 600; }
-        .modal-close { width: 36px; height: 36px; border: none; background: var(--bg-light); border-radius: 50%; cursor: pointer; font-size: 18px; }
-        .modal-close:hover { background: var(--danger-color); color: var(--white); }
+        .modal-header h2 { font-size: 20px; font-weight: 700; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--gray-medium); }
+        .empty-state { text-align: center; padding: 48px; color: var(--gray-medium); }
+        .empty-state i { font-size: 48px; margin-bottom: 16px; }
+        .chart-container { height: 250px; display: flex; align-items: flex-end; justify-content: space-around; padding: 20px 0; }
+        .chart-bar { width: 50px; background: var(--primary-color); border-radius: 8px 8px 0 0; position: relative; transition: var(--transition); }
+        .chart-bar:hover { background: var(--primary-dark); }
+        .chart-bar::after { content: attr(data-label); position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--gray-medium); white-space: nowrap; }
+        .chart-bar span { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 600; }
+        .rating-stars { color: var(--accent-color); }
+        @media (max-width: 1024px) { .sidebar { width: 80px; } .sidebar-menu a span { display: none; } .sidebar-menu a { justify-content: center; padding: 16px; } .dashboard-content { margin-left: 80px; } .content-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .sidebar { display: none; } .dashboard-content { margin-left: 0; } .nav-menu { display: none; } .stats-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -116,16 +143,17 @@
         <div class="nav-container">
             <a href="interviewer-dashboard.html" class="nav-logo"><i class="fas fa-code"></i><span>EkVue</span></a>
             <div class="nav-menu">
-                <a href="interviewer-dashboard.html" class="active">Dashboard</a>
-                <a href="#">Candidates</a>
-                <a href="#">Schedule</a>
-                <a href="#">Assessments</a>
-                <a href="#">Analytics</a>
+                <a onclick="showSection('dashboard')" class="active">Dashboard</a>
+                <a onclick="showSection('candidates')">Candidates</a>
+                <a onclick="showSection('schedule')">Schedule</a>
+                <a onclick="showSection('assessments')">Assessments</a>
+                <a onclick="showSection('interviews')">Interviews</a>
+                <a onclick="showSection('analytics')">Analytics</a>
             </div>
             <div class="nav-user">
                 <div class="user-avatar" id="userAvatar">JD</div>
                 <div class="user-info">
-                    <span class="user-name" id="userName">John Doe</span>
+                    <span class="user-name" id="userName">Interviewer</span>
                     <span class="user-type">Interviewer</span>
                 </div>
                 <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -136,132 +164,427 @@
         <div class="dashboard-container">
             <aside class="sidebar">
                 <ul class="sidebar-menu">
-                    <li><a href="interviewer-dashboard.html" class="active"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
-                    <li><a href="#"><i class="fas fa-user-plus"></i><span>Candidates</span></a></li>
-                    <li><a href="#"><i class="fas fa-calendar-alt"></i><span>Schedule</span></a></li>
-                    <li><a href="#"><i class="fas fa-clipboard-list"></i><span>Assessments</span></a></li>
-                    <li><a href="#"><i class="fas fa-video"></i><span>Interviews</span></a></li>
-                    <li><a href="#"><i class="fas fa-chart-bar"></i><span>Analytics</span></a></li>
-                    <li><a href="#"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+                    <li><a onclick="showSection('dashboard')" class="active"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+                    <li><a onclick="showSection('candidates')"><i class="fas fa-user-plus"></i><span>Candidates</span></a></li>
+                    <li><a onclick="showSection('schedule')"><i class="fas fa-calendar-alt"></i><span>Schedule</span></a></li>
+                    <li><a onclick="showSection('assessments')"><i class="fas fa-clipboard-list"></i><span>Assessments</span></a></li>
+                    <li><a onclick="showSection('interviews')"><i class="fas fa-video"></i><span>Interviews</span></a></li>
+                    <li><a onclick="showSection('analytics')"><i class="fas fa-chart-bar"></i><span>Analytics</span></a></li>
+                    <li><a onclick="showSection('settings')"><i class="fas fa-cog"></i><span>Settings</span></a></li>
                 </ul>
             </aside>
             <main class="dashboard-content">
-                <div class="page-header">
-                    <h1 class="page-title">Welcome, <span id="welcomeName">Interviewer</span>! 👋</h1>
-                    <p class="page-subtitle">Manage your interviews and candidates from here.</p>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon blue"><i class="fas fa-users"></i></div>
-                        <div class="stat-info"><h3>24</h3><p>Total Candidates</p></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon green"><i class="fas fa-calendar-check"></i></div>
-                        <div class="stat-info"><h3>8</h3><p>Scheduled Interviews</p></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon orange"><i class="fas fa-clipboard-check"></i></div>
-                        <div class="stat-info"><h3>45</h3><p>Completed</p></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon red"><i class="fas fa-star"></i></div>
-                        <div class="stat-info"><h3>4.8</h3><p>Average Rating</p></div>
-                    </div>
-                </div>
-                <div class="content-grid">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Registered Students</h3>
-                            <span style="color: var(--gray-medium); font-size: 14px;" id="studentCount">0 students</span>
-                        </div>
-                        <div class="card-body" id="studentsList">
-                            <!-- Students will be loaded here dynamically -->
+                <!-- Dashboard Section -->
+                <div id="dashboard" class="section active">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Welcome, <span id="welcomeName">Interviewer</span>! 👋</h1>
+                            <p class="page-subtitle">Manage your interviews and candidates from here.</p>
                         </div>
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+                            <div class="stat-info"><h3 id="totalCandidates">0</h3><p>Total Candidates</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green"><i class="fas fa-calendar-check"></i></div>
+                            <div class="stat-info"><h3 id="scheduledCount">0</h3><p>Scheduled Interviews</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orange"><i class="fas fa-clipboard-check"></i></div>
+                            <div class="stat-info"><h3 id="completedCount">0</h3><p>Completed</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red"><i class="fas fa-star"></i></div>
+                            <div class="stat-info"><h3 id="avgRating">4.8</h3><p>Average Rating</p></div>
+                        </div>
+                    </div>
+                    <div class="content-grid">
                         <div class="card">
-                            <div class="card-header"><h3 class="card-title">Quick Actions</h3></div>
-                            <div class="card-body">
-                                <div class="quick-actions">
-                                    <button class="quick-action" onclick="scheduleInterview()"><i class="fas fa-calendar-plus"></i><span>Schedule Interview</span></button>
-                                    <button class="quick-action" onclick="viewCandidates()"><i class="fas fa-search"></i><span>View All Candidates</span></button>
-                                    <button class="quick-action" onclick="createAssessment()"><i class="fas fa-plus-circle"></i><span>Create Assessment</span></button>
+                            <div class="card-header">
+                                <h3 class="card-title">Registered Students</h3>
+                                <span style="color: var(--gray-medium); font-size: 14px;" id="studentCount">0 students</span>
+                            </div>
+                            <div class="card-body" id="studentsList">
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 24px;">
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Upcoming Interviews</h3></div>
+                                <div class="card-body" id="upcomingInterviews">
                                 </div>
                             </div>
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Quick Actions</h3></div>
+                                <div class="card-body">
+                                    <div class="quick-actions">
+                                        <button class="quick-action" onclick="showScheduleModal()"><i class="fas fa-calendar-plus"></i><span>Schedule Interview</span></button>
+                                        <button class="quick-action" onclick="showSection('candidates')"><i class="fas fa-search"></i><span>View All Candidates</span></button>
+                                        <button class="quick-action" onclick="showAssessmentModal()"><i class="fas fa-plus-circle"></i><span>Create Assessment</span></button>
+                                        <button class="quick-action" onclick="exportData()"><i class="fas fa-download"></i><span>Export Data</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Candidates Section -->
+                <div id="candidates" class="section">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Candidates</h1>
+                            <p class="page-subtitle">View and manage all candidates</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body" id="candidatesList">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule Section -->
+                <div id="schedule" class="section">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Schedule</h1>
+                            <p class="page-subtitle">Manage your interview schedule</p>
+                        </div>
+                        <button class="btn-primary" onclick="showScheduleModal()"><i class="fas fa-plus"></i> Schedule Interview</button>
+                    </div>
+                    <div class="card">
+                        <div class="card-body" id="scheduleList">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assessments Section -->
+                <div id="assessments" class="section">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Assessments</h1>
+                            <p class="page-subtitle">Create and manage assessments</p>
+                        </div>
+                        <button class="btn-primary" onclick="showAssessmentModal()"><i class="fas fa-plus"></i> Create Assessment</button>
+                    </div>
+                    <div class="card">
+                        <div class="card-body" id="assessmentsList">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interviews Section -->
+                <div id="interviews" class="section">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Interviews</h1>
+                            <p class="page-subtitle">View and manage all interviews</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body" id="interviewsList">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div id="analytics" class="section">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Analytics</h1>
+                            <p class="page-subtitle">Track your interview performance</p>
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fas fa-user-check"></i></div>
+                            <div class="stat-info"><h3 id="totalConducted">0</h3><p>Interviews Conducted</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+                            <div class="stat-info"><h3 id="passRate">0%</h3><p>Pass Rate</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+                            <div class="stat-info"><h3 id="avgDuration">0</h3><p>Avg. Duration (min)</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red"><i class="fas fa-star"></i></div>
+                            <div class="stat-info"><h3 id="myRating">4.8</h3><p>Your Rating</p></div>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 24px;">
+                        <div class="card-header"><h3 class="card-title">Interviews This Week</h3></div>
+                        <div class="card-body">
+                            <div class="chart-container" id="interviewChart">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settings" class="section">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Settings</h1>
+                            <p class="page-subtitle">Manage your account settings</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">Interviewer Profile</h3></div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="settingsName" placeholder="Your Name">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="settingsEmail" placeholder="interviewer@company.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Expertise</label>
+                                <input type="text" id="settingsExpertise" placeholder="e.g., JavaScript, Python, System Design">
+                            </div>
+                            <div class="form-group">
+                                <label>Availability</label>
+                                <select id="settingsAvailability">
+                                    <option value="fulltime">Full Time</option>
+                                    <option value="parttime">Part Time</option>
+                                    <option value="weekends">Weekends Only</option>
+                                </select>
+                            </div>
+                            <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
                         </div>
                     </div>
                 </div>
             </main>
         </div>
     </div>
-<script>
-        function checkAuth() {
-            const user = localStorage.getItem('ekvue_user');
-            if (!user) { window.location.href = 'login.html'; return null; }
-            const userData = JSON.parse(user);
-            if (userData.type !== 'interviewer') { window.location.href = userData.type + '-dashboard.html'; return null; }
-            return userData;
-        }
-        const user = checkAuth();
-        if (user) {
-            document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
-            document.getElementById('userName').textContent = user.name;
-            document.getElementById('welcomeName').textContent = user.name.split(' ')[0];
-            loadStudents();
-        }
-        
-// Load all students from localStorage
-        function loadStudents() {
-            const allUsers = JSON.parse(localStorage.getItem('ekvue_users')) || [];
-            const students = allUsers.filter(u => u.type === 'student');
-            
-            // Update student count
-            document.getElementById('studentCount').textContent = students.length + ' students';
-            
-            const studentsList = document.getElementById('studentsList');
-            
-            if (students.length === 0) {
-                studentsList.innerHTML = '<p style="color: var(--gray-medium); text-align: center; padding: 20px;">No students registered yet.</p>';
-                return;
+
+    <!-- Schedule Interview Modal -->
+    <div id="scheduleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Schedule Interview</h2>
+                <button class="modal-close" onclick="closeScheduleModal()">&times;</button>
+            </div>
+            <form id="interviewForm" onsubmit="saveInterview(event)">
+                <div class="form-group">
+                    <label>Candidate</label>
+                    <select id="candidateSelect" required>
+                        <option value="">Select Candidate</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Interview Date</label>
+                    <input type="date" id="interviewDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Interview Time</label>
+                    <input type="time" id="interviewTime" required>
+                </div>
+                <div class="form-group">
+                    <label>Interview Type</label>
+                    <select id="interviewType" required>
+                        <option value="">Select Type</option>
+                        <option value="Technical">Technical</option>
+                        <option value="Behavioral">Behavioral</option>
+                        <option value="Coding">Coding</option>
+                        <option value="System Design">System Design</option>
+                        <option value="HR">HR</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Duration (minutes)</label>
+                    <select id="interviewDuration">
+                        <option value="30">30 minutes</option>
+                        <option value="45">45 minutes</option>
+                        <option value="60" selected>60 minutes</option>
+                        <option value="90">90 minutes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="interviewNotes" rows="3" placeholder="Interview focus areas, topics to cover..."></textarea>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%;">Schedule Interview</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Assessment Modal -->
+    <div id="assessmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Assessment</h2>
+                <button class="modal-close" onclick="closeAssessmentModal()">&times;</button>
+            </div>
+            <form id="assessmentForm" onsubmit="saveAssessment(event)">
+                <div class="form-group">
+                    <label>Assessment Title</label>
+                    <input type="text" id="assessmentTitle" placeholder="e.g., JavaScript Fundamentals" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="assessmentCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="Technical">Technical</option>
+                        <option value="Coding">Coding</option>
+                        <option value="Aptitude">Aptitude</option>
+                        <option value="Behavioral">Behavioral</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Difficulty</label>
+                    <select id="assessmentDifficulty" required>
+                        <option value="Easy">Easy</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Hard">Hard</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Questions</label>
+                    <textarea id="assessmentQuestions" rows="4" placeholder="Enter questions (one per line)..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Time Limit (minutes)</label>
+                    <input type="number" id="assessmentTime" value="30" min="5" max="180">
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%;">Create Assessment</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize data
+        let interviewerData = {
+            interviews: [],
+            assessments: [],
+            settings: {},
+            ratings: []
+        };
+
+        // Load data from localStorage
+        function loadData() {
+            const saved = localStorage.getItem('ekvue_interviewer_data');
+            if (saved) {
+                interviewerData = JSON.parse(saved);
             }
             
-let html = '';
-            students.forEach((student, index) => {
-                const studentName = student.name || 'Unknown';
-                const studentEmail = student.email || 'No email';
-                const signupDate = student.signupTime ? new Date(student.signupTime).toLocaleDateString() : 'Unknown';
-                
-                // Check if student has resume data
-                const hasNewProfile = student.education || student.skills || student.experience || student.github || student.linkedin;
-                const hasResume = student.resume && student.resume.personal && student.resume.personal.fullName;
-                const profileStatus = (student.profileCompleted || hasNewProfile) ? '<span class="difficulty easy">Profile Complete</span>' : '<span class="difficulty medium">Profile Incomplete</span>';
-                
-                // Encode email for safe use in onclick
-                const encodedEmail = encodeURIComponent(student.email);
-                
-                html += `
+            // Add sample data if empty
+            if (interviewerData.interviews.length === 0) {
+                interviewerData.interviews = [
+                    { id: 1, candidateId: 1, candidateName: 'John Smith', candidateEmail: 'john@example.com', date: '2024-01-25', time: '10:00', type: 'Technical', duration: 60, status: 'scheduled', notes: 'Focus on data structures' },
+                    { id: 2, candidateId: 2, candidateName: 'Sarah Johnson', candidateEmail: 'sarah@example.com', date: '2024-01-26', time: '14:00', type: 'Coding', duration: 45, status: 'scheduled', notes: 'Algorithm problems' },
+                    { id: 3, candidateId: 3, candidateName: 'Mike Davis', candidateEmail: 'mike@example.com', date: '2024-01-20', time: '11:00', type: 'Behavioral', duration: 30, status: 'completed', notes: 'Culture fit', rating: 4, feedback: 'Great communication skills' }
+                ];
+                interviewerData.assessments = [
+                    { id: 1, title: 'JavaScript Fundamentals', category: 'Technical', difficulty: 'Easy', questions: 'What is closure?\nExplain hoisting\nWhat is DOM?', timeLimit: 30, createdAt: '2024-01-15' },
+                    { id: 2, title: 'Python Coding Challenge', category: 'Coding', difficulty: 'Medium', questions: 'Reverse a string\nFind palindrome\nSort array', timeLimit: 45, createdAt: '2024-01-18' }
+                ];
+                saveData();
+            }
+            
+            updateDashboard();
+            updateCandidatesList();
+            updateScheduleList();
+            updateAssessmentsList();
+            updateInterviewsList();
+            updateAnalytics();
+            populateSelects();
+        }
+
+        function saveData() {
+            localStorage.setItem('ekvue_interviewer_data', JSON.stringify(interviewerData));
+        }
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            
+            document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
+            document.querySelector(`.nav-menu a[onclick="showSection('${sectionId}')"]`).classList.add('active');
+            
+            document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+            document.querySelector(`.sidebar-menu a[onclick="showSection('${sectionId}')"]`).classList.add('active');
+        }
+
+        // Dashboard
+        function updateDashboard() {
+            const students = getStudents();
+            const scheduled = interviewerData.interviews.filter(i => i.status === 'scheduled').length;
+            const completed = interviewerData.interviews.filter(i => i.status === 'completed').length;
+            
+            document.getElementById('totalCandidates').textContent = students.length;
+            document.getElementById('studentCount').textContent = students.length + ' students';
+            document.getElementById('scheduledCount').textContent = scheduled;
+            document.getElementById('completedCount').textContent = completed;
+
+            // Students list
+            const studentsHtml = students.slice(0, 5).map(student => `
+                <div class="question-item">
+                    <div class="question-info">
+                        <h4>${student.name || 'Unknown'}</h4>
+                        <div class="question-meta">
+                            <span><i class="fas fa-envelope"></i> ${student.email || 'No email'}</span>
+                        </div>
+                    </div>
+                    <button class="btn-action btn-view" onclick="viewStudentProfile('${encodeURIComponent(student.email)}')">View</button>
+                </div>
+            `).join('');
+            document.getElementById('studentsList').innerHTML = studentsHtml || '<div class="empty-state"><i class="fas fa-users"></i><p>No students registered yet.</p></div>';
+
+            // Upcoming interviews
+            const upcomingHtml = interviewerData.interviews
+                .filter(i => i.status === 'scheduled')
+                .slice(0, 3)
+                .map(interview => `
+                    <div class="activity-item">
+                        <div class="activity-icon interview"><i class="fas fa-calendar"></i></div>
+                        <div class="activity-info">
+                            <p>${interview.candidateName}</p>
+                            <span>${interview.date} at ${interview.time}</span>
+                        </div>
+                    </div>
+                `).join('');
+            document.getElementById('upcomingInterviews').innerHTML = upcomingHtml || '<div class="empty-state"><i class="fas fa-calendar"></i><p>No upcoming interviews.</p></div>';
+        }
+
+        function getStudents() {
+            const allUsers = JSON.parse(localStorage.getItem('ekvue_users')) || [];
+            return allUsers.filter(u => u.type === 'student');
+        }
+
+        // Candidates
+        function updateCandidatesList() {
+            const students = getStudents();
+            const candidatesHtml = students.map(student => {
+                const hasProfile = student.education || student.skills || student.experience;
+                return `
                     <div class="question-item">
                         <div class="question-info">
-                            <h4>${studentName}</h4>
+                            <h4>${student.name || 'Unknown'}</h4>
                             <div class="question-meta">
-                                <span><i class="fas fa-envelope"></i> ${studentEmail}</span>
-                                <span><i class="fas fa-calendar"></i> ${signupDate}</span>
+                                <span><i class="fas fa-envelope"></i> ${student.email || 'No email'}</span>
+                                <span><i class="fas fa-calendar"></i> ${student.signupTime ? new Date(student.signupTime).toLocaleDateString() : 'Unknown'}</span>
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            ${profileStatus}
-                            <button class="btn-practice" onclick="viewStudentProfile(decodeURIComponent('${encodedEmail}'))">View Profile</button>
+                            ${hasProfile ? '<span class="difficulty easy">Profile Complete</span>' : '<span class="difficulty medium">Profile Incomplete</span>'}
+                            <button class="btn-action btn-view" onclick="viewStudentProfile('${encodeURIComponent(student.email)}')">View Profile</button>
+                            <button class="btn-action btn-edit" onclick="quickSchedule('${encodeURIComponent(student.email)}')">Schedule</button>
                         </div>
                     </div>
                 `;
-            });
-            
-            studentsList.innerHTML = html;
+            }).join('');
+            document.getElementById('candidatesList').innerHTML = candidatesHtml || '<div class="empty-state"><i class="fas fa-users"></i><p>No candidates yet.</p></div>';
         }
-        
+
         function viewStudentProfile(email) {
             const allUsers = JSON.parse(localStorage.getItem('ekvue_users')) || [];
-            const student = allUsers.find(u => u.email === email);
+            const student = allUsers.find(u => u.email === decodeURIComponent(email));
             
             if (!student) {
                 alert('Student not found');
@@ -269,115 +592,369 @@ let html = '';
             }
             
             let profileHtml = '';
-            
-            // Check for new profile data from student-profile.html first
             const hasNewProfile = student.education || student.skills || student.experience || student.github || student.linkedin;
             
             if (hasNewProfile) {
-                // Show profile from student-profile.html
-                profileHtml = `<div style="padding: 20px; max-height: 500px; overflow-y: auto;">
-                    <h3 style="font-size: 24px; margin-bottom: 8px;">${student.name || 'N/A'}</h3>
+                profileHtml = `<div>
+                    <h3 style="margin-bottom: 8px;">${student.name || 'N/A'}</h3>
                     <p style="color: var(--gray-medium); margin-bottom: 16px;">${student.email || 'No email'}</p>`;
                 
                 if (student.education) {
-                    const edu = student.education;
-                    profileHtml += `<div style="margin-bottom: 20px; padding: 16px; background: var(--bg-light); border-radius: 12px;">
-                        <h4 style="margin-bottom: 12px; color: var(--primary-color);"><i class="fas fa-graduation-cap"></i> Education</h4>
-                        <p><strong>University:</strong> ${edu.university || 'N/A'}</p>
-                        <p><strong>Degree:</strong> ${edu.degree || 'N/A'}</p>
-                        <p><strong>Graduation Year:</strong> ${edu.graduationYear || 'N/A'}</p>
-                        ${edu.cgpa ? `<p><strong>CGPA:</strong> ${edu.cgpa}</p>` : ''}
+                    profileHtml += `<div style="margin-bottom: 16px; padding: 12px; background: var(--bg-light); border-radius: 8px;">
+                        <strong><i class="fas fa-graduation-cap"></i> Education</strong>
+                        <p>${student.education.university || ''} - ${student.education.degree || ''}</p>
                     </div>`;
                 }
                 
                 if (student.skills) {
                     if (student.skills.languages && student.skills.languages.length > 0) {
-                        profileHtml += `<div style="margin-bottom: 20px; padding: 16px; background: var(--bg-light); border-radius: 12px;">
-                            <h4 style="margin-bottom: 12px; color: var(--primary-color);"><i class="fas fa-code"></i> Programming Languages</h4>
-                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">`;
-                        student.skills.languages.forEach(skill => {
-                            profileHtml += `<span class="difficulty easy">${skill}</span>`;
-                        });
-                        profileHtml += `</div></div>`;
-                    }
-                    
-                    if (student.skills.technologies && student.skills.technologies.length > 0) {
-                        profileHtml += `<div style="margin-bottom: 20px; padding: 16px; background: var(--bg-light); border-radius: 12px;">
-                            <h4 style="margin-bottom: 12px; color: var(--primary-color);"><i class="fas fa-tools"></i> Technologies/Frameworks</h4>
-                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">`;
-                        student.skills.technologies.forEach(skill => {
-                            profileHtml += `<span class="difficulty medium">${skill}</span>`;
-                        });
+                        profileHtml += `<div style="margin-bottom: 16px;"><strong>Languages:</strong> <div style="margin-top: 8px;">`;
+                        student.skills.languages.forEach(s => profileHtml += `<span class="difficulty easy" style="margin-right: 4px;">${s}</span>`);
                         profileHtml += `</div></div>`;
                     }
                 }
                 
                 if (student.experience) {
-                    profileHtml += `<div style="margin-bottom: 20px; padding: 16px; background: var(--bg-light); border-radius: 12px;">
-                        <h4 style="margin-bottom: 12px; color: var(--primary-color);"><i class="fas fa-briefcase"></i> Experience</h4>
+                    profileHtml += `<div style="margin-bottom: 16px; padding: 12px; background: var(--bg-light); border-radius: 8px;">
+                        <strong><i class="fas fa-briefcase"></i> Experience</strong>
                         <p>${student.experience}</p>
                     </div>`;
                 }
                 
-                if (student.github || student.linkedin) {
-                    profileHtml += `<div style="margin-bottom: 20px; padding: 16px; background: var(--bg-light); border-radius: 12px;">
-                        <h4 style="margin-bottom: 12px; color: var(--primary-color);"><i class="fas fa-link"></i> Links</h4>`;
-                    if (student.github) profileHtml += `<p><i class="fab fa-github"></i> <a href="${student.github}" target="_blank">${student.github}</a></p>`;
-                    if (student.linkedin) profileHtml += `<p><i class="fab fa-linkedin"></i> <a href="${student.linkedin}" target="_blank">${student.linkedin}</a></p>`;
-                    profileHtml += `</div>`;
-                }
-                
                 profileHtml += '</div>';
             } else if (student.resume && student.resume.personal) {
-                // Fallback to resume data
                 const p = student.resume.personal;
-                profileHtml = `<div style="padding: 20px; max-height: 400px; overflow-y: auto;">
-                    <h3 style="font-size: 24px; margin-bottom: 8px;">${p.fullName || 'N/A'}</h3>
+                profileHtml = `<div>
+                    <h3 style="margin-bottom: 8px;">${p.fullName || 'N/A'}</h3>
                     <p style="color: var(--gray-medium); margin-bottom: 16px;">${p.jobTitle || 'No Job Title'}</p>
-                    
-                    <div style="margin-bottom: 16px;">
-                        <strong>Email:</strong> ${p.email || 'N/A'}<br>
-                        <strong>Phone:</strong> ${p.phone || 'N/A'}<br>
-                        <strong>Location:</strong> ${p.location || 'N/A'}
-                    </div>`;
-                
-                if (student.resume.skills && student.resume.skills.length > 0) {
-                    profileHtml += '<div style="margin-bottom: 16px;"><strong>Skills:</strong><div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">';
-                    student.resume.skills.forEach(skill => { profileHtml += `<span class="difficulty easy">${skill}</span>`; });
-                    profileHtml += '</div></div>';
-                }
-                
-                profileHtml += '</div>';
+                    <p><strong>Email:</strong> ${p.email || 'N/A'}</p>
+                </div>`;
             } else {
-                profileHtml = '<p style="padding: 20px; text-align: center;">This student has not completed their profile yet.</p>';
+                profileHtml = '<p>This student has not completed their profile yet.</p>';
             }
             
-// Create modal
-            const modalDiv = document.createElement('div');
-            modalDiv.className = 'modal-overlay show';
-            modalDiv.onclick = function(e) {
-                if (e.target === modalDiv) {
-                    modalDiv.remove();
-                }
-            };
-            modalDiv.innerHTML = `
-                <div class="modal-content" style="max-width: 600px;">
-                    <div class="modal-header">
-                        <h2>${student.name || 'Student'} - Profile</h2>
-                        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+            alert(profileHtml.replace(/<[^>]*>/g, ''));
+        }
+
+        function quickSchedule(email) {
+            const student = getStudents().find(s => s.email === decodeURIComponent(email));
+            if (student) {
+                document.getElementById('candidateSelect').value = student.email;
+                showScheduleModal();
+            }
+        }
+
+        // Schedule
+        function updateScheduleList() {
+            const sortedInterviews = [...interviewerData.interviews].sort((a, b) => new Date(a.date) - new Date(b.date));
+            const scheduleHtml = sortedInterviews.map(interview => `
+                <div class="question-item">
+                    <div class="question-info">
+                        <h4>${interview.candidateName}</h4>
+                        <div class="question-meta">
+                            <span><i class="fas fa-calendar"></i> ${interview.date} at ${interview.time}</span>
+                            <span><i class="fas fa-clock"></i> ${interview.duration} min</span>
+                            <span><i class="fas fa-tag"></i> ${interview.type}</span>
+                        </div>
                     </div>
-                    ${profileHtml}
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="status-badge status-${interview.status}">${interview.status}</span>
+                        ${interview.status === 'scheduled' ? `
+                            <button class="btn-action btn-edit" onclick="startInterview(${interview.id})">Start</button>
+                            <button class="btn-action btn-delete" onclick="cancelInterview(${interview.id})">Cancel</button>
+                        ` : ''}
+                    </div>
                 </div>
+            `).join('');
+            document.getElementById('scheduleList').innerHTML = scheduleHtml || '<div class="empty-state"><i class="fas fa-calendar"></i><p>No scheduled interviews.</p></div>';
+        }
+
+        function showScheduleModal() {
+            document.getElementById('scheduleModal').classList.add('show');
+            populateSelects();
+        }
+
+        function closeScheduleModal() {
+            document.getElementById('scheduleModal').classList.remove('show');
+        }
+
+        function populateSelects() {
+            const students = getStudents();
+            const select = document.getElementById('candidateSelect');
+            select.innerHTML = '<option value="">Select Candidate</option>' + 
+                students.map(s => `<option value="${s.email}">${s.name || s.email}</option>`).join('');
+        }
+
+        function saveInterview(e) {
+            e.preventDefault();
+            const email = document.getElementById('candidateSelect').value;
+            const student = getStudents().find(s => s.email === email);
+            
+            const interview = {
+                id: Date.now(),
+                candidateId: student ? Date.now() : 0,
+                candidateName: student ? student.name : 'Unknown',
+                candidateEmail: email,
+                date: document.getElementById('interviewDate').value,
+                time: document.getElementById('interviewTime').value,
+                type: document.getElementById('interviewType').value,
+                duration: parseInt(document.getElementById('interviewDuration').value),
+                notes: document.getElementById('interviewNotes').value,
+                status: 'scheduled'
+            };
+
+            interviewerData.interviews.push(interview);
+            saveData();
+            updateDashboard();
+            updateScheduleList();
+            updateInterviewsList();
+            updateAnalytics();
+            closeScheduleModal();
+            document.getElementById('interviewForm').reset();
+            alert('Interview scheduled successfully!');
+        }
+
+        function startInterview(interviewId) {
+            const interview = interviewerData.interviews.find(i => i.id === interviewId);
+            if (interview) {
+                const rating = prompt('Enter rating for this interview (1-5):', '4');
+                const feedback = prompt('Enter feedback:');
+                
+                if (rating !== null) {
+                    interview.status = 'completed';
+                    interview.rating = parseInt(rating) || 0;
+                    interview.feedback = feedback || '';
+                    interview.completedAt = new Date().toISOString();
+                    
+                    saveData();
+                    updateDashboard();
+                    updateScheduleList();
+                    updateInterviewsList();
+                    updateAnalytics();
+                    alert('Interview completed and saved!');
+                }
+            }
+        }
+
+        function cancelInterview(interviewId) {
+            if (confirm('Are you sure you want to cancel this interview?')) {
+                interviewerData.interviews = interviewerData.interviews.filter(i => i.id !== interviewId);
+                saveData();
+                updateDashboard();
+                updateScheduleList();
+                updateInterviewsList();
+                updateAnalytics();
+                alert('Interview cancelled!');
+            }
+        }
+
+        // Assessments
+        function updateAssessmentsList() {
+            const assessmentsHtml = interviewerData.assessments.map(assessment => `
+                <div class="question-item">
+                    <div class="question-info">
+                        <h4>${assessment.title}</h4>
+                        <div class="question-meta">
+                            <span><i class="fas fa-tag"></i> ${assessment.category}</span>
+                            <span><i class="fas fa-clock"></i> ${assessment.timeLimit} min</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span class="difficulty ${assessment.difficulty.toLowerCase()}">${assessment.difficulty}</span>
+                        <button class="btn-action btn-view" onclick="viewAssessment(${assessment.id})">View</button>
+                        <button class="btn-action btn-delete" onclick="deleteAssessment(${assessment.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('assessmentsList').innerHTML = assessmentsHtml || '<div class="empty-state"><i class="fas fa-clipboard-list"></i><p>No assessments created yet.</p></div>';
+        }
+
+        function showAssessmentModal() {
+            document.getElementById('assessmentModal').classList.add('show');
+        }
+
+        function closeAssessmentModal() {
+            document.getElementById('assessmentModal').classList.remove('show');
+        }
+
+        function saveAssessment(e) {
+            e.preventDefault();
+            
+            const assessment = {
+                id: Date.now(),
+                title: document.getElementById('assessmentTitle').value,
+                category: document.getElementById('assessmentCategory').value,
+                difficulty: document.getElementById('assessmentDifficulty').value,
+                questions: document.getElementById('assessmentQuestions').value,
+                timeLimit: parseInt(document.getElementById('assessmentTime').value),
+                createdAt: new Date().toISOString().split('T')[0]
+            };
+
+            interviewerData.assessments.push(assessment);
+            saveData();
+            updateAssessmentsList();
+            closeAssessmentModal();
+            document.getElementById('assessmentForm').reset();
+            alert('Assessment created successfully!');
+        }
+
+        function viewAssessment(assessmentId) {
+            const assessment = interviewerData.assessments.find(a => a.id === assessmentId);
+            if (assessment) {
+                alert(`Title: ${assessment.title}\nCategory: ${assessment.category}\nDifficulty: ${assessment.difficulty}\nTime Limit: ${assessment.timeLimit} min\n\nQuestions:\n${assessment.questions}`);
+            }
+        }
+
+        function deleteAssessment(assessmentId) {
+            if (confirm('Are you sure you want to delete this assessment?')) {
+                interviewerData.assessments = interviewerData.assessments.filter(a => a.id !== assessmentId);
+                saveData();
+                updateAssessmentsList();
+                alert('Assessment deleted!');
+            }
+        }
+
+        // Interviews
+        function updateInterviewsList() {
+            const interviewsHtml = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Candidate</th>
+                            <th>Date & Time</th>
+                            <th>Type</th>
+                            <th>Duration</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${interviewerData.interviews.map(interview => `
+                            <tr>
+                                <td>${interview.candidateName}</td>
+                                <td>${interview.date} ${interview.time}</td>
+                                <td>${interview.type}</td>
+                                <td>${interview.duration} min</td>
+                                <td><span class="status-badge status-${interview.status}">${interview.status}</span></td>
+                                <td>
+                                    ${interview.status === 'scheduled' ? `
+                                        <button class="btn-action btn-view" onclick="startInterview(${interview.id})">Start</button>
+                                        <button class="btn-action btn-delete" onclick="cancelInterview(${interview.id})">Cancel</button>
+                                    ` : `
+                                        <button class="btn-action btn-view" onclick="viewInterviewDetails(${interview.id})">Details</button>
+                                    `}
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
             `;
-            document.body.appendChild(modalDiv);
+            document.getElementById('interviewsList').innerHTML = interviewerData.interviews.length ? interviewsHtml : '<div class="empty-state"><i class="fas fa-video"></i><p>No interviews yet.</p></div>';
+        }
+
+        function viewInterviewDetails(interviewId) {
+            const interview = interviewerData.interviews.find(i => i.id === interviewId);
+            if (interview) {
+                alert(`Candidate: ${interview.candidateName}\nEmail: ${interview.candidateEmail}\nDate: ${interview.date}\nTime: ${interview.time}\nType: ${interview.type}\nDuration: ${interview.duration} min\nNotes: ${interview.notes || 'None'}\nRating: ${interview.rating || 'N/A'}\nFeedback: ${interview.feedback || 'None'}`);
+            }
+        }
+
+        // Analytics
+        function updateAnalytics() {
+            const completed = interviewerData.interviews.filter(i => i.status === 'completed');
+            const total = interviewerData.interviews.length;
+            const passRate = total > 0 ? Math.round((completed.length / total) * 100) : 0;
+            
+            // Calculate average rating
+            const ratings = completed.filter(i => i.rating).map(i => i.rating);
+            const avgRating = ratings.length > 0 ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : 0;
+
+            document.getElementById('totalConducted').textContent = completed.length;
+            document.getElementById('passRate').textContent = passRate + '%';
+            document.getElementById('avgDuration').textContent = completed.length > 0 ? Math.round(completed.reduce((sum, i) => sum + i.duration, 0) / completed.length) : 0;
+            document.getElementById('myRating').textContent = avgRating || 'N/A';
+
+            // Chart
+            const chartData = [
+                { label: 'Mon', value: Math.floor(Math.random() * 5) },
+                { label: 'Tue', value: Math.floor(Math.random() * 5) },
+                { label: 'Wed', value: Math.floor(Math.random() * 5) },
+                { label: 'Thu', value: Math.floor(Math.random() * 5) },
+                { label: 'Fri', value: Math.floor(Math.random() * 5) },
+                { label: 'Sat', value: Math.floor(Math.random() * 3) },
+                { label: 'Sun', value: Math.floor(Math.random() * 2) }
+            ];
+            
+            const maxValue = Math.max(...chartData.map(d => d.value), 1);
+            const chartHtml = chartData.map(d => `
+                <div class="chart-bar" style="height: ${Math.max((d.value / maxValue) * 180, 20)}px;" data-label="${d.label}">
+                    <span>${d.value}</span>
+                </div>
+            `).join('');
+            document.getElementById('interviewChart').innerHTML = chartHtml;
+        }
+
+        // Settings
+        function saveSettings() {
+            interviewerData.settings = {
+                name: document.getElementById('settingsName').value,
+                email: document.getElementById('settingsEmail').value,
+                expertise: document.getElementById('settingsExpertise').value,
+                availability: document.getElementById('settingsAvailability').value
+            };
+            saveData();
+            alert('Settings saved!');
+        }
+
+        // Export
+        function exportData() {
+            const data = {
+                interviewerData: interviewerData,
+                users: JSON.parse(localStorage.getItem('ekvue_users')) || [],
+                exportedAt: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ekvue-interviewer-backup-' + new Date().toISOString().split('T')[0] + '.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            alert('Data exported successfully!');
+        }
+
+        // Auth check
+        function checkAuth() {
+            const user = localStorage.getItem('ekvue_user');
+            if (!user) { window.location.href = 'login.html'; return null; }
+            const userData = JSON.parse(user);
+            if (userData.type !== 'interviewer') { window.location.href = userData.type + '-dashboard.html'; return null; }
+            return userData;
+        }
+
+        // Initialize
+        const user = checkAuth();
+        if (user) {
+            document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('welcomeName').textContent = user.name.split(' ')[0];
+            
+            if (interviewerData.settings) {
+                document.getElementById('settingsName').value = interviewerData.settings.name || user.name;
+                document.getElementById('settingsEmail').value = interviewerData.settings.email || user.email;
+                document.getElementById('settingsExpertise').value = interviewerData.settings.expertise || '';
+                document.getElementById('settingsAvailability').value = interviewerData.settings.availability || 'fulltime';
+            }
         }
         
-        function logout() { localStorage.removeItem('ekvue_user'); window.location.href = 'login.html'; }
-        function startInterview(candidateName) { alert('Starting interview with ' + candidateName); }
-        function viewDetails(candidateName) { alert('Viewing details for ' + candidateName); }
-        function scheduleInterview() { alert('Schedule New Interview'); }
-        function viewCandidates() { alert('View All Candidates'); }
-        function createAssessment() { alert('Create New Assessment'); }
+        function logout() { 
+            localStorage.removeItem('ekvue_user'); 
+            window.location.href = 'login.html'; 
+        }
+
+        // Load data on page load
+        loadData();
     </script>
 </body>
 </html>
