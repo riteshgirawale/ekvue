@@ -1,4 +1,83 @@
-// Mobile Navigation Toggle
+// =====================
+// DATA MANAGEMENT UTILITIES
+// =====================
+
+// Save demo request to localStorage
+function saveDemoRequest(data) {
+    const demoRequests = JSON.parse(localStorage.getItem('ekvue_demo_requests')) || [];
+    data.submittedAt = new Date().toISOString();
+    data.id = Date.now(); // Unique ID for each request
+    demoRequests.push(data);
+    localStorage.setItem('ekvue_demo_requests', JSON.stringify(demoRequests));
+    console.log('Demo request saved:', data);
+    return demoRequests;
+}
+
+// Get all demo requests
+function getDemoRequests() {
+    return JSON.parse(localStorage.getItem('ekvue_demo_requests')) || [];
+}
+
+// Export all data to a JSON file for backup
+function exportAllData() {
+    const data = {
+        users: JSON.parse(localStorage.getItem('ekvue_users')) || [],
+        currentUser: JSON.parse(localStorage.getItem('ekvue_user')) || null,
+        demoRequests: JSON.parse(localStorage.getItem('ekvue_demo_requests')) || [],
+        resume: JSON.parse(localStorage.getItem('ekvue_resume')) || null,
+        exportedAt: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ekvue-backup-' + new Date().toISOString().split('T')[0] + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    console.log('Data exported successfully');
+    return data;
+}
+
+// Import data from a JSON file
+function importData(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            
+            if (data.users) {
+                localStorage.setItem('ekvue_users', JSON.stringify(data.users));
+            }
+            if (data.demoRequests) {
+                localStorage.setItem('ekvue_demo_requests', JSON.stringify(data.demoRequests));
+            }
+            if (data.resume) {
+                localStorage.setItem('ekvue_resume', JSON.stringify(data.resume));
+            }
+            
+            alert('Data imported successfully! Please refresh the page.');
+            console.log('Data imported:', data);
+        } catch (error) {
+            alert('Error importing data: ' + error.message);
+            console.error('Import error:', error);
+        }
+    };
+    reader.readAsText(file);
+}
+
+// Clear all stored data (for testing/reset)
+function clearAllData() {
+    if (confirm('Are you sure you want to clear ALL data? This cannot be undone!')) {
+        localStorage.clear();
+        alert('All data cleared! Please refresh the page.');
+        window.location.href = 'index.html';
+    }
+}
+
+// =====================
+// MOBILE NAVIGATION
+// =====================
 const hamburger = document.querySelector('.hamburger');
 const navLinks = document.querySelector('.nav-links');
 const navButtons = document.querySelector('.nav-buttons');
@@ -50,6 +129,9 @@ demoForm.addEventListener('submit', (e) => {
     const data = Object.fromEntries(formData.entries());
     
     console.log('Form submitted:', data);
+    
+    // Save demo request data to localStorage
+    saveDemoRequest(data);
     
     // Show success message
     successModal.classList.add('show');
