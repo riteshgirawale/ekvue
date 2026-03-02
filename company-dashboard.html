@@ -39,7 +39,7 @@
         .nav-logo { display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 700; color: var(--primary-color); text-decoration: none; }
         .nav-logo i { font-size: 28px; }
         .nav-menu { display: flex; align-items: center; gap: 32px; }
-        .nav-menu a { font-weight: 500; color: var(--gray-dark); text-decoration: none; transition: var(--transition); }
+        .nav-menu a { font-weight: 500; color: var(--gray-dark); text-decoration: none; transition: var(--transition); cursor: pointer; }
         .nav-menu a:hover, .nav-menu a.active { color: var(--primary-color); }
         .nav-user { display: flex; align-items: center; gap: 16px; }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 600; }
@@ -53,11 +53,11 @@
         .sidebar { width: 260px; background: var(--white); border-right: 1px solid #E5E7EB; padding: 24px 0; position: fixed; top: 80px; left: 0; bottom: 0; overflow-y: auto; }
         .sidebar-menu { list-style: none; }
         .sidebar-menu li { margin-bottom: 4px; }
-        .sidebar-menu a { display: flex; align-items: center; gap: 12px; padding: 12px 24px; color: var(--gray-dark); text-decoration: none; font-weight: 500; transition: var(--transition); }
+        .sidebar-menu a { display: flex; align-items: center; gap: 12px; padding: 12px 24px; color: var(--gray-dark); text-decoration: none; font-weight: 500; transition: var(--transition); cursor: pointer; }
         .sidebar-menu a:hover, .sidebar-menu a.active { background: rgba(79, 70, 229, 0.1); color: var(--primary-color); border-right: 3px solid var(--primary-color); }
         .sidebar-menu a i { width: 20px; text-align: center; }
         .dashboard-content { flex: 1; margin-left: 260px; padding: 32px; }
-        .page-header { margin-bottom: 32px; }
+        .page-header { margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; }
         .page-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
         .page-subtitle { color: var(--gray-medium); }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 32px; }
@@ -74,11 +74,21 @@
         .card-header { padding: 20px 24px; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between; }
         .card-title { font-size: 18px; font-weight: 600; }
         .card-body { padding: 24px; }
-        .job-item { padding: 16px 0; border-bottom: 1px solid #F3F4F6; }
+        .job-item { padding: 16px 0; border-bottom: 1px solid #F3F4F6; display: flex; justify-content: space-between; align-items: center; }
         .job-item:last-child { border-bottom: none; }
-        .job-item h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+        .job-info h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
         .job-meta { display: flex; gap: 16px; font-size: 13px; color: var(--gray-medium); }
         .job-meta span { display: flex; align-items: center; gap: 4px; }
+        .job-actions { display: flex; gap: 8px; }
+        .btn-action { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; transition: var(--transition); }
+        .btn-view { background: rgba(79, 70, 229, 0.1); color: var(--primary-color); }
+        .btn-view:hover { background: var(--primary-color); color: var(--white); }
+        .btn-edit { background: rgba(245, 158, 11, 0.1); color: var(--accent-color); }
+        .btn-edit:hover { background: var(--accent-color); color: var(--white); }
+        .btn-delete { background: rgba(239, 68, 68, 0.1); color: var(--danger-color); }
+        .btn-delete:hover { background: var(--danger-color); color: var(--white); }
+        .btn-primary { padding: 12px 24px; background: var(--primary-color); color: var(--white); border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: var(--transition); }
+        .btn-primary:hover { background: var(--primary-dark); }
         .activity-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F3F4F6; }
         .activity-item:last-child { border-bottom: none; }
         .activity-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
@@ -92,6 +102,38 @@
         .quick-action:hover { background: rgba(79, 70, 229, 0.1); }
         .quick-action i { width: 40px; height: 40px; background: var(--white); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary-color); font-size: 18px; box-shadow: var(--shadow-sm); }
         .quick-action span { font-weight: 600; color: var(--dark-color); }
+        .section { display: none; }
+        .section.active { display: block; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th, .table td { padding: 16px; text-align: left; border-bottom: 1px solid #E5E7EB; }
+        .table th { font-weight: 600; color: var(--gray-dark); background: var(--bg-light); }
+        .table tr:hover { background: var(--bg-light); }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-active { background: rgba(16, 185, 129, 0.1); color: var(--secondary-color); }
+        .status-pending { background: rgba(245, 158, 11, 0.1); color: var(--accent-color); }
+        .status-closed { background: rgba(107, 114, 128, 0.1); color: var(--gray-medium); }
+        .status-hired { background: rgba(79, 70, 229, 0.1); color: var(--primary-color); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; color: var(--dark-color); margin-bottom: 8px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; font-size: 15px; border: 2px solid #E5E7EB; border-radius: 10px; outline: none; transition: var(--transition); font-family: var(--font-family); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary-color); }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
+        .modal.show { display: flex; }
+        .modal-content { background: var(--white); border-radius: 16px; padding: 32px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .modal-header h2 { font-size: 20px; font-weight: 700; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--gray-medium); }
+        .success-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; }
+        .success-modal.show { display: flex; }
+        .success-content { background: var(--white); border-radius: 16px; padding: 48px; text-align: center; max-width: 400px; }
+        .success-icon { font-size: 64px; color: var(--secondary-color); margin-bottom: 16px; }
+        .chart-container { height: 300px; display: flex; align-items: flex-end; justify-content: space-around; padding: 20px 0; }
+        .chart-bar { width: 60px; background: var(--primary-color); border-radius: 8px 8px 0 0; position: relative; transition: var(--transition); }
+        .chart-bar:hover { background: var(--primary-dark); }
+        .chart-bar::after { content: attr(data-label); position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-size: 12px; color: var(--gray-medium); white-space: nowrap; }
+        .chart-bar span { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: 600; }
+        .empty-state { text-align: center; padding: 48px; color: var(--gray-medium); }
+        .empty-state i { font-size: 48px; margin-bottom: 16px; }
         @media (max-width: 1024px) { .sidebar { width: 80px; } .sidebar-menu a span { display: none; } .sidebar-menu a { justify-content: center; padding: 16px; } .dashboard-content { margin-left: 80px; } .content-grid { grid-template-columns: 1fr; } }
         @media (max-width: 768px) { .sidebar { display: none; } .dashboard-content { margin-left: 0; } .nav-menu { display: none; } .stats-grid { grid-template-columns: 1fr; } }
     </style>
@@ -101,11 +143,11 @@
         <div class="nav-container">
             <a href="company-dashboard.html" class="nav-logo"><i class="fas fa-code"></i><span>EkVue</span></a>
             <div class="nav-menu">
-                <a href="company-dashboard.html" class="active">Dashboard</a>
-                <a href="#">Job Posts</a>
-                <a href="#">Candidates</a>
-                <a href="#">Interviews</a>
-                <a href="#">Analytics</a>
+                <a onclick="showSection('dashboard')" class="active">Dashboard</a>
+                <a onclick="showSection('jobs')">Job Posts</a>
+                <a onclick="showSection('candidates')">Candidates</a>
+                <a onclick="showSection('interviews')">Interviews</a>
+                <a onclick="showSection('analytics')">Analytics</a>
             </div>
             <div class="nav-user">
                 <div class="user-avatar" id="userAvatar">JD</div>
@@ -121,110 +163,353 @@
         <div class="dashboard-container">
             <aside class="sidebar">
                 <ul class="sidebar-menu">
-                    <li><a href="company-dashboard.html" class="active"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
-                    <li><a href="#"><i class="fas fa-briefcase"></i><span>Job Posts</span></a></li>
-                    <li><a href="#"><i class="fas fa-users"></i><span>Candidates</span></a></li>
-                    <li><a href="#"><i class="fas fa-calendar-check"></i><span>Interviews</span></a></li>
-                    <li><a href="#"><i class="fas fa-chart-pie"></i><span>Analytics</span></a></li>
-                    <li><a href="#"><i class="fas fa-file-contract"></i><span>Reports</span></a></li>
-                    <li><a href="#"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+                    <li><a onclick="showSection('dashboard')" class="active"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+                    <li><a onclick="showSection('jobs')"><i class="fas fa-briefcase"></i><span>Job Posts</span></a></li>
+                    <li><a onclick="showSection('candidates')"><i class="fas fa-users"></i><span>Candidates</span></a></li>
+                    <li><a onclick="showSection('interviews')"><i class="fas fa-calendar-check"></i><span>Interviews</span></a></li>
+                    <li><a onclick="showSection('analytics')"><i class="fas fa-chart-pie"></i><span>Analytics</span></a></li>
+                    <li><a onclick="showSection('reports')"><i class="fas fa-file-contract"></i><span>Reports</span></a></li>
+                    <li><a onclick="showSection('settings')"><i class="fas fa-cog"></i><span>Settings</span></a></li>
                 </ul>
             </aside>
             <main class="dashboard-content">
-                <div class="page-header">
-                    <h1 class="page-title">Welcome, <span id="welcomeName">Company</span>! 👋</h1>
-                    <p class="page-subtitle">Manage your hiring pipeline and job postings.</p>
+                <!-- Dashboard Section -->
+                <div id="dashboard" class="section active">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Welcome, <span id="welcomeName">Company</span>! 👋</h1>
+                            <p class="page-subtitle">Manage your hiring pipeline and job postings.</p>
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fas fa-briefcase"></i></div>
+                            <div class="stat-info"><h3 id="activeJobsCount">0</h3><p>Active Jobs</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green"><i class="fas fa-user-plus"></i></div>
+                            <div class="stat-info"><h3 id="totalApplicantsCount">0</h3><p>Total Applicants</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orange"><i class="fas fa-user-check"></i></div>
+                            <div class="stat-info"><h3 id="hiredCount">0</h3><p>Hired This Month</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red"><i class="fas fa-clock"></i></div>
+                            <div class="stat-info"><h3 id="avgDaysCount">0</h3><p>Avg. Days to Hire</p></div>
+                        </div>
+                    </div>
+                    <div class="content-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Active Job Postings</h3>
+                                <button class="btn-primary" onclick="showJobModal()">Post New Job</button>
+                            </div>
+                            <div class="card-body" id="activeJobsList">
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 24px;">
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Hiring Pipeline</h3></div>
+                                <div class="card-body">
+                                    <div class="activity-item">
+                                        <div class="activity-icon attempted"><i class="fas fa-file-alt"></i></div>
+                                        <div class="activity-info"><p>Applications</p><span id="pipelineApplications">0 total</span></div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon interview"><i class="fas fa-eye"></i></div>
+                                        <div class="activity-info"><p>Screening</p><span id="pipelineScreening">0 reviewed</span></div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon attempted"><i class="fas fa-user-tie"></i></div>
+                                        <div class="activity-info"><p>Interview</p><span id="pipelineInterview">0 in process</span></div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon solved"><i class="fas fa-check"></i></div>
+                                        <div class="activity-info"><p>Offer Extended</p><span id="pipelineOffer">0 offers</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Quick Actions</h3></div>
+                                <div class="card-body">
+                                    <div class="quick-actions">
+                                        <button class="quick-action" onclick="showJobModal()"><i class="fas fa-plus"></i><span>Post New Job</span></button>
+                                        <button class="quick-action" onclick="showSection('candidates')"><i class="fas fa-users"></i><span>View All Candidates</span></button>
+                                        <button class="quick-action" onclick="showSection('analytics')"><i class="fas fa-chart-line"></i><span>View Analytics</span></button>
+                                        <button class="quick-action" onclick="viewDemoRequests()"><i class="fas fa-envelope"></i><span>View Demo Requests</span></button>
+                                        <button class="quick-action" onclick="exportData()"><i class="fas fa-download"></i><span>Export Data</span></button>
+                                        <button class="quick-action" onclick="document.getElementById('importFile').click()"><i class="fas fa-upload"></i><span>Import Data</span></button>
+                                        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon blue"><i class="fas fa-briefcase"></i></div>
-                        <div class="stat-info"><h3>5</h3><p>Active Jobs</p></div>
+
+                <!-- Job Posts Section -->
+                <div id="jobs" class="section">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Job Posts</h1>
+                            <p class="page-subtitle">Manage your job postings</p>
+                        </div>
+                        <button class="btn-primary" onclick="showJobModal()"><i class="fas fa-plus"></i> Post New Job</button>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon green"><i class="fas fa-user-plus"></i></div>
-                        <div class="stat-info"><h3>156</h3><p>Total Applicants</p></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon orange"><i class="fas fa-user-check"></i></div>
-                        <div class="stat-info"><h3>12</h3><p>Hired This Month</p></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon red"><i class="fas fa-clock"></i></div>
-                        <div class="stat-info"><h3>14</h3><p>Avg. Days to Hire</p></div>
-                    </div>
-                </div>
-                <div class="content-grid">
                     <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Active Job Postings</h3>
-                            <a href="#" style="color: var(--primary-color); text-decoration: none; font-size: 14px;">View All</a>
+                        <div class="card-body" id="jobsList">
                         </div>
+                    </div>
+                </div>
+
+                <!-- Candidates Section -->
+                <div id="candidates" class="section">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Candidates</h1>
+                            <p class="page-subtitle">View and manage all applicants</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body" id="candidatesList">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interviews Section -->
+                <div id="interviews" class="section">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Interviews</h1>
+                            <p class="page-subtitle">Schedule and manage interviews</p>
+                        </div>
+                        <button class="btn-primary" onclick="showScheduleModal()"><i class="fas fa-plus"></i> Schedule Interview</button>
+                    </div>
+                    <div class="card">
+                        <div class="card-body" id="interviewsList">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div id="analytics" class="section">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Analytics</h1>
+                            <p class="page-subtitle">Track your hiring metrics</p>
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fas fa-eye"></i></div>
+                            <div class="stat-info"><h3 id="analyticsViews">0</h3><p>Job Views</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green"><i class="fas fa-user-plus"></i></div>
+                            <div class="stat-info"><h3 id="analyticsApplications">0</h3><p>Applications</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orange"><i class="fas fa-percentage"></i></div>
+                            <div class="stat-info"><h3 id="analyticsConversion">0%</h3><p>Conversion Rate</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red"><i class="fas fa-clock"></i></div>
+                            <div class="stat-info"><h3 id="analyticsTime">0</h3><p>Avg. Time to Hire</p></div>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 24px;">
+                        <div class="card-header"><h3 class="card-title">Applications Over Time</h3></div>
                         <div class="card-body">
-                            <div class="job-item">
-                                <h4>Senior Software Engineer</h4>
-                                <div class="job-meta">
-                                    <span><i class="fas fa-users"></i> 45 applicants</span>
-                                    <span><i class="fas fa-clock"></i> Posted 5 days ago</span>
-                                    <span><i class="fas fa-check-circle"></i> 12 in interview</span>
-                                </div>
+                            <div class="chart-container" id="applicationsChart">
                             </div>
-                            <div class="job-item">
-                                <h4>Product Manager</h4>
-                                <div class="job-meta">
-                                    <span><i class="fas fa-users"></i> 32 applicants</span>
-                                    <span><i class="fas fa-clock"></i> Posted 3 days ago</span>
-                                    <span><i class="fas fa-check-circle"></i> 8 in interview</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Section -->
+                <div id="reports" class="section">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Reports</h1>
+                            <p class="page-subtitle">Generate and download reports</p>
+                        </div>
+                    </div>
+                    <div class="content-grid">
+                        <div class="card">
+                            <div class="card-header"><h3 class="card-title">Generate Report</h3></div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Report Type</label>
+                                    <select id="reportType">
+                                        <option value="hiring">Hiring Summary</option>
+                                        <option value="candidates">Candidate Report</option>
+                                        <option value="interviews">Interview Stats</option>
+                                        <option value="jobs">Job Performance</option>
+                                    </select>
                                 </div>
+                                <div class="form-group">
+                                    <label>Date Range</label>
+                                    <select id="reportRange">
+                                        <option value="week">Last Week</option>
+                                        <option value="month">Last Month</option>
+                                        <option value="quarter">Last Quarter</option>
+                                        <option value="year">Last Year</option>
+                                    </select>
+                                </div>
+                                <button class="btn-primary" onclick="generateReport()" style="width: 100%;">Generate Report</button>
                             </div>
-                            <div class="job-item">
-                                <h4>DevOps Engineer</h4>
-                                <div class="job-meta">
-                                    <span><i class="fas fa-users"></i> 28 applicants</span>
-                                    <span><i class="fas fa-clock"></i> Posted 1 week ago</span>
-                                    <span><i class="fas fa-check-circle"></i> 5 in interview</span>
+                        </div>
+                        <div class="card">
+                            <div class="card-header"><h3 class="card-title">Recent Reports</h3></div>
+                            <div class="card-body" id="recentReports">
+                                <div class="empty-state">
+                                    <i class="fas fa-file-alt"></i>
+                                    <p>No reports generated yet</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div style="display: flex; flex-direction: column; gap: 24px;">
-                        <div class="card">
-                            <div class="card-header"><h3 class="card-title">Hiring Pipeline</h3></div>
-                            <div class="card-body">
-                                <div class="activity-item">
-                                    <div class="activity-icon attempted"><i class="fas fa-file-alt"></i></div>
-                                    <div class="activity-info"><p>Applications</p><span>156 total</span></div>
-                                </div>
-                                <div class="activity-item">
-                                    <div class="activity-icon interview"><i class="fas fa-eye"></i></div>
-                                    <div class="activity-info"><p>Screening</p><span>45 reviewed</span></div>
-                                </div>
-                                <div class="activity-item">
-                                    <div class="activity-icon attempted"><i class="fas fa-user-tie"></i></div>
-                                    <div class="activity-info"><p>Interview</p><span>25 in process</span></div>
-                                </div>
-                                <div class="activity-item">
-                                    <div class="activity-icon solved"><i class="fas fa-check"></i></div>
-                                    <div class="activity-info"><p>Offer Extended</p><span>15 offers</span></div>
-                                </div>
-                            </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="settings" class="section">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Settings</h1>
+                            <p class="page-subtitle">Manage your account settings</p>
                         </div>
-                        <div class="card">
-                            <div class="card-header"><h3 class="card-title">Quick Actions</h3></div>
-                            <div class="card-body">
-                                <div class="quick-actions">
-                                    <button class="quick-action" onclick="postJob()"><i class="fas fa-plus"></i><span>Post New Job</span></button>
-                                    <button class="quick-action" onclick="viewAllApplicants()"><i class="fas fa-users"></i><span>View All Applicants</span></button>
-                                    <button class="quick-action" onclick="generateReport()"><i class="fas fa-chart-line"></i><span>Generate Report</span></button>
-                                    <button class="quick-action" onclick="viewDemoRequests()"><i class="fas fa-envelope"></i><span>View Demo Requests</span></button>
-                                    <button class="quick-action" onclick="exportData()"><i class="fas fa-download"></i><span>Export Data</span></button>
-                                    <button class="quick-action" onclick="document.getElementById('importFile').click()"><i class="fas fa-upload"></i><span>Import Data</span></button>
-                                    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
-                                </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">Company Profile</h3></div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Company Name</label>
+                                <input type="text" id="settingsCompanyName" placeholder="Your Company">
                             </div>
+                            <div class="form-group">
+                                <label>Contact Email</label>
+                                <input type="email" id="settingsEmail" placeholder="hr@company.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" id="settingsPhone" placeholder="+1 234 567 8900">
+                            </div>
+                            <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
                         </div>
                     </div>
                 </div>
             </main>
+        </div>
+    </div>
+
+    <!-- Job Post Modal -->
+    <div id="jobModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="jobModalTitle">Post New Job</h2>
+                <button class="modal-close" onclick="closeJobModal()">&times;</button>
+            </div>
+            <form id="jobForm" onsubmit="saveJob(event)">
+                <input type="hidden" id="jobId">
+                <div class="form-group">
+                    <label>Job Title</label>
+                    <input type="text" id="jobTitle" placeholder="e.g., Senior Software Engineer" required>
+                </div>
+                <div class="form-group">
+                    <label>Department</label>
+                    <select id="jobDepartment" required>
+                        <option value="">Select Department</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Product">Product</option>
+                        <option value="Design">Design</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Sales">Sales</option>
+                        <option value="HR">HR</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="jobLocation" placeholder="e.g., Remote, New York, NY" required>
+                </div>
+                <div class="form-group">
+                    <label>Job Type</label>
+                    <select id="jobType" required>
+                        <option value="">Select Type</option>
+                        <option value="Full-time">Full-time</option>
+                        <option value="Part-time">Part-time</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Internship">Internship</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Experience Level</label>
+                    <select id="jobExperience" required>
+                        <option value="">Select Level</option>
+                        <option value="Entry">Entry Level</option>
+                        <option value="Mid">Mid Level</option>
+                        <option value="Senior">Senior Level</option>
+                        <option value="Lead">Lead</option>
+                        <option value="Manager">Manager</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="jobDescription" rows="4" placeholder="Job description..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Requirements</label>
+                    <textarea id="jobRequirements" rows="3" placeholder="Key requirements..."></textarea>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%;">Save Job</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Schedule Interview Modal -->
+    <div id="scheduleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Schedule Interview</h2>
+                <button class="modal-close" onclick="closeScheduleModal()">&times;</button>
+            </div>
+            <form id="interviewForm" onsubmit="saveInterview(event)">
+                <div class="form-group">
+                    <label>Candidate</label>
+                    <select id="interviewCandidate" required>
+                        <option value="">Select Candidate</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Job Position</label>
+                    <select id="interviewJob" required>
+                        <option value="">Select Job</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Interview Date</label>
+                    <input type="date" id="interviewDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Interview Time</label>
+                    <input type="time" id="interviewTime" required>
+                </div>
+                <div class="form-group">
+                    <label>Interview Type</label>
+                    <select id="interviewType" required>
+                        <option value="">Select Type</option>
+                        <option value="Phone">Phone Screen</option>
+                        <option value="Video">Video Call</option>
+                        <option value="Onsite">Onsite</option>
+                        <option value="Technical">Technical</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="interviewNotes" rows="3" placeholder="Additional notes..."></textarea>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%;">Schedule Interview</button>
+            </form>
         </div>
     </div>
 
@@ -242,24 +527,438 @@
     </div>
 
     <script>
-        function checkAuth() {
-            const user = localStorage.getItem('ekvue_user');
-            if (!user) { window.location.href = 'login.html'; return null; }
-            const userData = JSON.parse(user);
-            if (userData.type !== 'company') { window.location.href = userData.type + '-dashboard.html'; return null; }
-            return userData;
+        // Initialize data
+        let companyData = {
+            jobs: [],
+            candidates: [],
+            interviews: [],
+            settings: {}
+        };
+
+        // Load data from localStorage
+        function loadCompanyData() {
+            const saved = localStorage.getItem('ekvue_company_data');
+            if (saved) {
+                companyData = JSON.parse(saved);
+            }
+            // Add sample data if empty
+            if (companyData.jobs.length === 0) {
+                companyData.jobs = [
+                    { id: 1, title: 'Senior Software Engineer', department: 'Engineering', location: 'Remote', type: 'Full-time', experience: 'Senior', description: 'We are looking for a senior software engineer...', requirements: '5+ years experience', status: 'active', applicants: 45, posted: '2024-01-15', views: 1250 },
+                    { id: 2, title: 'Product Manager', department: 'Product', location: 'New York, NY', type: 'Full-time', experience: 'Mid', description: 'Join our product team...', requirements: '3+ years experience', status: 'active', applicants: 32, posted: '2024-01-18', views: 890 },
+                    { id: 3, title: 'DevOps Engineer', department: 'Engineering', location: 'San Francisco, CA', type: 'Full-time', experience: 'Senior', description: 'Help us scale our infrastructure...', requirements: '4+ years experience', status: 'active', applicants: 28, posted: '2024-01-10', views: 720 }
+                ];
+                companyData.candidates = [
+                    { id: 1, name: 'John Smith', email: 'john@example.com', job: 'Senior Software Engineer', status: 'interview', applied: '2024-01-20', experience: '5 years' },
+                    { id: 2, name: 'Sarah Johnson', email: 'sarah@example.com', job: 'Product Manager', status: 'screening', applied: '2024-01-19', experience: '3 years' },
+                    { id: 3, name: 'Mike Davis', email: 'mike@example.com', job: 'Senior Software Engineer', status: 'applied', applied: '2024-01-21', experience: '6 years' },
+                    { id: 4, name: 'Emily Brown', email: 'emily@example.com', job: 'DevOps Engineer', status: 'hired', applied: '2024-01-15', experience: '4 years' },
+                    { id: 5, name: 'Alex Wilson', email: 'alex@example.com', job: 'Product Manager', status: 'rejected', applied: '2024-01-18', experience: '2 years' }
+                ];
+                companyData.interviews = [
+                    { id: 1, candidateId: 1, candidateName: 'John Smith', job: 'Senior Software Engineer', date: '2024-01-25', time: '10:00', type: 'Technical', status: 'scheduled' },
+                    { id: 2, candidateId: 2, candidateName: 'Sarah Johnson', job: 'Product Manager', date: '2024-01-26', time: '14:00', type: 'Video', status: 'scheduled' }
+                ];
+                saveCompanyData();
+            }
+            updateDashboard();
+            updateJobsList();
+            updateCandidatesList();
+            updateInterviewsList();
+            updateAnalytics();
+            populateSelects();
         }
-        const user = checkAuth();
-        if (user) {
-            document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
-            document.getElementById('userName').textContent = user.companyName || user.name;
-            document.getElementById('welcomeName').textContent = user.companyName || user.name;
+
+        function saveCompanyData() {
+            localStorage.setItem('ekvue_company_data', JSON.stringify(companyData));
         }
-        function logout() { localStorage.removeItem('ekvue_user'); window.location.href = 'login.html'; }
-        function postJob() { alert('Post New Job'); }
-        function viewAllApplicants() { alert('View All Applicants'); }
-        function generateReport() { alert('Generate Report'); }
-        
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            
+            document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
+            document.querySelector(`.nav-menu a[onclick="showSection('${sectionId}')"]`).classList.add('active');
+            
+            document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+            document.querySelector(`.sidebar-menu a[onclick="showSection('${sectionId}')"]`).classList.add('active');
+        }
+
+        // Dashboard updates
+        function updateDashboard() {
+            const activeJobs = companyData.jobs.filter(j => j.status === 'active');
+            const totalApplicants = companyData.jobs.reduce((sum, j) => sum + j.applicants, 0);
+            const hired = companyData.candidates.filter(c => c.status === 'hired').length;
+            
+            document.getElementById('activeJobsCount').textContent = activeJobs.length;
+            document.getElementById('totalApplicantsCount').textContent = companyData.candidates.length;
+            document.getElementById('hiredCount').textContent = hired;
+            document.getElementById('avgDaysCount').textContent = '14';
+            
+            document.getElementById('pipelineApplications').textContent = companyData.candidates.length + ' total';
+            document.getElementById('pipelineScreening').textContent = companyData.candidates.filter(c => c.status === 'screening').length + ' reviewed';
+            document.getElementById('pipelineInterview').textContent = companyData.candidates.filter(c => c.status === 'interview').length + ' in process';
+            document.getElementById('pipelineOffer').textContent = companyData.candidates.filter(c => c.status === 'offer').length + ' offers';
+
+            // Active jobs list
+            const jobsHtml = activeJobs.slice(0, 5).map(job => `
+                <div class="job-item">
+                    <div class="job-info">
+                        <h4>${job.title}</h4>
+                        <div class="job-meta">
+                            <span><i class="fas fa-users"></i> ${job.applicants} applicants</span>
+                            <span><i class="fas fa-clock"></i> Posted ${getDaysAgo(job.posted)}</span>
+                            <span><i class="fas fa-check-circle"></i> ${companyData.candidates.filter(c => c.job === job.title && c.status === 'interview').length} in interview</span>
+                        </div>
+                    </div>
+                    <div class="job-actions">
+                        <button class="btn-action btn-view" onclick="viewJob(${job.id})"><i class="fas fa-eye"></i></button>
+                        <button class="btn-action btn-edit" onclick="editJob(${job.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn-action btn-delete" onclick="deleteJob(${job.id})"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('activeJobsList').innerHTML = jobsHtml || '<div class="empty-state"><i class="fas fa-briefcase"></i><p>No active jobs. Post your first job!</p></div>';
+        }
+
+        function getDaysAgo(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const days = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+            if (days === 0) return 'Today';
+            if (days === 1) return 'Yesterday';
+            return days + ' days ago';
+        }
+
+        // Jobs functions
+        function updateJobsList() {
+            const jobsHtml = companyData.jobs.map(job => `
+                <div class="job-item">
+                    <div class="job-info">
+                        <h4>${job.title}</h4>
+                        <div class="job-meta">
+                            <span><i class="fas fa-building"></i> ${job.department}</span>
+                            <span><i class="fas fa-map-marker-alt"></i> ${job.location}</span>
+                            <span><i class="fas fa-clock"></i> ${job.type}</span>
+                            <span><i class="fas fa-users"></i> ${job.applicants} applicants</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <span class="status-badge status-${job.status}">${job.status}</span>
+                        <div class="job-actions">
+                            <button class="btn-action btn-view" onclick="viewJob(${job.id})"><i class="fas fa-eye"></i></button>
+                            <button class="btn-action btn-edit" onclick="editJob(${job.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn-action btn-delete" onclick="deleteJob(${job.id})"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('jobsList').innerHTML = jobsHtml || '<div class="empty-state"><i class="fas fa-briefcase"></i><p>No jobs posted yet.</p></div>';
+        }
+
+        function showJobModal(jobId = null) {
+            document.getElementById('jobModal').classList.add('show');
+            document.getElementById('jobModalTitle').textContent = jobId ? 'Edit Job' : 'Post New Job';
+            document.getElementById('jobForm').reset();
+            document.getElementById('jobId').value = '';
+            
+            if (jobId) {
+                const job = companyData.jobs.find(j => j.id === jobId);
+                if (job) {
+                    document.getElementById('jobId').value = job.id;
+                    document.getElementById('jobTitle').value = job.title;
+                    document.getElementById('jobDepartment').value = job.department;
+                    document.getElementById('jobLocation').value = job.location;
+                    document.getElementById('jobType').value = job.type;
+                    document.getElementById('jobExperience').value = job.experience;
+                    document.getElementById('jobDescription').value = job.description;
+                    document.getElementById('jobRequirements').value = job.requirements;
+                }
+            }
+        }
+
+        function closeJobModal() {
+            document.getElementById('jobModal').classList.remove('show');
+        }
+
+        function saveJob(e) {
+            e.preventDefault();
+            const jobId = document.getElementById('jobId').value;
+            const jobData = {
+                id: jobId ? parseInt(jobId) : Date.now(),
+                title: document.getElementById('jobTitle').value,
+                department: document.getElementById('jobDepartment').value,
+                location: document.getElementById('jobLocation').value,
+                type: document.getElementById('jobType').value,
+                experience: document.getElementById('jobExperience').value,
+                description: document.getElementById('jobDescription').value,
+                requirements: document.getElementById('jobRequirements').value,
+                status: 'active',
+                applicants: jobId ? companyData.jobs.find(j => j.id == jobId).applicants : 0,
+                posted: jobId ? companyData.jobs.find(j => j.id == jobId).posted : new Date().toISOString().split('T')[0],
+                views: jobId ? companyData.jobs.find(j => j.id == jobId).views : 0
+            };
+
+            if (jobId) {
+                const index = companyData.jobs.findIndex(j => j.id == jobId);
+                companyData.jobs[index] = jobData;
+            } else {
+                companyData.jobs.push(jobData);
+            }
+
+            saveCompanyData();
+            updateDashboard();
+            updateJobsList();
+            updateAnalytics();
+            populateSelects();
+            closeJobModal();
+            alert('Job saved successfully!');
+        }
+
+        function viewJob(jobId) {
+            const job = companyData.jobs.find(j => j.id === jobId);
+            if (job) {
+                alert(`Job: ${job.title}\nDepartment: ${job.department}\nLocation: ${job.location}\nType: ${job.type}\nApplicants: ${job.applicants}\nViews: ${job.views}`);
+            }
+        }
+
+        function editJob(jobId) {
+            showJobModal(jobId);
+        }
+
+        function deleteJob(jobId) {
+            if (confirm('Are you sure you want to delete this job?')) {
+                companyData.jobs = companyData.jobs.filter(j => j.id !== jobId);
+                saveCompanyData();
+                updateDashboard();
+                updateJobsList();
+                updateAnalytics();
+                populateSelects();
+                alert('Job deleted!');
+            }
+        }
+
+        // Candidates functions
+        function updateCandidatesList() {
+            const candidatesHtml = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Applied For</th>
+                            <th>Status</th>
+                            <th>Applied Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${companyData.candidates.map(candidate => `
+                            <tr>
+                                <td>${candidate.name}</td>
+                                <td>${candidate.email}</td>
+                                <td>${candidate.job}</td>
+                                <td><span class="status-badge status-${candidate.status}">${candidate.status}</span></td>
+                                <td>${candidate.applied}</td>
+                                <td>
+                                    <button class="btn-action btn-view" onclick="viewCandidate(${candidate.id})"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-action btn-edit" onclick="updateCandidateStatus(${candidate.id})"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            document.getElementById('candidatesList').innerHTML = companyData.candidates.length ? candidatesHtml : '<div class="empty-state"><i class="fas fa-users"></i><p>No candidates yet.</p></div>';
+        }
+
+        function viewCandidate(candidateId) {
+            const candidate = companyData.candidates.find(c => c.id === candidateId);
+            if (candidate) {
+                alert(`Candidate: ${candidate.name}\nEmail: ${candidate.email}\nJob: ${candidate.job}\nExperience: ${candidate.experience}\nApplied: ${candidate.applied}`);
+            }
+        }
+
+        function updateCandidateStatus(candidateId) {
+            const statuses = ['applied', 'screening', 'interview', 'offer', 'hired', 'rejected'];
+            const candidate = companyData.candidates.find(c => c.id === candidateId);
+            if (candidate) {
+                const currentIndex = statuses.indexOf(candidate.status);
+                const nextStatus = statuses[(currentIndex + 1) % statuses.length];
+                candidate.status = nextStatus;
+                saveCompanyData();
+                updateCandidatesList();
+                updateDashboard();
+                alert(`Status updated to: ${nextStatus}`);
+            }
+        }
+
+        // Interviews functions
+        function updateInterviewsList() {
+            const interviewsHtml = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Candidate</th>
+                            <th>Job</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${companyData.interviews.map(interview => `
+                            <tr>
+                                <td>${interview.candidateName}</td>
+                                <td>${interview.job}</td>
+                                <td>${interview.date}</td>
+                                <td>${interview.time}</td>
+                                <td>${interview.type}</td>
+                                <td><span class="status-badge status-${interview.status}">${interview.status}</span></td>
+                                <td>
+                                    <button class="btn-action btn-view" onclick="viewInterview(${interview.id})"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-action btn-edit" onclick="completeInterview(${interview.id})"><i class="fas fa-check"></i></button>
+                                    <button class="btn-action btn-delete" onclick="cancelInterview(${interview.id})"><i class="fas fa-times"></i></button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            document.getElementById('interviewsList').innerHTML = companyData.interviews.length ? interviewsHtml : '<div class="empty-state"><i class="fas fa-calendar-check"></i><p>No interviews scheduled.</p></div>';
+        }
+
+        function showScheduleModal() {
+            document.getElementById('scheduleModal').classList.add('show');
+            populateSelects();
+        }
+
+        function closeScheduleModal() {
+            document.getElementById('scheduleModal').classList.remove('show');
+        }
+
+        function saveInterview(e) {
+            e.preventDefault();
+            const candidateId = document.getElementById('interviewCandidate').value;
+            const candidateName = document.getElementById('interviewCandidate').options[document.getElementById('interviewCandidate').selectedIndex].text;
+            
+            const interviewData = {
+                id: Date.now(),
+                candidateId: parseInt(candidateId),
+                candidateName: candidateName,
+                job: document.getElementById('interviewJob').value,
+                date: document.getElementById('interviewDate').value,
+                time: document.getElementById('interviewTime').value,
+                type: document.getElementById('interviewType').value,
+                notes: document.getElementById('interviewNotes').value,
+                status: 'scheduled'
+            };
+
+            companyData.interviews.push(interviewData);
+            saveCompanyData();
+            updateInterviewsList();
+            closeScheduleModal();
+            alert('Interview scheduled successfully!');
+        }
+
+        function viewInterview(interviewId) {
+            const interview = companyData.interviews.find(i => i.id === interviewId);
+            if (interview) {
+                alert(`Interview Details:\nCandidate: ${interview.candidateName}\nJob: ${interview.job}\nDate: ${interview.date}\nTime: ${interview.time}\nType: ${interview.type}\nNotes: ${interview.notes || 'None'}`);
+            }
+        }
+
+        function completeInterview(interviewId) {
+            const interview = companyData.interviews.find(i => i.id === interviewId);
+            if (interview) {
+                interview.status = 'completed';
+                saveCompanyData();
+                updateInterviewsList();
+                alert('Interview marked as completed!');
+            }
+        }
+
+        function cancelInterview(interviewId) {
+            if (confirm('Are you sure you want to cancel this interview?')) {
+                companyData.interviews = companyData.interviews.filter(i => i.id !== interviewId);
+                saveCompanyData();
+                updateInterviewsList();
+                alert('Interview cancelled!');
+            }
+        }
+
+        function populateSelects() {
+            const candidateSelect = document.getElementById('interviewCandidate');
+            const jobSelect = document.getElementById('interviewJob');
+            
+            if (candidateSelect) {
+                candidateSelect.innerHTML = '<option value="">Select Candidate</option>' + 
+                    companyData.candidates.filter(c => c.status !== 'hired' && c.status !== 'rejected').map(c => 
+                        `<option value="${c.id}">${c.name}</option>`
+                    ).join('');
+            }
+            
+            if (jobSelect) {
+                jobSelect.innerHTML = '<option value="">Select Job</option>' + 
+                    companyData.jobs.filter(j => j.status === 'active').map(j => 
+                        `<option value="${j.title}">${j.title}</option>`
+                    ).join('');
+            }
+        }
+
+        // Analytics functions
+        function updateAnalytics() {
+            const totalViews = companyData.jobs.reduce((sum, j) => sum + (j.views || 0), 0);
+            const totalApplications = companyData.candidates.length;
+            const conversionRate = totalViews > 0 ? ((totalApplications / totalViews) * 100).toFixed(1) : 0;
+            
+            document.getElementById('analyticsViews').textContent = totalViews;
+            document.getElementById('analyticsApplications').textContent = totalApplications;
+            document.getElementById('analyticsConversion').textContent = conversionRate + '%';
+            document.getElementById('analyticsTime').textContent = '14';
+
+            // Chart
+            const chartData = [
+                { label: 'Mon', value: 12 },
+                { label: 'Tue', value: 19 },
+                { label: 'Wed', value: 8 },
+                { label: 'Thu', value: 15 },
+                { label: 'Fri', value: 22 },
+                { label: 'Sat', value: 5 },
+                { label: 'Sun', value: 3 }
+            ];
+            
+            const maxValue = Math.max(...chartData.map(d => d.value));
+            const chartHtml = chartData.map(d => `
+                <div class="chart-bar" style="height: ${(d.value / maxValue) * 200}px;" data-label="${d.label}">
+                    <span>${d.value}</span>
+                </div>
+            `).join('');
+            document.getElementById('applicationsChart').innerHTML = chartHtml;
+        }
+
+        // Report functions
+        function generateReport() {
+            const type = document.getElementById('reportType').value;
+            const range = document.getElementById('reportRange').value;
+            alert(`Generating ${type} report for ${range}...`);
+        }
+
+        // Settings functions
+        function saveSettings() {
+            companyData.settings = {
+                companyName: document.getElementById('settingsCompanyName').value,
+                email: document.getElementById('settingsEmail').value,
+                phone: document.getElementById('settingsPhone').value
+            };
+            saveCompanyData();
+            alert('Settings saved!');
+        }
+
+        // Demo Requests functions
         function viewDemoRequests() {
             const demoRequests = JSON.parse(localStorage.getItem('ekvue_demo_requests')) || [];
             const listContainer = document.getElementById('demoRequestsList');
@@ -293,11 +992,12 @@
         function closeDemoRequestsModal() {
             document.getElementById('demoRequestsModal').classList.remove('show');
         }
-        
+
+        // Export/Import functions
         function exportData() {
             const data = {
+                companyData: companyData,
                 users: JSON.parse(localStorage.getItem('ekvue_users')) || [],
-                currentUser: JSON.parse(localStorage.getItem('ekvue_user')) || null,
                 demoRequests: JSON.parse(localStorage.getItem('ekvue_demo_requests')) || [],
                 resume: JSON.parse(localStorage.getItem('ekvue_resume')) || null,
                 exportedAt: new Date().toISOString()
@@ -307,7 +1007,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'ekvue-backup-' + new Date().toISOString().split('T')[0] + '.json';
+            a.download = 'ekvue-company-backup-' + new Date().toISOString().split('T')[0] + '.json';
             a.click();
             URL.revokeObjectURL(url);
             alert('Data exported successfully!');
@@ -322,6 +1022,10 @@
                 try {
                     const data = JSON.parse(e.target.result);
                     
+                    if (data.companyData) {
+                        companyData = data.companyData;
+                        localStorage.setItem('ekvue_company_data', JSON.stringify(companyData));
+                    }
                     if (data.users) {
                         localStorage.setItem('ekvue_users', JSON.stringify(data.users));
                     }
@@ -332,7 +1036,8 @@
                         localStorage.setItem('ekvue_resume', JSON.stringify(data.resume));
                     }
                     
-                    alert('Data imported successfully! Please refresh the page.');
+                    loadCompanyData();
+                    alert('Data imported successfully!');
                 } catch (error) {
                     alert('Error importing data: ' + error.message);
                     console.error('Import error:', error);
@@ -341,6 +1046,37 @@
             reader.readAsText(file);
             input.value = '';
         }
+
+        // Auth
+        function checkAuth() {
+            const user = localStorage.getItem('ekvue_user');
+            if (!user) { window.location.href = 'login.html'; return null; }
+            const userData = JSON.parse(user);
+            if (userData.type !== 'company') { window.location.href = userData.type + '-dashboard.html'; return null; }
+            return userData;
+        }
+
+        // Initialize
+        const user = checkAuth();
+        if (user) {
+            document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
+            document.getElementById('userName').textContent = user.companyName || user.name;
+            document.getElementById('welcomeName').textContent = user.companyName || user.name;
+            
+            if (companyData.settings && companyData.settings.companyName) {
+                document.getElementById('settingsCompanyName').value = companyData.settings.companyName || '';
+                document.getElementById('settingsEmail').value = companyData.settings.email || '';
+                document.getElementById('settingsPhone').value = companyData.settings.phone || '';
+            }
+        }
+        
+        function logout() { 
+            localStorage.removeItem('ekvue_user'); 
+            window.location.href = 'login.html'; 
+        }
+
+        // Load data on page load
+        loadCompanyData();
     </script>
 </body>
 </html>
