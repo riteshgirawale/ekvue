@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Re-bind to make sure tracks are updated
       if (mainVideo) mainVideo.srcObject = localStream;
-      if (pipVideo) pipVideo.srcObject = localStream;
+      // if (pipVideo) pipVideo.srcObject = localStream; // Bug fix: Do not overwrite remote interviewer camera
       if (lobbyPreviewVideo) lobbyPreviewVideo.srcObject = localStream;
       
     } catch (err) {
