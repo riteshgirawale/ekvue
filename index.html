@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EKVUE — Build interviews that feel like real engineering</title>
+  <link rel="stylesheet" href="styles.css?v=1.0.4" />
+
+    <script src="/dashboards/mongo-sync.js"></script>
+</head>
+<body>
+  <div class="page-shell">
+    <nav class="site-nav">
+      <div class="brand">
+        <div class="brand-mark">E</div>
+        <span>EKVUE</span>
+      </div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#resources">Resources</a>
+      </div>
+      <div class="nav-actions">
+        <a id="login-link" class="nav-text" href="#login">Log in</a>
+        <a class="button button-primary" href="login/index.html?forceLogin=1">Get Started</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">AI-Powered Interview Platform</p>
+        <h1>Build interviews that feel like real engineering.</h1>
+        <p class="hero-description">Live coding, video interviews, scheduling, and AI-generated reports — all in one seamless platform.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="login/index.html?forceLogin=1">Start Free Trial</a>
+          <a class="button button-secondary" href="#demo">Watch Demo</a>
+        </div>
+        <div class="hero-footnote">
+          <span>No credit card required</span>
+          <span>Setup in 5 minutes</span>
+          <span>Cancel anytime, no lock-in</span>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="visual-panel">
+          <div class="panel-header">
+            <span class="tag" id="problem-tag">Two Sum Problem</span>
+            <span class="status" id="problem-status">Easy</span>
+            <div class="timer" id="problem-timer">00:05:00</div>
+          </div>
+
+          <div class="panel-body wide-layout">
+            <div class="problem-panel" id="problem-panel">
+              <h2>Problem statement</h2>
+              <p id="problem-text">Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.</p>
+              <div class="example-block" id="example-1">
+                <strong>Example 1:</strong>
+                <p>Input: nums = [2,7,11,15], target = 9</p>
+                <p>Output: [0,1]</p>
+              </div>
+              <div class="example-block" id="example-2">
+                <strong>Example 2:</strong>
+                <p>Input: nums = [3,2,4], target = 6</p>
+                <p>Output: [1,2]</p>
+              </div>
+            </div>
+
+            <div class="code-panel" id="code-panel">
+              <div class="code-toolbar">
+                <div class="toolbar-actions">
+                  <select id="lang-select" class="lang-select" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 600; outline: none; cursor: pointer; transition: all 0.2s; margin-right: 10px;">
+                    <option value="javascript" style="background: #1e293b; color: white;">JavaScript</option>
+                    <option value="python" style="background: #1e293b; color: white;">Python 3</option>
+                    <option value="cpp" style="background: #1e293b; color: white;">C++ 17</option>
+                    <option value="c" style="background: #1e293b; color: white;">C (GCC)</option>
+                    <option value="java" style="background: #1e293b; color: white;">Java</option>
+                    <option value="csharp" style="background: #1e293b; color: white;">C# (.NET)</option>
+                  </select>
+                  <button class="run-button" id="run-code">Run Code</button>
+                  <button class="button button-secondary fullscreen-button" id="toggle-fullscreen" type="button" title="Full Screen">⛶</button>
+                </div>
+              </div>
+              <textarea id="code-editor" class="code-editor">function twoSum(nums, target) {
+  const map = new Map();
+  for (let i = 0; i < nums.length; i += 1) {
+    const complement = target - nums[i];
+    if (map.has(complement)) {
+      return [map.get(complement), i];
+    }
+    map.set(nums[i], i);
+  }
+}
+
+// Example usage
+console.log(twoSum([2,7,11,15], 9));</textarea>
+              <div class="code-output">
+                <div class="output-title">Output</div>
+                <pre id="output-panel">Ready to run code.</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section id="trusted" class="trusted-bar">
+      <span>Trusted by fast-growing teams and innovative companies</span>
+      <div class="logo-grid">
+        <div class="logo-card logo-google">Google</div>
+        <div class="logo-card logo-microsoft">Microsoft</div>
+        <div class="logo-card logo-amazon">Amazon</div>
+        <div class="logo-card logo-uber">Uber</div>
+        <div class="logo-card logo-airbnb">Airbnb</div>
+        <div class="logo-card logo-swiggy">Swiggy</div>
+        <div class="logo-card logo-oppo">Oppo</div>
+      </div>
+    </section>
+
+    <section id="features" class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">&lt;/&gt;</div>
+        <h3>Live Coding</h3>
+        <p>Real-time code editor with multi-language support, auto-complete, and custom test cases.</p>
+        <a href="#learn-more">Learn more →</a>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎥</div>
+        <h3>Video Interviews</h3>
+        <p>High-quality WebRTC video calls with screen sharing and recording capabilities.</p>
+        <a href="#learn-more">Learn more →</a>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3>AI Reports</h3>
+        <p>AI-generated candidate reports with code quality analysis and detailed feedback.</p>
+        <a href="#learn-more">Learn more →</a>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📅</div>
+        <h3>Smart Scheduling</h3>
+        <p>Automated scheduling with calendar sync and timezone management.</p>
+        <a href="#learn-more">Learn more →</a>
+      </div>
+    </section>
+
+    <!-- Interactive AI Resume Analyzer Landing Section -->
+    <section id="landing-resume-analyzer" class="pricing-section" style="padding: 80px 20px; background: rgba(10, 15, 30, 0.4); border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);">
+      <div class="section-header" style="text-align: center; max-width: 600px; margin: 0 auto 40px;">
+        <p class="section-title" style="color: #6366f1; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; margin-bottom: 8px;">Try it Live</p>
+        <h2 style="font-size: 32px; color: white; margin-bottom: 12px; font-weight: 800;">Scan your Resume with AI</h2>
+        <p class="section-subtitle" style="color: #94a3b8; font-size: 15px;">Upload your CV to calculate your ATS Score and unlock matching target companies instantly. Purely client-side and deterministic.</p>
+      </div>
+
+      <div id="landing-analyzer-workspace" style="max-width: 960px; margin: 0 auto;"></div>
+    </section>
+
+    <section id="pricing" class="pricing-section">
+      <div class="section-header">
+        <p class="section-title">Pricing</p>
+        <p class="section-subtitle">Simple, transparent plans designed for every hiring team.</p>
+      </div>
+
+      <div class="pricing-toggle-group" role="tablist" aria-label="Pricing frequency">
+        <button class="pricing-toggle active" data-period="monthly">Monthly billing</button>
+        <button class="pricing-toggle" data-period="yearly">Yearly billing</button>
+      </div>
+
+      <div class="pricing-grid">
+        <article class="pricing-card">
+          <span class="plan-label">Starter</span>
+          <div class="plan-price">
+            <span class="price-value" data-monthly="29" data-yearly="24">29</span>
+            <span class="price-unit">/mo</span>
+          </div>
+          <p class="plan-copy">For small teams running hiring rounds with ease.</p>
+          <ul class="plan-features">
+            <li>50 interviews per month</li>
+            <li>Live coding assessments</li>
+            <li>Candidate reports</li>
+          </ul>
+          <a class="button button-secondary plan-button" href="login/index.html?forceLogin=1">Start Free Trial</a>
+        </article>
+
+        <article class="pricing-card pricing-card-featured">
+          <span class="plan-label">Growth</span>
+          <div class="plan-price">
+            <span class="price-value" data-monthly="69" data-yearly="59">69</span>
+            <span class="price-unit">/mo</span>
+          </div>
+          <p class="plan-copy">Best for growing teams that need end-to-end interview workflows.</p>
+          <ul class="plan-features">
+            <li>Unlimited interviews</li>
+            <li>Video interview tools</li>
+            <li>AI-powered feedback</li>
+          </ul>
+          <a class="button button-primary plan-button" href="login/index.html?forceLogin=1">Choose Growth</a>
+        </article>
+
+        <article class="pricing-card">
+          <span class="plan-label">Enterprise</span>
+          <div class="plan-price">
+            <span class="price-value" data-monthly="149" data-yearly="129">149</span>
+            <span class="price-unit">/mo</span>
+          </div>
+          <p class="plan-copy">Custom workflows, advanced analytics, and premium support.</p>
+          <ul class="plan-features">
+            <li>Custom integrations</li>
+            <li>Dedicated support</li>
+            <li>Advanced analytics</li>
+          </ul>
+          <a class="button button-secondary plan-button" href="#contact">Contact Sales</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="testimonial-section">
+      <div class="testimonial-copy">
+        <p class="section-title">What our customers say</p>
+        <p class="section-subtitle">Join thousands of recruiters who trust EKVUE for their hiring needs.</p>
+      </div>
+      <div class="testimonial-grid">
+        <div class="testimonial-card">
+          <p>“EKVUE has transformed our hiring process. The platform is intuitive, and the AI reports save us hours of manual evaluation.”</p>
+          <div class="testimonial-author">
+            <span>EkVue AI</span>
+            <small>Head of Talent, Google</small>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <p>“The live coding environment is seamless, and candidates love the interview experience. Highly recommended!”</p>
+          <div class="testimonial-author">
+            <span>Michael Chen</span>
+            <small>Engineering Manager, Microsoft</small>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <p>“Finally, a platform that combines all interview tools in one place. Our hiring efficiency increased by 60%.”</p>
+          <div class="testimonial-author">
+            <span>Priya Sharma</span>
+            <small>HR Director, Amazon</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta">
+      <div>
+        <p class="eyebrow">Ready to revolutionize your hiring?</p>
+        <h2>Get started with EKVUE today and experience the future of interviews.</h2>
+      </div>
+      <a class="button button-primary" href="login/index.html?forceLogin=1">Start Free Trial →</a>
+    </section>
+
+    <footer class="site-footer">
+      <div class="footer-brand">
+        <div class="brand-mark">E</div>
+        <span>EKVUE</span>
+      </div>
+      <div class="footer-links">
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#resources">Resources</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="footer-copy">© 2026 EKVUE. Built for interview teams that move fast.</div>
+    </footer>
+
+    <div class="modal-backdrop" id="login-modal">
+      <div class="login-modal">
+        <button class="modal-close" id="modal-close" type="button">×</button>
+        <div class="modal-header">
+          <span class="eyebrow">Member access</span>
+          <h2>Log in to EKVUE</h2>
+          <p>Enter your credentials to unlock your dashboard and manage interview workflows.</p>
+        </div>
+        <form id="login-form" class="login-form">
+          <div class="form-field">
+            <label for="email">Email address</label>
+            <input id="email" type="email" class="form-input" placeholder="you@example.com" required />
+          </div>
+          <div class="form-field">
+            <label for="password">Password</label>
+            <input id="password" type="password" class="form-input" placeholder="Enter your password" required />
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="button button-primary">Log in</button>
+          </div>
+          <div class="login-error" id="login-error"></div>
+          <div class="login-success" id="login-success"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="scripts.js?v=1.0.4"></script>
+  <!-- Global Help Assistant Chatbot -->
+  <script src="help-chatbot.js?v=1.0.4" type="module"></script>
+  <!-- AI Resume Analyzer Module Loader -->
+  <script type="module">
+    import { setupResumeAnalyzer } from './resume-analyzer/resume-analyzer.js';
+    setupResumeAnalyzer('landing-analyzer-workspace');
+  </script>
+</body>
+</html>

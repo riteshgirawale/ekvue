@@ -1,0 +1,10 @@
+{
+  "name": "ekvue",
+  "version": "1.0.0",
+  "description": "EkVue Platform",
+  "main": "api/server.js",
+  "scripts": {
+    "start": "node api/server.js",
+    "install": "cd api && npm install"
+  }
+}

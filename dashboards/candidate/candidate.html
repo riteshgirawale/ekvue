@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Student Dashboard | EKVUE</title>
+    <link rel="stylesheet" href="../dashboard.css?v=1.0.4" />
+    <!-- Load React & ReactDOM globally -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Load Babel Standalone to compile JSX locally in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body>
+    <div class="dash-shell">
+      <div class="surface">
+        <aside class="sidebar">
+          <div class="brandline">
+            <div class="mark">&lt;/&gt;</div>
+            <div>
+              <strong>EkVue</strong><br />
+              <span>Student</span>
+            </div>
+          </div>
+
+          <nav class="side-nav" aria-label="Sidebar" id="sidebar-menu">
+            <a class="active" href="#" data-view="dashboard"><span class="dot"></span>Dashboard</a>
+            <a href="#" data-view="problems"><span class="dot"></span>Problems</a>
+            <a href="#" data-view="practice"><span class="dot"></span>Practice</a>
+            <a href="#" data-view="mock-interviews"><span class="dot"></span>Mock Interviews</a>
+            <a href="#" data-view="progress"><span class="dot"></span>Progress</a>
+            <a href="#" data-view="leaderboard"><span class="dot"></span>Leaderboard</a>
+            <a href="#" data-view="resume-builder"><span class="dot"></span>Resume Builder</a>
+            <a href="#" data-view="resume-analyzer"><span class="dot"></span>AI Resume Analyzer</a>
+            <a href="#" data-view="interview-results"><span class="dot"></span>Interview Results</a>
+            <a href="#" data-view="active-jobs"><span class="dot"></span>Active Job Applications</a>
+            <a href="#" data-view="settings"><span class="dot"></span>Settings</a>
+            <a href="#" data-view="online-compiler"><span class="dot"></span>Online Compiler</a>
+          </nav>
+        </aside>
+
+        <main class="main">
+          <!-- Real-time Live Interview Invitation Banner -->
+          <div class="live-meet-invitation-banner hidden" id="live-call-notification-banner">
+            <div class="invitation-icon">🔔</div>
+            <div class="invitation-body">
+              <strong>Live Interview Active!</strong>
+              <span id="live-call-invitation-details">Interviewer EkVue AI has launched your live technical assessment round.</span>
+            </div>
+            <button class="btn primary join-live-btn" id="join-live-call-btn" type="button">Join Google Meet Call Now</button>
+          </div>
+
+          <div class="toprow">
+            <div class="brandline" style="padding:0">
+              <div class="mark">&lt;/&gt;</div>
+              <strong>EkVue</strong>
+            </div>
+
+            <div class="tabs" aria-label="Top tabs" id="top-menu">
+              <a href="#" data-view="settings">My Profile</a>
+              <a class="active" href="#" data-view="dashboard">Dashboard</a>
+              <a href="#" data-view="problems">Problems</a>
+              <a href="#" data-view="practice">Practice</a>
+              <a href="#" data-view="mock-interviews">Mock Interviews</a>
+              <a href="#" data-view="active-jobs">Jobs</a>
+            </div>
+
+            <div class="userbox" style="display:flex; align-items:center; gap:12px;">
+              <!-- Notifications Bell Dropdown -->
+              <div class="notif-bell-container" style="position:relative;">
+                <button type="button" class="btn small" id="notif-bell-btn" style="padding:6px 10px; font-size:14px; background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.08); position:relative; display:flex; align-items:center; justify-content:center; border-radius:8px; cursor:pointer; outline:none;">
+                  🔔
+                  <span id="notif-badge" class="notif-badge hidden" style="position:absolute; top:-4px; right:-4px; background:#ef4444; color:white; border-radius:50%; width:15px; height:15px; font-size:9px; font-weight:800; display:grid; place-items:center; border:1px solid #000; z-index:10;">0</span>
+                </button>
+                
+                <!-- Glassmorphic Notifications Dropdown Container -->
+                <div id="notif-dropdown" class="card notif-dropdown hidden" style="position:absolute; top:42px; right:0; width:340px; max-height:420px; background:rgba(10, 15, 30, 0.95); border:1px solid rgba(168, 85, 247, 0.25); border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.6); z-index:9999; display:flex; flex-direction:column; overflow:hidden; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); text-align:left;">
+                  <div style="padding:12px; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="font-size:13px; color:white; font-weight:800;">Notifications</strong>
+                    <button type="button" id="mark-all-read-btn" style="background:none; border:none; color:#a78bfa; font-size:11px; font-weight:800; cursor:pointer; outline:none;">Mark all read</button>
+                  </div>
+                  <div id="notif-list-container" style="overflow-y:auto; flex-grow:1; display:flex; flex-direction:column; max-height:320px;">
+                    <!-- Dynamic notifications will load here -->
+                  </div>
+                </div>
+              </div>
+
+              <div class="avatar" id="avatar">S</div>
+              <div class="pill">Student</div>
+              <button class="btn small" id="logoutBtn" type="button">Logout</button>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Dashboard
+               ========================================== -->
+          <div id="view-dashboard" class="view-content active">
+            <div class="welcome">
+              <h1 id="welcomeLine">Welcome back!</h1>
+              <p>Ready to ace your next interview? Let’s practice some problems.</p>
+            </div>
+
+            <section class="kpis" aria-label="KPI cards">
+              <div class="card kpi">
+                <div class="left">
+                  <strong id="kpiSolved">0</strong>
+                  <small>Problems solved</small>
+                </div>
+                <div class="ico">✓</div>
+              </div>
+              <div class="card kpi">
+                <div class="left">
+                  <strong id="kpiStreak">0</strong>
+                  <small>Day streak</small>
+                </div>
+                <div class="ico">🔥</div>
+              </div>
+              <div class="card kpi">
+                <div class="left">
+                  <strong id="kpiPractice">0h</strong>
+                  <small>Practice time</small>
+                </div>
+                <div class="ico">⏱</div>
+              </div>
+              <div class="card kpi">
+                <div class="left">
+                  <strong id="kpiRank">#—</strong>
+                  <small>Global rank</small>
+                </div>
+                <div class="ico">🏆</div>
+              </div>
+            </section>
+
+            <section class="grid">
+              <div class="card section">
+                <div class="header-row">
+                  <div>
+                    <h2>Recommended problems</h2>
+                    <div class="muted">Personalized picks</div>
+                  </div>
+                  <button class="btn small primary" id="dash-view-all-problems" type="button">View all</button>
+                </div>
+
+                <div class="list" aria-label="Recommended problems list">
+                  <div class="row">
+                    <div class="title">
+                      <strong>Maximum Subarray</strong>
+                      <span>Dynamic Programming · Kadane's Algorithm</span>
+                    </div>
+                    <div style="display:flex; gap:10px; align-items:center">
+                      <span class="badge medium">Medium</span>
+                      <button class="btn small primary solve-problem-quick" data-pname="Maximum Subarray" type="button">Solve</button>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="title">
+                      <strong>Longest Substring Without Repeating</strong>
+                      <span>String · Sliding Window</span>
+                    </div>
+                    <div style="display:flex; gap:10px; align-items:center">
+                      <span class="badge medium">Medium</span>
+                      <button class="btn small primary solve-problem-quick" data-pname="Longest Substring Without Repeating" type="button">Solve</button>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="title">
+                      <strong>Binary Tree Inorder Traversal</strong>
+                      <span>Tree · DFS recursion</span>
+                    </div>
+                    <div style="display:flex; gap:10px; align-items:center">
+                      <span class="badge easy">Easy</span>
+                      <button class="btn small primary solve-problem-quick" data-pname="Binary Tree Inorder Traversal" type="button">Solve</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="action-col">
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Recent activity</h2>
+                    <div class="muted">Latest events</div>
+                  </div>
+                  <div class="list" id="dash-recent-activity">
+                    <!-- Dynamic from JS -->
+                  </div>
+                </div>
+
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Quick actions</h2>
+                    <div class="muted">Fast shortcuts</div>
+                  </div>
+                  <a class="action" href="#" data-action="random"><div>Random problem<br /><span>Get a challenge</span></div><span>→</span></a>
+                  <a class="action" href="#" data-action="mock"><div>Start mock interview<br /><span>Simulate real round</span></div><span>→</span></a>
+                  <a class="action" href="#" data-action="progress"><div>View progress<br /><span>Track improvement</span></div><span>→</span></a>
+                  <a class="action" href="#" data-action="practice"><div>Practice now<br /><span>Warm-up session</span></div><span>→</span></a>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Problems
+               ========================================== -->
+          <div id="view-problems" class="view-content">
+            <div class="welcome" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 12px; margin-bottom: 8px;">
+              <div>
+                <h1 style="margin: 0;">Problem Workspace</h1>
+                <p style="margin: 4px 0 0 0;">Solve curated interview challenges and get immediate compiler feedback.</p>
+              </div>
+              <button class="btn primary" id="generate-new-question-btn" type="button" style="background: linear-gradient(135deg, #a855f7, #6366f1); border: none; box-shadow: 0 8px 24px rgba(168, 85, 247, 0.35); font-weight: 800; display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 10px 18px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 12px;">
+                ✨ Generate New Question
+              </button>
+            </div>
+            <div class="workspace-container">
+              <div class="workspace-sidebar">
+                <div id="workspace-problems-list" class="workspace-problems-list">
+                  <!-- Dynamic List of Problems from JS -->
+                </div>
+              </div>
+              <div class="editor-workspace">
+                <div class="card section problem-statement-card" style="padding: 24px; position: relative; display: flex; flex-direction: column; gap: 16px;">
+                  <!-- Top Selectors Row -->
+                  <div class="workspace-selectors-row" style="display: flex; gap: 16px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 16px;">
+                    <div style="display: flex; flex-direction: column; gap: 6px; flex: 1;">
+                      <label style="font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Topic</label>
+                      <select id="workspace-topic-select" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: white; border-radius: 8px; padding: 8px 12px; font-size: 12.5px; font-weight: 700; outline: none; cursor: pointer; width: 100%;">
+                        <option value="Array">Arrays & Hashing</option>
+                        <option value="String">Strings</option>
+                        <option value="Tree">Trees & DFS/BFS</option>
+                        <option value="Dynamic Programming">Dynamic Programming</option>
+                      </select>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 6px; flex: 1;">
+                      <label style="font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Difficulty</label>
+                      <select id="workspace-difficulty-select" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: white; border-radius: 8px; padding: 8px 12px; font-size: 12.5px; font-weight: 700; outline: none; cursor: pointer; width: 100%;">
+                        <option value="Easy">Easy</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Hard">Hard</option>
+                      </select>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 6px; flex: 1;">
+                      <label style="font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Language</label>
+                      <select id="workspace-lang-sync-select" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: white; border-radius: 8px; padding: 8px 12px; font-size: 12.5px; font-weight: 700; outline: none; cursor: pointer; width: 100%;">
+                        <option value="javascript">JavaScript</option>
+                        <option value="python">Python 3</option>
+                        <option value="cpp">C++ 17</option>
+                        <option value="c">C (GCC)</option>
+                        <option value="java">Java</option>
+                        <option value="typescript">TypeScript</option>
+                        <option value="csharp">C# (.NET)</option>
+                        <option value="ruby">Ruby</option>
+                        <option value="go">Go</option>
+                        <option value="rust">Rust</option>
+                        <option value="php">PHP</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Problem Header with Bookmark -->
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <h2 id="workspace-problem-title" style="margin: 0; font-size: 22px; font-weight: 800; color: white;">Maximum Subarray</h2>
+                      <span id="workspace-problem-difficulty-badge" class="badge medium" style="font-size: 10.5px; padding: 4px 10px; border-radius: 50px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Medium</span>
+                    </div>
+                    <button type="button" style="background: none; border: none; color: #cbd5e1; font-size: 20px; cursor: pointer; outline: none; transition: color 0.2s;" onmouseenter="this.style.color='#fbbf24'" onmouseleave="this.style.color='#cbd5e1'">🔖</button>
+                  </div>
+
+                  <!-- Problem Body -->
+                  <p id="workspace-problem-desc" style="font-size: 13.5px; line-height: 1.6; color: #cbd5e1; margin: 0;">Given an integer array nums, find the subarray with the largest sum and return its sum.</p>
+                  
+                  <div class="examples" style="display: flex; flex-direction: column; gap: 14px; margin-top: 8px;">
+                    <div id="workspace-problem-ex1" class="example-box" style="background: rgba(2, 6, 23, 0.3); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; font-family: inherit; font-size: 13px; color: #e2e8f0; line-height: 1.5;"><strong>Example 1:</strong> Input: nums = [-2,1,-3,4,-1,2,1,-5,4] -> Output: 6</div>
+                    <div id="workspace-problem-ex2" class="example-box" style="background: rgba(2, 6, 23, 0.3); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; font-family: inherit; font-size: 13px; color: #e2e8f0; line-height: 1.5;"><strong>Example 2:</strong> Input: nums = [1] -> Output: 1</div>
+                    <div id="workspace-problem-ex3" class="example-box" style="background: rgba(2, 6, 23, 0.3); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; font-family: inherit; font-size: 13px; color: #e2e8f0; line-height: 1.5; display: none;"><strong>Example 3:</strong> Input: s = "()" -> Output: true</div>
+                  </div>
+
+                  <!-- Constraints -->
+                  <div style="margin-top: 8px;">
+                    <h4 style="font-size: 12px; font-weight: 800; color: white; text-transform: uppercase; margin: 0 0 10px 0; letter-spacing: 0.5px;">Constraints:</h4>
+                    <ul id="workspace-problem-constraints" style="margin: 0; padding-left: 20px; font-size: 12.5px; color: var(--muted); line-height: 1.6;">
+                      <li>2 &lt;= nums.length &lt;= 10^5</li>
+                      <li>-10^9 &lt;= nums[i] &lt;= 10^9</li>
+                    </ul>
+                  </div>
+
+                  <!-- Collapsible Test Cases Section -->
+                  <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; margin-top: 8px;">
+                    <button type="button" id="workspace-testcases-toggle" style="background: none; border: none; width: 100%; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: white; font-weight: 800; font-size: 13.5px; outline: none; padding: 0;">
+                      <span>Test Cases <span id="workspace-testcases-count" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 4px; padding: 1px 6px; font-size: 11px; margin-left: 6px; font-weight: 900;">3</span></span>
+                      <span id="workspace-testcases-chevron" style="transition: transform 0.2s;">▼</span>
+                    </button>
+                    <div id="workspace-testcases-drawer" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+                      <!-- Dynamic list of test cases in clean blocks -->
+                    </div>
+                  </div>
+                </div>
+                <div class="card section editor-card">
+                  <div class="editor-toolbar" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                    <select id="workspace-lang-select" class="lang-select" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; border-radius: 6px; padding: 4px 8px; font-size: 11.5px; font-weight: 600; outline: none; cursor: pointer; transition: all 0.2s;">
+                      <option value="javascript" style="background: #1e293b; color: white;">JavaScript</option>
+                      <option value="python" style="background: #1e293b; color: white;">Python 3</option>
+                      <option value="cpp" style="background: #1e293b; color: white;">C++ 17</option>
+                      <option value="c" style="background: #1e293b; color: white;">C (GCC)</option>
+                      <option value="java" style="background: #1e293b; color: white;">Java</option>
+                      <option value="typescript" style="background: #1e293b; color: white;">TypeScript</option>
+                      <option value="csharp" style="background: #1e293b; color: white;">C# (.NET)</option>
+                      <option value="ruby" style="background: #1e293b; color: white;">Ruby</option>
+                      <option value="go" style="background: #1e293b; color: white;">Go</option>
+                      <option value="rust" style="background: #1e293b; color: white;">Rust</option>
+                      <option value="php" style="background: #1e293b; color: white;">PHP</option>
+                    </select>
+                  </div>
+                  <textarea id="workspace-editor" class="editor-textarea" spellcheck="false" autocomplete="off">function maxSubArray(nums) {
+  // Write your code here
+}</textarea>
+                  <div class="editor-toolbar" style="display: flex; gap: 8px;">
+                    <button class="btn small" id="workspace-run-btn" type="button">Run Test Cases</button>
+                    <button class="btn small primary" id="workspace-submit-btn" type="button">Submit Solution</button>
+                    <button class="btn small" id="workspace-solution-btn" type="button" style="background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.25); color: #f59e0b; font-weight: 800;">💡 View Solution</button>
+                  </div>
+                </div>
+                <div class="card console-output-card" id="workspace-console">
+                  Ready to compile. Press "Run Test Cases" to verify.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Practice
+               ========================================== -->
+          <div id="view-practice" class="view-content">
+            <div class="welcome">
+              <h1>Concept Practice Deck</h1>
+              <p>Test your knowledge of algorithms, complexity, and systems with flip-card simulators.</p>
+            </div>
+            
+            <div class="practice-grid" id="practice-categories">
+              <div class="card practice-card" data-category="Arrays">
+                <div class="concept-icon">🗂</div>
+                <h3>Arrays & Hashing</h3>
+                <p>Big-O performance, dynamic sizing, hashing buckets, collisions.</p>
+              </div>
+              <div class="card practice-card" data-category="Trees">
+                <div class="concept-icon">🌲</div>
+                <h3>Trees & BSTs</h3>
+                <p>Traversal algorithms (BFS/DFS), balancing techniques, heap structures.</p>
+              </div>
+              <div class="card practice-card" data-category="System Design">
+                <div class="concept-icon">🌐</div>
+                <h3>System Design</h3>
+                <p>Load balancing, sharding, caching architectures, database scaling.</p>
+              </div>
+              <div class="card practice-card" data-category="Algorithms">
+                <div class="concept-icon">🧮</div>
+                <h3>Algorithms & Sorting</h3>
+                <p>Divide & conquer, dynamic programming, backtracking strategies.</p>
+              </div>
+            </div>
+
+            <!-- Active deck simulator container -->
+            <div class="flashcards-simulator" id="flashcard-deck-console" style="display:none">
+              <button class="btn small" id="exit-practice-btn" type="button" style="align-self:flex-start">← Back to concepts</button>
+              
+              <div class="flashcard-outer" id="practice-card-box">
+                <div class="flashcard-inner">
+                  <div class="card-front">
+                    <span class="q-tag" id="fc-category">Arrays</span>
+                    <div class="question-text" id="fc-question">What is the worst-case lookup complexity in an unsorted array?</div>
+                    <div class="click-hint">Click card to reveal answer</div>
+                  </div>
+                  <div class="card-back">
+                    <span class="ans-tag">Answer Summary</span>
+                    <div class="answer-text" id="fc-answer">O(N) because we might have to search the entire array element-by-element to locate the item.</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flashcard-controls">
+                <button class="btn" id="fc-prev-btn" type="button">Previous</button>
+                <div class="flashcard-rating">
+                  <button class="btn small primary" id="fc-rate-easy" type="button">Got it! (Easy)</button>
+                  <button class="btn small" id="fc-rate-hard" type="button">Review (Hard)</button>
+                </div>
+                <button class="btn" id="fc-next-btn" type="button">Next Card</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Mock Interviews
+               ========================================== -->
+          <div id="view-mock-interviews" class="view-content">
+            <div class="welcome">
+              <h1>AI Mock Interview Workspace</h1>
+              <p>Simulate official technical and coding rounds inside an immersive EkVue interview room with smart proctoring telemetry.</p>
+            </div>
+            
+            <div class="mock-launch-layout">
+              <!-- Google Meet launch banner card -->
+              <div class="card meet-lobby-banner">
+                <div class="banner-body">
+                  <div class="meet-badge">🔒 Live Proctoring Verified</div>
+                  <h2>EkVue AI Technical Assessment Room</h2>
+                  <p>Establish webcam connection and face tracking loops to start L4 engineering interview rounds moderated by your interviewer.</p>
+                  
+                  <!-- Room availability status -->
+                  <div id="mock-room-status" style="display:flex; align-items:center; gap:8px; margin:12px 0 4px 0; padding:8px 14px; border-radius:8px; font-size:11.5px; font-weight:700; background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.15); color:#fca5a5;">
+                    <span style="font-size:8px;">🔴</span> No active room — waiting for interviewer to schedule and launch a session
+                  </div>
+                  
+                  <div class="feature-bullets-grid">
+                    <div class="bullet-item">
+                      <span class="icon">📷</span>
+                      <div>
+                        <strong>WASM Face Detection</strong>
+                        <span>BlazeFace scans presence instantly.</span>
+                      </div>
+                    </div>
+                    <div class="bullet-item">
+                      <span class="icon">🟢</span>
+                      <div>
+                        <strong>Eye & Gaze Lock</strong>
+                        <span>Real-time warnings for eye focus and stability.</span>
+                      </div>
+                    </div>
+                    <div class="bullet-item">
+                      <span class="icon">💻</span>
+                      <div>
+                        <strong>Interactive Coding IDE</strong>
+                        <span>Solve pushed compiler challenges live.</span>
+                      </div>
+                    </div>
+                    <div class="bullet-item">
+                      <span class="icon">📄</span>
+                      <div>
+                        <strong>ATS Telemetry Scorecards</strong>
+                        <span>Get grades, strengths, and feedback.</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="banner-action-row" style="margin-top:24px">
+                    <button class="btn primary launch-btn" id="launch-meet-btn" type="button" disabled style="opacity:0.4; cursor:not-allowed;">Launch EkVue Room →</button>
+                  </div>
+                </div>
+                <div class="banner-preview-gfx">
+                  <div class="avatar-ring pulsing"></div>
+                  <div class="avatar-gfx">EA</div>
+                  <span class="label">EkVue AI (AI Partner)</span>
+                </div>
+              </div>
+
+              <!-- Proctor History Scorecard Grid -->
+              <div class="card section" style="margin-top:20px">
+                <div class="header-row">
+                  <h2>Your Past Proctored Session Records</h2>
+                  <div class="muted" id="mock-history-count">0 Sessions Graded</div>
+                </div>
+                <div class="mock-sessions-history-list" id="mock-history-feed">
+                  <!-- Dynamic from JS: list of scorecards from localStorage -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Progress
+               ========================================== -->
+          <div id="view-progress" class="view-content">
+            <div class="welcome">
+              <h1>Progress Analytics</h1>
+              <p>Track your learning vectors, daily consistency grids, and detailed problem logs.</p>
+            </div>
+            
+            <div class="grid">
+              <div class="card section contribution-card">
+                <div class="header-row">
+                  <h2>Consistency Matrix (Past Year)</h2>
+                  <div class="muted" id="matrix-total-commits">0 days active</div>
+                </div>
+                
+                <div class="contribution-grid-container">
+                  <div class="month-labels-row">
+                    <span class="month-label">Jan</span>
+                    <span class="month-label">Feb</span>
+                    <span class="month-label">Mar</span>
+                    <span class="month-label">Apr</span>
+                    <span class="month-label">May</span>
+                    <span class="month-label">Jun</span>
+                    <span class="month-label">Jul</span>
+                    <span class="month-label">Aug</span>
+                    <span class="month-label">Sep</span>
+                    <span class="month-label">Oct</span>
+                    <span class="month-label">Nov</span>
+                    <span class="month-label">Dec</span>
+                  </div>
+                  
+                  <div class="grid-matrix-shell">
+                    <div class="day-labels">
+                      <span>Mon</span>
+                      <span>Wed</span>
+                      <span>Fri</span>
+                    </div>
+                    <div id="matrix-blocks-container" style="display:flex; gap:6.5px">
+                      <!-- Dynamic from JS -->
+                    </div>
+                  </div>
+                  
+                  <div class="heatmap-legend">
+                    <span>Less</span>
+                    <span class="contrib-cell"></span>
+                    <span class="contrib-cell lvl-1"></span>
+                    <span class="contrib-cell lvl-2"></span>
+                    <span class="contrib-cell lvl-3"></span>
+                    <span class="contrib-cell lvl-4"></span>
+                    <span class="contrib-cell lvl-5"></span>
+                    <span>More</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="action-col">
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Topic Completion</h2>
+                    <div class="muted">Submissions</div>
+                  </div>
+                  
+                  <div class="progress-list">
+                    <div class="progress-row">
+                      <span class="label">Arrays & Hashing</span>
+                      <div class="barwrap"><div class="barfill" id="topic-bar-arrays" style="width:0%"></div></div>
+                      <span class="count" id="topic-val-arrays">0%</span>
+                    </div>
+                    <div class="progress-row">
+                      <span class="label">Strings</span>
+                      <div class="barwrap"><div class="barfill" id="topic-bar-strings" style="width:0%"></div></div>
+                      <span class="count" id="topic-val-strings">0%</span>
+                    </div>
+                    <div class="progress-row">
+                      <span class="label">Trees & BSTs</span>
+                      <div class="barwrap"><div class="barfill" id="topic-bar-trees" style="width:0%"></div></div>
+                      <span class="count" id="topic-val-trees">0%</span>
+                    </div>
+                    <div class="progress-row">
+                      <span class="label">Dynamic Programming</span>
+                      <div class="barwrap"><div class="barfill" id="topic-bar-dp" style="width:0%"></div></div>
+                      <span class="count" id="topic-val-dp">0%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card section" style="margin-top:14px">
+              <div class="header-row">
+                <h2>Detailed Submission History</h2>
+                <div class="muted">Verification Log</div>
+              </div>
+              <div id="progress-history-list" class="list">
+                <!-- Dynamic from JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Leaderboard
+               ========================================== -->
+          <div id="view-leaderboard" class="view-content">
+            <div class="welcome">
+              <h1>Competitive Leaderboard</h1>
+              <p>Compare stats, climb global brackets, and claim daily competitive ranks.</p>
+            </div>
+            
+            <div class="grid">
+              <div class="card section">
+                <div class="header-row">
+                  <h2>Global Rankings</h2>
+                  <div class="muted">Top student accounts</div>
+                </div>
+                <div id="leaderboard-table-body" class="leaderboard-table">
+                  <!-- Dynamic from JS -->
+                </div>
+              </div>
+              
+              <div class="action-col">
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Your Rank Status</h2>
+                    <div class="muted">Global Standing</div>
+                  </div>
+                  <div style="display:flex; flex-direction:column; align-items:center; gap:8px; padding:12px; text-align:center">
+                    <span style="font-size:36px">🏆</span>
+                    <h3 style="margin:0" id="lb-summary-rank">Rank #4</h3>
+                    <p style="margin:0; font-size:12px; color:var(--muted)">You are currently beating 75% of active university candidates on the platform.</p>
+                  </div>
+                </div>
+                
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Daily Challenge</h2>
+                    <span class="badge easy" style="background:rgba(16,185,129,0.1); border-color:rgba(16,185,129,0.22); color:#10b981">Live</span>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:6px">
+                    <strong style="font-size:13px; color:white">Solve "Maximum Subarray"</strong>
+                    <p style="margin:0; font-size:12px; color:var(--muted); line-height:1.4">Complete today's challenge to receive +20 XP points and boost your global standing.</p>
+                    <button class="btn primary small" id="challenge-solve-btn" type="button" style="margin-top:6px">Solve Now</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Resume Builder
+               ========================================== -->
+          <div id="view-resume-builder" class="view-content">
+            <div class="welcome">
+              <h1>Student Resume Builder</h1>
+              <p>Generate clean, ATS-optimized resumes. Select a template and export or print directly.</p>
+            </div>
+            
+            <div class="resume-builder-layout">
+              <div class="card section resume-form-card">
+                <form id="resume-input-form" class="form">
+                  <h2 style="margin: 0 0 10px 0; font-size: 13px; text-transform: uppercase; color: var(--primary)">Personal Details</h2>
+                  <div class="form-group-row">
+                    <div class="field">
+                      <label for="res-name">Full Name</label>
+                      <input id="res-name" type="text" value="Priya Sharma" placeholder="Your full name" required>
+                    </div>
+                    <div class="field">
+                      <label for="res-title">Target Job Title</label>
+                      <input id="res-title" type="text" value="Software Engineer" placeholder="e.g. Frontend Engineer" required>
+                    </div>
+                  </div>
+                  <div class="form-group-row">
+                    <div class="field">
+                      <label for="res-email">Email Address</label>
+                      <input id="res-email" type="email" value="priya@example.com" placeholder="you@example.com" required>
+                    </div>
+                    <div class="field">
+                      <label for="res-links">Social Links</label>
+                      <input id="res-links" type="text" value="github.com/priyadev · linkedin.com/in/priyadev">
+                    </div>
+                  </div>
+
+                  <h2 style="margin: 14px 0 10px 0; font-size: 13px; text-transform: uppercase; color: var(--primary)">Education</h2>
+                  <div class="form-group-row">
+                    <div class="field">
+                      <label for="res-school">School / University</label>
+                      <input id="res-school" type="text" value="National Institute of Technology" required>
+                    </div>
+                    <div class="field">
+                      <label for="res-degree">Degree & Major</label>
+                      <input id="res-degree" type="text" value="B.Tech in Computer Science" required>
+                    </div>
+                  </div>
+                  <div class="form-group-row">
+                    <div class="field">
+                      <label for="res-grad">Graduation / GPA</label>
+                      <input id="res-grad" type="text" value="May 2026 · GPA 9.1/10" required>
+                    </div>
+                  </div>
+
+                  <h2 style="margin: 14px 0 10px 0; font-size: 13px; text-transform: uppercase; color: var(--primary)">Work Experience</h2>
+                  <div class="field">
+                    <label for="res-company">Company & Location</label>
+                    <input id="res-company" type="text" value="EKVUE Corp (Internship) · Bengaluru">
+                  </div>
+                  <div class="form-group-row">
+                    <div class="field">
+                      <label for="res-job-title">Job Title</label>
+                      <input id="res-job-title" type="text" value="Software Engineering Intern">
+                    </div>
+                    <div class="field">
+                      <label for="res-job-dates">Date Duration</label>
+                      <input id="res-job-dates" type="text" value="Jan 2025 - Present">
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="res-job-bullets">Key Achievements (Bullet points)</label>
+                    <textarea id="res-job-bullets" placeholder="Achievement bullet points...">Built interactive live code execution dashboards using vanilla JS and WebRTC mock modules.
+Decreased dashboard screen transitions loading times by 40%.</textarea>
+                  </div>
+
+                  <h2 style="margin: 14px 0 10px 0; font-size: 13px; text-transform: uppercase; color: var(--primary)">Skills & Projects</h2>
+                  <div class="field">
+                    <label for="res-skills">Skills List (Languages & Tools)</label>
+                    <input id="res-skills" type="text" value="JavaScript (ES6), HTML5, CSS3, Git, Node.js, WebRTC, React">
+                  </div>
+                  <div class="field">
+                    <label for="res-project">Key Project Title & Tech Stack</label>
+                    <input id="res-project" type="text" value="AI Code Platform (Vite, JS, CSS)">
+                  </div>
+                  <div class="field">
+                    <label for="res-project-desc">Project Details</label>
+                    <textarea id="res-project-desc" placeholder="Project achievements...">Developed full stack coding compiler simulators for competitive interview analysis.
+Hosted mock peer interview rooms, supporting active scorecard reviews.</textarea>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Live preview sheet -->
+              <div class="resume-preview-panel">
+                <div class="card section" style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px">
+                  <div style="display:flex; gap:8px; align-items:center">
+                    <label for="res-theme-select" style="font-size:11px; font-weight:800; color:var(--muted)">Template:</label>
+                    <select id="res-theme-select" class="workspace-select" style="padding:4px 8px">
+                      <option value="Creative">Modern Creative</option>
+                      <option value="Classic">Classic Corporate</option>
+                    </select>
+                  </div>
+                  <button class="btn primary small" id="print-resume-btn" type="button">Print / Save PDF</button>
+                </div>
+                
+                <div class="resume-preview-sheet" id="resume-preview-sheet" data-theme="Creative">
+                  <h1 id="rp-name">Priya Sharma</h1>
+                  <div class="r-title" id="rp-title">Software Engineer</div>
+                  <div class="r-contact" id="rp-contact">
+                    <span id="rp-email">📩 priya@example.com</span> · 
+                    <span id="rp-links">🔗 github.com/priyadev · linkedin.com/in/priyadev</span>
+                  </div>
+
+                  <h2>Education</h2>
+                  <div class="r-item">
+                    <div class="r-item-header">
+                      <span id="rp-school">National Institute of Technology</span>
+                      <span id="rp-grad">May 2026</span>
+                    </div>
+                    <div class="r-item-sub">
+                      <span id="rp-degree">B.Tech in Computer Science</span>
+                      <span>GPA 9.1/10</span>
+                    </div>
+                  </div>
+
+                  <h2>Experience</h2>
+                  <div class="r-item">
+                    <div class="r-item-header">
+                      <span id="rp-company">EKVUE Corp · Bengaluru</span>
+                      <span id="rp-job-dates">Jan 2025 - Present</span>
+                    </div>
+                    <div class="r-item-sub">
+                      <span id="rp-job-title">Software Engineering Intern</span>
+                    </div>
+                    <div id="rp-job-bullets">
+                      <p>Built interactive live code execution dashboards using vanilla JS and WebRTC mock modules.</p>
+                      <p>Decreased dashboard screen transitions loading times by 40%.</p>
+                    </div>
+                  </div>
+
+                  <h2>Projects</h2>
+                  <div class="r-item">
+                    <div class="r-item-header">
+                      <span id="rp-project">AI Code Platform (Vite, JS, CSS)</span>
+                    </div>
+                    <div id="rp-project-desc">
+                      <p>Developed full stack coding compiler simulators for competitive interview analysis.</p>
+                      <p>Hosted mock peer interview rooms, supporting active scorecard reviews.</p>
+                    </div>
+                  </div>
+
+                  <h2>Skills</h2>
+                  <div class="r-skills-list" id="rp-skills">
+                    JavaScript (ES6), HTML5, CSS3, Git, Node.js, WebRTC, React
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: AI Resume Analyzer
+               ========================================== -->
+          <div id="view-resume-analyzer" class="view-content">
+            <div class="welcome">
+              <h1>AI Resume Analyzer & ATS Benchmarks</h1>
+              <p>Upload your software engineering resume for a deterministic, deep AI scoring check and company matches.</p>
+            </div>
+            <div id="dashboard-analyzer-workspace"></div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Interview Results & Scorecards
+               ========================================== -->
+          <div id="view-interview-results" class="view-content">
+            <div class="welcome">
+              <h1>Interview Results & Assessment Reports</h1>
+              <p>View all your graded interview scorecards, assessment breakdowns, and hiring recommendations from your interviewers.</p>
+            </div>
+            <div id="interview-results-list">
+              <!-- Dynamic from JS -->
+            </div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Settings
+               ========================================== -->
+          <!-- NEW: Online Compiler View -->
+          <section id="view-online-compiler" class="view-content">
+            <!-- React will mount here -->
+            <div id="compiler-root"></div>
+          </section>
+
+          <div id="view-settings" class="view-content">
+            <div class="welcome">
+              <h1>Profile & System Settings</h1>
+              <p>Customize your experience, toggle active themes, and save targeted company vectors.</p>
+            </div>
+            
+            <div class="grid">
+              <div class="card section">
+                <div class="header-row">
+                  <h2>Edit Student Profile</h2>
+                  <div class="muted">Saved dynamically</div>
+                </div>
+                <form id="settings-profile-form" class="form">
+                  <div class="form-group-row">
+                    <div class="field">
+                      <label for="settings-fullname">Full Name</label>
+                      <input id="settings-fullname" type="text" placeholder="Full name">
+                    </div>
+                    <div class="field">
+                      <label for="settings-school">School / University</label>
+                      <input id="settings-school" type="text" placeholder="School">
+                    </div>
+                  </div>
+                  <div class="form-group-row">
+                    <div class="field">
+                      <label for="settings-studyfield">Field of Study</label>
+                      <input id="settings-studyfield" type="text" placeholder="e.g. Computer Science">
+                    </div>
+                    <div class="field">
+                      <label for="settings-difficulty">Target Level</label>
+                      <select id="settings-difficulty" class="workspace-select" style="padding:10px 12px">
+                        <option value="Student">Student</option>
+                        <option value="Graduate">Graduate</option>
+                        <option value="Professional">Professional</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button class="btn primary" type="submit">Save Changes</button>
+                  <div id="settings-form-msg" class="msg ok" style="display:none; margin-top:8px">Profile updated!</div>
+                </form>
+              </div>
+
+              <!-- Registered Account Profile Details -->
+              <div class="card section" style="margin-top: 14px;">
+                <div class="header-row">
+                  <h2>Registered Account Profile</h2>
+                  <div class="muted">Credentials entered during account signup</div>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px; font-size:12.5px;">
+                  <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:6px;">
+                    <span style="color:var(--muted)">Registered Email</span>
+                    <strong id="acc-reg-email" style="color:white">—</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:6px;">
+                    <span style="color:var(--muted)">Full Name</span>
+                    <strong id="acc-reg-name" style="color:white">—</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:6px;">
+                    <span style="color:var(--muted)">School / University</span>
+                    <strong id="acc-reg-school" style="color:white">—</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:6px;">
+                    <span style="color:var(--muted)">Field of Study</span>
+                    <strong id="acc-reg-studyfield" style="color:white">—</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:6px;">
+                    <span style="color:var(--muted)">Education Level</span>
+                    <strong id="acc-reg-level" style="color:white">—</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; padding-bottom:2px;">
+                    <span style="color:var(--muted)">Account Created</span>
+                    <strong id="acc-reg-date" style="color:white">—</strong>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="action-col">
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Select UI Theme</h2>
+                    <div class="muted">Aesthetic skin</div>
+                  </div>
+                  
+                  <div class="settings-theme-grid">
+                    <div class="theme-card-option active" data-theme="default">
+                      <div class="theme-preview-bars">
+                        <span style="background:#0a0e27"></span>
+                        <span style="background:#2563eb"></span>
+                        <span style="background:#4f46e5"></span>
+                      </div>
+                      <span class="t-label">Indigo Night</span>
+                    </div>
+                    <div class="theme-card-option" data-theme="space">
+                      <div class="theme-preview-bars">
+                        <span style="background:#020617"></span>
+                        <span style="background:#4f46e5"></span>
+                        <span style="background:#6366f1"></span>
+                      </div>
+                      <span class="t-label">Deep Space</span>
+                    </div>
+                    <div class="theme-card-option" data-theme="emerald">
+                      <div class="theme-preview-bars">
+                        <span style="background:#020806"></span>
+                        <span style="background:#059669"></span>
+                        <span style="background:#10b981"></span>
+                      </div>
+                      <span class="t-label">Emerald Glow</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Target Companies</h2>
+                    <div class="muted">Hiring Goals</div>
+                  </div>
+                  <div class="company-badges-editor" id="settings-companies-list">
+                    <!-- Dynamic from JS -->
+                  </div>
+                  <div class="interview-keyboard-input" style="margin-top:10px">
+                    <input type="text" id="settings-company-add-input" class="workspace-search" style="flex:1" placeholder="Add company...">
+                    <button class="btn primary small" id="settings-company-add-btn" type="button">Add</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card section" style="margin-top:14px; background:rgba(239,68,68,0.03); border-color:rgba(239,68,68,0.22)">
+              <h2 style="color:#fca5a5">Danger Zone</h2>
+              <p style="font-size:12px; color:var(--muted); margin:4px 0 10px 0">Permanently clear all user statistics, submissions records, streaks, and account configurations. This cannot be undone.</p>
+              <button class="btn" id="danger-wipe-btn" type="button" style="background:#ef4444; border-color:#ef4444; color:white">Reset All Profile Data</button>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Active Job Applications
+               ========================================== -->
+          <div id="view-active-jobs" class="view-content">
+            <div id="active-jobs-react-root"></div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Load shared utilities and compiler as regular (non-module) scripts -->
+    <script src="../utils-global.js"></script>
+    <script src="../judge0-global.js"></script>
+
+    <!-- React and Babel -->
+    <!-- Mount React Component directly -->
+    <script src="compiler.js"></script>
+    <!-- Load the help chatbot (must be module since it uses import) -->
+    <script type="module" src="../../help-chatbot.js"></script>
+    <!-- Load the Resume Analyzer module -->
+    <script type="module" src="../../resume-analyzer/resume-analyzer.js"></script>
+    <!-- Load candidate dashboard (regular script, NOT module) -->
+    <script src="./candidate.js?v=2.0.0-nomod"></script>
+    <!-- Load active jobs React component (JSX script compiled by Babel standalone) -->
+    <script type="text/babel" src="./active-jobs.js"></script>
+  </body>
+</html>
+

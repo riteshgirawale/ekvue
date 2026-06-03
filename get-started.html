@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Get Started | EKVUE</title>
+  <link rel="stylesheet" href="styles.css?v=1.0.4" />
+  <link rel="stylesheet" href="get-started.css?v=1.0.4" />
+
+    <script src="/dashboards/mongo-sync.js"></script>
+</head>
+<body>
+  <div class="page-shell get-started-shell">
+    <nav class="site-nav">
+      <div class="brand">
+        <div class="brand-mark">E</div>
+        <span>EKVUE</span>
+      </div>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#features">Features</a>
+        <a href="index.html#pricing">Pricing</a>
+        <a href="index.html#resources">Resources</a>
+      </div>
+      <div class="nav-actions">
+        <a class="nav-text" href="index.html">Back</a>
+        <a class="button button-primary" href="index.html">Explore home</a>
+      </div>
+    </nav>
+
+    <main class="get-started-main">
+      <section class="get-started-hero">
+        <p class="eyebrow">Get Started</p>
+        <h1>Sign in for the role that fits your workflow.</h1>
+        <p>Choose Candidate, Interviewer, or Company to continue with EKVUE and start your interview journey.</p>
+      </section>
+
+      <section class="role-portal">
+        <div class="section-header">
+          <p class="section-title">Pick your login path</p>
+          <p class="section-subtitle">Switch between Candidate, Interviewer, and Company workflows with a tailored login experience and instant dashboard access.</p>
+        </div>
+
+        <div class="role-tabs">
+          <button type="button" class="role-tab active" data-role="candidate">Candidate</button>
+          <button type="button" class="role-tab" data-role="interviewer">Interviewer</button>
+          <button type="button" class="role-tab" data-role="company">Company</button>
+        </div>
+
+        <div class="account-toggle-row">
+          <span>New here?</span>
+          <button type="button" class="link-button" id="open-create-account">Create a new account</button>
+        </div>
+
+        <div class="role-content">
+          <section class="role-section active" data-role="candidate">
+            <div class="role-summary">
+              <h3>Candidate login</h3>
+              <p>Access your live coding challenges, interview prep, and feedback from hiring teams.</p>
+            </div>
+            <form class="role-login-form" data-role="candidate">
+              <div class="form-field">
+                <label for="candidate-email">Email address</label>
+                <input id="candidate-email" type="email" class="form-input" placeholder="candidate@example.com" required />
+              </div>
+              <div class="form-field">
+                <label for="candidate-password">Password</label>
+                <input id="candidate-password" type="password" class="form-input" placeholder="Enter your password" required />
+              </div>
+              <button type="submit" class="button button-primary">Log in as Candidate</button>
+            </form>
+          </section>
+
+          <section class="role-section" data-role="interviewer">
+            <div class="role-summary">
+              <h3>Interviewer login</h3>
+              <p>Jump into candidate sessions, review code submissions, and run live interviews with your team.</p>
+            </div>
+            <form class="role-login-form" data-role="interviewer">
+              <div class="form-field">
+                <label for="interviewer-email">Email address</label>
+                <input id="interviewer-email" type="email" class="form-input" placeholder="interviewer@example.com" required />
+              </div>
+              <div class="form-field">
+                <label for="interviewer-password">Password</label>
+                <input id="interviewer-password" type="password" class="form-input" placeholder="Enter your password" required />
+              </div>
+              <button type="submit" class="button button-primary">Log in as Interviewer</button>
+            </form>
+          </section>
+
+          <section class="role-section" data-role="company">
+            <div class="role-summary">
+              <h3>Company login</h3>
+              <p>Manage hiring workflows, invite teams, and configure interview pipelines for your company.</p>
+            </div>
+            <form class="role-login-form" data-role="company">
+              <div class="form-field">
+                <label for="company-email">Email address</label>
+                <input id="company-email" type="email" class="form-input" placeholder="recruiter@example.com" required />
+              </div>
+              <div class="form-field">
+                <label for="company-password">Password</label>
+                <input id="company-password" type="password" class="form-input" placeholder="Enter your password" required />
+              </div>
+              <button type="submit" class="button button-primary">Log in as Company</button>
+            </form>
+          </section>
+        </div>
+
+        <div id="signup-status-message" class="login-response"></div>
+        <div id="role-login-message" class="login-response"></div>
+
+        <section id="role-dashboard" class="dashboard-panel hidden"></section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-brand">
+        <div class="brand-mark">E</div>
+        <span>EKVUE</span>
+      </div>
+      <div class="footer-links">
+        <a href="index.html#features">Features</a>
+        <a href="index.html#pricing">Pricing</a>
+        <a href="index.html#resources">Resources</a>
+        <a href="index.html#contact">Contact</a>
+      </div>
+      <div class="footer-copy">© 2026 EKVUE. Built for interview teams that move fast.</div>
+    </footer>
+  </div>
+
+  <script src="get-started.js?v=1.0.4"></script>
+  <!-- Global Help Assistant Chatbot -->
+  <script src="help-chatbot.js?v=1.0.4" type="module"></script>
+</body>
+</html>

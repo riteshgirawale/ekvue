@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Company Dashboard | EKVUE</title>
+    <link rel="stylesheet" href="../dashboard.css?v=1.0.8" />
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body>
+    <div class="dash-shell">
+      <div class="surface">
+        <aside class="sidebar">
+          <div class="brandline">
+            <div class="mark">&lt;/&gt;</div>
+            <div>
+              <strong>EkVue</strong><br />
+              <span>Company</span>
+            </div>
+          </div>
+
+          <nav class="side-nav" aria-label="Sidebar" id="sidebar-menu">
+            <a class="active" href="#" data-view="dashboard"><span class="dot"></span>Dashboard</a>
+            <a href="#" data-view="post-job"><span class="dot"></span>Post a Job</a>
+            <a href="#" data-view="jobs"><span class="dot"></span>Job Postings</a>
+            <a href="#" data-view="candidates"><span class="dot"></span>Candidates</a>
+            <a href="#" data-view="interviews"><span class="dot"></span>Interviews</a>
+            <a href="#" data-view="analytics"><span class="dot"></span>Analytics</a>
+            <a href="#" data-view="team"><span class="dot"></span>Team</a>
+            <a href="#" data-view="settings"><span class="dot"></span>Settings</a>
+          </nav>
+        </aside>
+
+        <main class="main">
+          <div class="toprow">
+            <div class="brandline" style="padding:0">
+              <div class="mark">&lt;/&gt;</div>
+              <strong>EkVue</strong>
+            </div>
+
+            <div class="tabs" aria-label="Top tabs" id="top-menu">
+              <a class="active" href="#" data-view="dashboard">Dashboard</a>
+              <a href="#" data-view="post-job">Post a Job</a>
+              <a href="#" data-view="jobs">Jobs</a>
+              <a href="#" data-view="candidates">Candidates</a>
+              <a href="#" data-view="analytics">Analytics</a>
+            </div>
+
+            <div class="userbox">
+              <div class="avatar" id="avatar">C</div>
+              <div class="pill">Company</div>
+              <button class="btn small" id="logoutBtn" type="button">Logout</button>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Dashboard
+               ========================================== -->
+          <div id="view-dashboard" class="view-content active">
+            <div class="welcome">
+              <h1 id="welcomeLine">Welcome!</h1>
+              <p>Manage job postings, interview pipelines, and team access.</p>
+            </div>
+
+            <section class="kpis" aria-label="KPI cards">
+              <div class="card kpi">
+                <div class="left">
+                  <strong id="kpiJobs">0</strong>
+                  <small>Active jobs</small>
+                </div>
+                <div class="ico">💼</div>
+              </div>
+              <div class="card kpi">
+                <div class="left">
+                  <strong id="kpiCandidates">0</strong>
+                  <small>Candidates</small>
+                </div>
+                <div class="ico">👥</div>
+              </div>
+              <div class="card kpi">
+                <div class="left">
+                  <strong id="kpiInterviews">0</strong>
+                  <small>Interviews scheduled</small>
+                </div>
+                <div class="ico">📅</div>
+              </div>
+              <div class="card kpi">
+                <div class="left">
+                  <strong id="kpiPipeline">0</strong>
+                  <small>Open pipelines</small>
+                </div>
+                <div class="ico">📈</div>
+              </div>
+            </section>
+
+            <section class="grid">
+              <div class="card section">
+                <div class="header-row">
+                  <div>
+                    <h2>Job postings</h2>
+                    <div class="muted">Your active postings</div>
+                  </div>
+                  <button class="btn small primary" id="dash-create-job-btn" type="button">New job</button>
+                </div>
+                <div id="list" class="list"></div>
+              </div>
+
+              <div class="action-col">
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Quick actions</h2>
+                    <div class="muted">Shortcuts</div>
+                  </div>
+                  <a class="action" href="#" data-action="candidates"><div>Browse Candidates<br /><span>View student profiles</span></div><span>→</span></a>
+                  <a class="action" href="#" data-action="team"><div>Invite team<br /><span>Add interviewers</span></div><span>→</span></a>
+                  <a class="action" href="#" data-action="interviews"><div>Schedule interviews<br /><span>Book slots faster</span></div><span>→</span></a>
+                  <a class="action" href="#" data-action="analytics"><div>View analytics<br /><span>Track funnel health</span></div><span>→</span></a>
+                </div>
+
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Create a job posting</h2>
+                    <div class="muted">Saved to your jobs list</div>
+                  </div>
+                  <form id="createForm" class="form">
+                    <div class="field">
+                      <label for="jobTitle">Job title</label>
+                      <input id="jobTitle" name="jobTitle" placeholder="e.g. Frontend Engineer" />
+                    </div>
+                    <div class="field">
+                      <label for="location">Location (optional)</label>
+                      <input id="location" name="location" placeholder="e.g. Remote / Bengaluru" />
+                    </div>
+                    <div class="field">
+                      <label for="description">Job description</label>
+                      <textarea id="description" name="description" placeholder="Responsibilities and requirements..."></textarea>
+                    </div>
+                    <button class="btn primary" type="submit">Create</button>
+                    <div id="formMsg" class="msg error"></div>
+                    <div id="formOk" class="msg ok"></div>
+                  </form>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Post a Job
+               ========================================== -->
+          <div id="view-post-job" class="view-content">
+            <div class="welcome" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:20px;">
+              <div>
+                <h1 style="margin:0 0 4px 0;">Post New Job</h1>
+                <p style="font-size:12px; color:var(--muted); margin:0;">Dashboard &bull; Post New Job</p>
+              </div>
+              <div style="display:flex; gap:10px;">
+                <button type="button" class="btn" id="pj-draft-btn-top" style="background:rgba(255,255,255,0.02); border-color:var(--border);">Save Draft</button>
+                <button type="button" class="btn" id="pj-preview-btn-top" style="background:rgba(168,85,247,0.1); border-color:rgba(168,85,247,0.2); color:#c084fc;">👁 Preview Job</button>
+                <button type="button" class="btn primary" id="pj-publish-btn-top" style="background:linear-gradient(135deg, #2563eb, #4f46e5); border:none; box-shadow:0 0 20px rgba(79,70,229,0.35);">Publish Job</button>
+              </div>
+            </div>
+
+            <form id="postJobForm" class="form">
+              <div class="post-job-grid" style="display:grid; grid-template-columns: 1.25fr 0.75fr; gap:20px; align-items:start;">
+                
+                <!-- LEFT COLUMN: SECTIONS 1 - 5 -->
+                <div style="display:flex; flex-direction:column; gap:20px;">
+                  
+                  <!-- 1. Basic Information -->
+                  <div class="card section" style="padding:20px;">
+                    <h3 style="font-size:14px; font-weight:800; color:white; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+                      <span style="display:inline-flex; justify-content:center; align-items:center; width:22px; height:22px; border-radius:50%; background:#2563eb; color:white; font-size:11px;">1</span>
+                      Basic Information
+                    </h3>
+                    <div class="form-group-row" style="margin-bottom:14px;">
+                      <div class="field">
+                        <label for="pj-title">Job Title <span style="color:#ef4444">*</span></label>
+                        <input id="pj-title" placeholder="e.g. Full Stack Developer" required style="background:rgba(2, 6, 23, 0.4);" />
+                      </div>
+                      <div class="field">
+                        <label for="pj-department">Department <span style="color:#ef4444">*</span></label>
+                        <select id="pj-department" class="workspace-select" style="padding:10px 12px; border-radius:12px; background:rgba(2, 6, 23, 0.4);" required>
+                          <option value="Engineering">Engineering</option>
+                          <option value="Product Management">Product Management</option>
+                          <option value="Design">Design</option>
+                          <option value="Marketing">Marketing</option>
+                          <option value="Sales">Sales</option>
+                          <option value="HR / Recruiting">HR / Recruiting</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px;">
+                      <div class="field">
+                        <label for="pj-employment-type">Employment Type <span style="color:#ef4444">*</span></label>
+                        <select id="pj-employment-type" class="workspace-select" style="padding:10px 12px; border-radius:12px; background:rgba(2, 6, 23, 0.4);" required>
+                          <option value="Full-time">Full-time</option>
+                          <option value="Part-time">Part-time</option>
+                          <option value="Contract">Contract</option>
+                          <option value="Internship">Internship</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label for="pj-work-mode">Work Mode <span style="color:#ef4444">*</span></label>
+                        <select id="pj-work-mode" class="workspace-select" style="padding:10px 12px; border-radius:12px; background:rgba(2, 6, 23, 0.4);" required>
+                          <option value="Remote">Remote</option>
+                          <option value="Onsite">Onsite</option>
+                          <option value="Hybrid">Hybrid</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label for="pj-experience">Experience Required <span style="color:#ef4444">*</span></label>
+                        <select id="pj-experience" class="workspace-select" style="padding:10px 12px; border-radius:12px; background:rgba(2, 6, 23, 0.4);" required>
+                          <option value="Entry Level">Entry Level (0-2 yrs)</option>
+                          <option value="Mid Level">Mid Level (2-5 yrs)</option>
+                          <option value="Senior Level">Senior Level (5-10 yrs)</option>
+                          <option value="Lead / Principal">Lead / Principal (10+ yrs)</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 2. Job Details -->
+                  <div class="card section" style="padding:20px;">
+                    <h3 style="font-size:14px; font-weight:800; color:white; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+                      <span style="display:inline-flex; justify-content:center; align-items:center; width:22px; height:22px; border-radius:50%; background:#2563eb; color:white; font-size:11px;">2</span>
+                      Job Details
+                    </h3>
+                    <div class="field" style="margin-bottom:14px;">
+                      <label for="pj-description">Job Description <span style="color:#ef4444">*</span></label>
+                      <textarea id="pj-description" placeholder="Describe the role, job purpose and overview..." style="height:110px; background:rgba(2, 6, 23, 0.4);" required></textarea>
+                    </div>
+                    <div class="field" style="margin-bottom:14px;">
+                      <label for="pj-responsibilities">Key Responsibilities <span style="color:#ef4444">*</span></label>
+                      <textarea id="pj-responsibilities" placeholder="Describe core responsibilities and expectations..." style="height:100px; background:rgba(2, 6, 23, 0.4);" required></textarea>
+                    </div>
+                    <div class="form-group-row">
+                      <div class="field">
+                        <label for="pj-skills">Required Skills <span style="color:#ef4444">*</span></label>
+                        <input id="pj-skills" placeholder="Enter skills (e.g. React, Node.js, MongoDB)" style="background:rgba(2, 6, 23, 0.4);" required />
+                      </div>
+                      <div class="field">
+                        <label for="pj-preferred-skills">Preferred Skills</label>
+                        <input id="pj-preferred-skills" placeholder="Enter preferred skills (e.g. AWS, Next.js)" style="background:rgba(2, 6, 23, 0.4);" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 3. Salary & Benefits -->
+                  <div class="card section" style="padding:20px;">
+                    <h3 style="font-size:14px; font-weight:800; color:white; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+                      <span style="display:inline-flex; justify-content:center; align-items:center; width:22px; height:22px; border-radius:50%; background:#2563eb; color:white; font-size:11px;">3</span>
+                      Salary & Benefits
+                    </h3>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px;">
+                      <div class="field">
+                        <label for="pj-salary">Salary Range (per annum) <span style="color:#ef4444">*</span></label>
+                        <input id="pj-salary" placeholder="e.g. ₹8L - ₹12L or Competitive" style="background:rgba(2, 6, 23, 0.4);" required />
+                      </div>
+                      <div class="field">
+                        <label for="pj-bonus">Bonus (Optional)</label>
+                        <input id="pj-bonus" placeholder="e.g. 10% of annual CTC" style="background:rgba(2, 6, 23, 0.4);" />
+                      </div>
+                      <div class="field">
+                        <label for="pj-benefits">Benefits (Optional)</label>
+                        <input id="pj-benefits" placeholder="e.g. Health Insurance, WFH, Paid Leave" style="background:rgba(2, 6, 23, 0.4);" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 4. Location -->
+                  <div class="card section" style="padding:20px;">
+                    <h3 style="font-size:14px; font-weight:800; color:white; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+                      <span style="display:inline-flex; justify-content:center; align-items:center; width:22px; height:22px; border-radius:50%; background:#2563eb; color:white; font-size:11px;">4</span>
+                      Location
+                    </h3>
+                    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px;">
+                      <div class="field">
+                        <label for="pj-country">Country <span style="color:#ef4444">*</span></label>
+                        <select id="pj-country" class="workspace-select" style="padding:10px 12px; border-radius:12px; background:rgba(2, 6, 23, 0.4);" required>
+                          <option value="India">India</option>
+                          <option value="United States">United States</option>
+                          <option value="United Kingdom">United Kingdom</option>
+                          <option value="Canada">Canada</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label for="pj-state">State <span style="color:#ef4444">*</span></label>
+                        <select id="pj-state" class="workspace-select" style="padding:10px 12px; border-radius:12px; background:rgba(2, 6, 23, 0.4);" required>
+                          <option value="Karnataka">Karnataka</option>
+                          <option value="California">California</option>
+                          <option value="London">London</option>
+                          <option value="Ontario">Ontario</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label for="pj-city">City <span style="color:#ef4444">*</span></label>
+                        <select id="pj-city" class="workspace-select" style="padding:10px 12px; border-radius:12px; background:rgba(2, 6, 23, 0.4);" required>
+                          <option value="Bengaluru">Bengaluru</option>
+                          <option value="San Francisco">San Francisco</option>
+                          <option value="London">London</option>
+                          <option value="Toronto">Toronto</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label for="pj-work-location">Work Location <span style="color:#ef4444">*</span></label>
+                        <select id="pj-work-location" class="workspace-select" style="padding:10px 12px; border-radius:12px; background:rgba(2, 6, 23, 0.4);" required>
+                          <option value="Office">Office</option>
+                          <option value="Remote">Remote</option>
+                          <option value="Hybrid">Hybrid</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 5. Requirements -->
+                  <div class="card section" style="padding:20px;">
+                    <h3 style="font-size:14px; font-weight:800; color:white; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+                      <span style="display:inline-flex; justify-content:center; align-items:center; width:22px; height:22px; border-radius:50%; background:#2563eb; color:white; font-size:11px;">5</span>
+                      Requirements
+                    </h3>
+                    <div style="display:grid; grid-template-columns: 1.5fr 1fr 1.5fr; gap:12px;">
+                      <div class="field">
+                        <label for="pj-education">Minimum Education <span style="color:#ef4444">*</span></label>
+                        <select id="pj-education" class="workspace-select" style="padding:10px 12px; border-radius:12px; background:rgba(2, 6, 23, 0.4);" required>
+                          <option value="Bachelor's Degree">Bachelor's Degree</option>
+                          <option value="Master's Degree">Master's Degree</option>
+                          <option value="PhD">PhD</option>
+                          <option value="High School / Diploma">High School / Diploma</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label>Experience (Years) <span style="color:#ef4444">*</span></label>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                          <input id="pj-exp-min" type="number" placeholder="Min" style="padding:10px 6px; background:rgba(2, 6, 23, 0.4);" required />
+                          <span style="color:var(--muted)">-</span>
+                          <input id="pj-exp-max" type="number" placeholder="Max" style="padding:10px 6px; background:rgba(2, 6, 23, 0.4);" required />
+                        </div>
+                      </div>
+                      <div class="field">
+                        <label for="pj-certifications">Certifications (Optional)</label>
+                        <input id="pj-certifications" placeholder="e.g. AWS Solutions Architect" style="background:rgba(2, 6, 23, 0.4);" />
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- RIGHT COLUMN: SECTIONS 6 - 9 & TIPS -->
+                <div style="display:flex; flex-direction:column; gap:20px;">
+                  
+                  <!-- 6. Application Settings -->
+                  <div class="card section" style="padding:20px;">
+                    <h3 style="font-size:14px; font-weight:800; color:white; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+                      <span style="display:inline-flex; justify-content:center; align-items:center; width:22px; height:22px; border-radius:50%; background:#2563eb; color:white; font-size:11px;">6</span>
+                      Application Settings
+                    </h3>
+                    <div class="form-group-row" style="margin-bottom:14px;">
+                      <div class="field">
+                        <label for="pj-deadline">Application Deadline <span style="color:#ef4444">*</span></label>
+                        <input id="pj-deadline" type="date" required style="background:rgba(2, 6, 23, 0.4);" />
+                      </div>
+                      <div class="field">
+                        <label for="pj-max-applicants">Maximum Applicants (Optional)</label>
+                        <input id="pj-max-applicants" type="number" placeholder="e.g. 1000" style="background:rgba(2, 6, 23, 0.4);" />
+                      </div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:10px; padding:6px 0;">
+                      <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:12.5px; color:#cbd5e1;">Resume Required</span>
+                        <label class="switch" style="position:relative; display:inline-block; width:36px; height:18px;">
+                          <input type="checkbox" id="pj-resume-required" checked style="opacity:0; width:0; height:0;" />
+                          <span class="slider small" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#334155; transition:0.3s; border-radius:34px;"></span>
+                        </label>
+                      </div>
+                      <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:12.5px; color:#cbd5e1;">Portfolio Required</span>
+                        <label class="switch" style="position:relative; display:inline-block; width:36px; height:18px;">
+                          <input type="checkbox" id="pj-portfolio-required" style="opacity:0; width:0; height:0;" />
+                          <span class="slider small" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#334155; transition:0.3s; border-radius:34px;"></span>
+                        </label>
+                      </div>
+                      <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:12.5px; color:#cbd5e1;">GitHub Required</span>
+                        <label class="switch" style="position:relative; display:inline-block; width:36px; height:18px;">
+                          <input type="checkbox" id="pj-github-required" style="opacity:0; width:0; height:0;" />
+                          <span class="slider small" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#334155; transition:0.3s; border-radius:34px;"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 7. Contact Information -->
+                  <div class="card section" style="padding:20px;">
+                    <h3 style="font-size:14px; font-weight:800; color:white; display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+                      <span style="display:inline-flex; justify-content:center; align-items:center; width:22px; height:22px; border-radius:50%; background:#2563eb; color:white; font-size:11px;">7</span>
+                      Contact Information
+                    </h3>
+                    <div class="field" style="margin-bottom:10px;">
+                      <label for="pj-hr-name">HR Name <span style="color:#ef4444">*</span></label>
+                      <input id="pj-hr-name" placeholder="Enter HR Name" required style="background:rgba(2, 6, 23, 0.4);" />
+                    </div>
+                    <div class="form-group-row">
+                      <div class="field">
+                        <label for="pj-hr-email">Email <span style="color:#ef4444">*</span></label>
+                        <input id="pj-hr-email" type="email" placeholder="Enter Email" required style="background:rgba(2, 6, 23, 0.4);" />
+                      </div>
+                      <div class="field">
+                        <label for="pj-hr-phone">Phone Number <span style="color:#ef4444">*</span></label>
+                        <input id="pj-hr-phone" placeholder="Enter Phone" required style="background:rgba(2, 6, 23, 0.4);" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Tips for better response -->
+                  <div class="card section" style="padding:16px 20px; background:rgba(99,102,241,0.03); border-color:rgba(99,102,241,0.18);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                      <h4 style="margin:0; font-size:13px; font-weight:800; color:#a5b4fc;">Tips for better response</h4>
+                      <span style="font-size:20px;">💼</span>
+                    </div>
+                    <ul style="margin:0; padding-left:16px; font-size:11.5px; color:#cbd5e1; line-height:1.7;">
+                      <li style="margin-bottom:6px;">Write a clear and accurate job description</li>
+                      <li style="margin-bottom:6px;">Add all the required skills for the role</li>
+                      <li style="margin-bottom:6px;">Mention expected experience level</li>
+                      <li>Include interview process to set expectations</li>
+                    </ul>
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!-- FOOTER DECK -->
+              <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px; padding:15px 0; border-top:1px solid var(--border);">
+                <button type="button" class="btn" id="pj-draft-btn-bottom" style="background:rgba(255,255,255,0.02); border-color:var(--border);">Save Draft</button>
+                <button type="button" class="btn" id="pj-preview-btn-bottom" style="background:rgba(168,85,247,0.1); border-color:rgba(168,85,247,0.2); color:#c084fc;">👁 Preview Job</button>
+                <button type="submit" class="btn primary" id="pj-publish-btn-bottom" style="background:linear-gradient(135deg, #2563eb, #4f46e5); border:none; box-shadow:0 0 20px rgba(79,70,229,0.35); padding:10px 24px;">Publish Job</button>
+              </div>
+              
+              <div id="pj-msg-error" class="msg error" style="display:none; margin-top:12px;"></div>
+              <div id="pj-msg-ok" class="msg ok" style="display:none; margin-top:12px;"></div>
+            </form>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Jobs
+               ========================================== -->
+          <div id="view-jobs" class="view-content">
+            <div class="welcome">
+              <h1>Job Workspace</h1>
+              <p>Manage candidate vacancy listings, publish statuses, and applicant statistics.</p>
+            </div>
+
+            <div class="workspace-container">
+              <div class="workspace-sidebar">
+                <div class="card section search-filter-box">
+                  <h2>Search & Filters</h2>
+                  <input type="text" id="job-search" class="workspace-search" placeholder="Search jobs...">
+                  <select id="job-location-filter" class="workspace-select">
+                    <option value="">All Locations</option>
+                    <option value="Remote">Remote</option>
+                    <option value="Bengaluru">Bengaluru</option>
+                    <option value="San Francisco">San Francisco</option>
+                  </select>
+                </div>
+                <div id="workspace-jobs-list" class="workspace-problems-list">
+                  <!-- Dynamic Job List from JS -->
+                </div>
+              </div>
+
+              <div class="editor-workspace">
+                <div class="card section problem-statement-card">
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start">
+                    <div>
+                      <h2 id="job-view-title">Frontend Engineer</h2>
+                      <p id="job-view-meta" style="font-size:12px; color:var(--muted); margin-top:2px">📍 Bengaluru · Full-time</p>
+                    </div>
+                    <span class="badge easy" id="job-view-status">Active</span>
+                  </div>
+                  <div style="margin-top:12px">
+                    <h3>Job Description</h3>
+                    <p id="job-view-desc" style="white-space:pre-wrap; font-size:13px; line-height:1.6">Responsibilities and criteria details...</p>
+                  </div>
+                </div>
+
+                <div class="card section" style="display:flex; flex-direction:column; gap:12px; padding:14px">
+                  <h2>Position Applicants Statistics</h2>
+                  <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; text-align:center">
+                    <div class="card" style="padding:10px; background:rgba(255,255,255,0.02)">
+                      <strong style="font-size:18px" id="job-stat-applied">12</strong><br>
+                      <small style="font-size:11px; color:var(--muted)">Applied</small>
+                    </div>
+                    <div class="card" style="padding:10px; background:rgba(255,255,255,0.02)">
+                      <strong style="font-size:18px" id="job-stat-interview">4</strong><br>
+                      <small style="font-size:11px; color:var(--muted)">Interviewed</small>
+                    </div>
+                    <div class="card" style="padding:10px; background:rgba(255,255,255,0.02)">
+                      <strong style="font-size:18px" id="job-stat-offer">1</strong><br>
+                      <small style="font-size:11px; color:var(--muted)">Offered</small>
+                    </div>
+                  </div>
+                  <div id="job-applicants-list" style="margin-top:14px"></div>
+                  <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:6px">
+                    <button class="btn small" id="job-toggle-status-btn" type="button">Toggle Draft Status</button>
+                    <button class="btn small" style="background:#ef4444; border-color:#ef4444; color:white" id="job-delete-btn" type="button">Delete Job Post</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Candidates (React Root)
+               ========================================== -->
+          <div id="view-candidates" class="view-content">
+            <div id="candidates-react-root"></div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Interviews
+               ========================================== -->
+          <div id="view-interviews" class="view-content">
+            <div class="welcome">
+              <h1>Interview Scheduling Console</h1>
+              <p>Schedule candidate assessments, assign active recruiters/interviewers, and select challenge sets.</p>
+            </div>
+
+            <div class="grid">
+              <div class="card section">
+                <div class="header-row">
+                  <h2>Scheduled Interviews Timeline</h2>
+                  <div class="muted" id="interviews-scheduled-count">0 slots booked</div>
+                </div>
+                <div class="schedule-timeline-container" id="scheduled-timeline-list">
+                  <!-- Dynamic schedule list cards from JS -->
+                </div>
+              </div>
+
+              <div class="action-col">
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Book Interview Slot</h2>
+                    <div class="muted">Assign schedule</div>
+                  </div>
+                  <form id="book-interview-form" class="form">
+                    <div class="field">
+                      <label for="meet-candidate">Candidate Name</label>
+                      <input id="meet-candidate" placeholder="e.g. Priya Sharma" list="registered-candidates-datalist" required />
+                    </div>
+                    <div class="field">
+                      <label for="meet-role">Target Job Posting</label>
+                      <input id="meet-role" class="workspace-search" style="padding:10px 12px" list="job-postings-datalist" placeholder="e.g. Frontend Engineer" required autocomplete="off" />
+                      <datalist id="job-postings-datalist"></datalist>
+                    </div>
+                    <div class="field">
+                      <label for="meet-interviewer">Assign Interviewer</label>
+                      <select id="meet-interviewer" class="workspace-select" style="padding:10px 12px" required>
+                        <!-- Dynamic from active team list -->
+                      </select>
+                      <small style="font-size:10px; color:var(--muted); margin-top:2px; display:block;">Add interviewers via the Team section if list is empty.</small>
+                    </div>
+                    <div class="form-group-row">
+                      <div class="field">
+                        <label for="meet-date">Date</label>
+                        <input id="meet-date" type="date" required />
+                      </div>
+                      <div class="field">
+                        <label for="meet-time">Time</label>
+                        <input id="meet-time" type="time" required />
+                      </div>
+                    </div>
+                    <div class="field">
+                      <label for="meet-notes">Notes / Instructions (Optional)</label>
+                      <textarea id="meet-notes" rows="2" placeholder="e.g. Focus on system design, candidate prefers video call" style="padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; color:white; font-size:12px; width:100%; box-sizing:border-box; outline:none; resize:vertical; font-family:inherit;"></textarea>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                      <button class="btn primary" type="submit" style="flex:1;">Schedule Interview</button>
+                      <button class="btn" type="button" id="cancel-edit-meet-btn" style="display:none; padding:10px 14px;">Cancel</button>
+                    </div>
+                    <div id="meet-ok-msg" class="msg ok" style="display:none; margin-top:8px; padding:8px 12px; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); border-radius:8px; color:#34d399; font-weight:700; font-size:12px; text-align:center;">✅ Scheduled!</div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Analytics
+               ========================================== -->
+          <div id="view-analytics" class="view-content">
+            <div class="welcome">
+              <h1>Conversion Funnel Analytics</h1>
+              <p>Track candidate pipelines drop-off conversion rates, source indicators, and recruitment velocity.</p>
+            </div>
+
+            <div class="grid">
+              <div class="card section analytics-funnel-card">
+                <div class="header-row">
+                  <h2>Applicant Funnel (Year-to-date)</h2>
+                  <div class="muted">Conversion rates</div>
+                </div>
+                <div class="funnel-bar-row">
+                  <div class="funnel-stage-label"><span>Applied (New Candidates)</span><strong>100% (148 Candidates)</strong></div>
+                  <div class="funnel-bar-wrapper"><div class="funnel-bar-fill" style="width:100%"></div></div>
+                </div>
+                <div class="funnel-bar-row">
+                  <div class="funnel-stage-label"><span>Screened (Resume checks)</span><strong>65% (96 Candidates)</strong></div>
+                  <div class="funnel-bar-wrapper"><div class="funnel-bar-fill" style="width:65%"></div></div>
+                </div>
+                <div class="funnel-bar-row">
+                  <div class="funnel-stage-label"><span>Coding Assessment</span><strong>30% (44 Candidates)</strong></div>
+                  <div class="funnel-bar-wrapper"><div class="funnel-bar-fill" style="width:30%"></div></div>
+                </div>
+                <div class="funnel-bar-row">
+                  <div class="funnel-stage-label"><span>Technical Live Interview</span><strong>12% (18 Candidates)</strong></div>
+                  <div class="funnel-bar-wrapper"><div class="funnel-bar-fill" style="width:12%"></div></div>
+                </div>
+                <div class="funnel-bar-row">
+                  <div class="funnel-stage-label"><span>Offer Extended</span><strong>4% (6 Hires)</strong></div>
+                  <div class="funnel-bar-wrapper"><div class="funnel-bar-fill" style="width:4%"></div></div>
+                </div>
+              </div>
+
+              <div class="action-col">
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Recruiting Efficiency</h2>
+                    <span class="badge easy">Healthy</span>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:12px; padding:6px">
+                    <div>
+                      <small style="color:var(--muted); font-weight:800">AVERAGE DAYS TO HIRE</small>
+                      <h3 style="margin:2px 0 0 0; font-size:24px">24 Days</h3>
+                    </div>
+                    <div>
+                      <small style="color:var(--muted); font-weight:800">INTERVIEW PASS RATE</small>
+                      <h3 style="margin:2px 0 0 0; font-size:24px">41%</h3>
+                    </div>
+                    <div>
+                      <small style="color:var(--muted); font-weight:800">SOURCE QUALITY</small>
+                      <h3 style="margin:2px 0 0 0; font-size:13px; color:white">Referrals (52%) · LinkedIn (34%)</h3>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Team
+               ========================================== -->
+          <div id="view-team" class="view-content">
+            <div class="welcome">
+              <h1>Interviewer Team Registry</h1>
+              <p>Add technical interviewers, view conducted interview matrices, and manage pass ratios.</p>
+            </div>
+
+            <div class="grid">
+              <div class="card section" style="padding:14px">
+                <div class="header-row">
+                  <h2>Active Team Interviewers</h2>
+                  <div class="muted" id="team-total-count">3 members</div>
+                </div>
+                <div class="team-members-grid" id="team-list-cards">
+                  <!-- Dynamic from JS -->
+                </div>
+              </div>
+
+              <div class="action-col">
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Register Interviewer</h2>
+                    <div class="muted">Access control</div>
+                  </div>
+                  <form id="add-team-form" class="form">
+                    <div class="field">
+                      <label for="team-name">Full Name</label>
+                      <input id="team-name" placeholder="e.g. EkVue AI" required />
+                    </div>
+                    <div class="field">
+                      <label for="team-role">Job Title / Role</label>
+                      <input id="team-role" placeholder="e.g. Principal Architect" required />
+                    </div>
+                    <div class="field">
+                      <label for="team-dept">Company Department</label>
+                      <select id="team-dept" class="workspace-select" style="padding:10px 12px" required>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Product">Product Management</option>
+                        <option value="Talent Acquisition">Talent Acquisition</option>
+                      </select>
+                    </div>
+                    <button class="btn primary" type="submit">Invite Interviewer</button>
+                    <div id="team-ok-msg" class="msg ok" style="display:none; margin-top:8px">Registered!</div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Settings
+               ========================================== -->
+          <div id="view-settings" class="view-content">
+            <div class="welcome">
+              <h1>Company & Dashboard Settings</h1>
+              <p>Configure company profile metrics, recruit filters, and switch UI visual skins.</p>
+            </div>
+
+            <div class="grid">
+              <div class="card section">
+                <div class="header-row">
+                  <h2>Edit Company Details</h2>
+                  <div class="muted">Saved dynamically</div>
+                </div>
+                <form id="settings-profile-form" class="form">
+                  <div class="form-group-row">
+                    <div class="field">
+                      <label for="settings-companyname">Company Name</label>
+                      <input id="settings-companyname" type="text" placeholder="Company Name">
+                    </div>
+                    <div class="field">
+                      <label for="settings-industry">Industry Sector</label>
+                      <input id="settings-industry" type="text" placeholder="Tech / Finance / Retail">
+                    </div>
+                  </div>
+                  <div class="form-group-row">
+                    <div class="field">
+                      <label for="settings-website">Website URL</label>
+                      <input id="settings-website" type="url" placeholder="https://example.com">
+                    </div>
+                    <div class="field">
+                      <label for="settings-companysize">Company Size</label>
+                      <select id="settings-companysize" class="workspace-select" style="padding:10px 12px">
+                        <option value="1-10">1-10 members</option>
+                        <option value="11-50">11-50 members</option>
+                        <option value="51-200">51-200 members</option>
+                        <option value="201-1000">201-1000 members</option>
+                        <option value="1000+">1000+ members</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button class="btn primary" type="submit">Save Changes</button>
+                  <div id="settings-form-msg" class="msg ok" style="display:none; margin-top:8px">Company profile saved!</div>
+                </form>
+              </div>
+
+              <div class="action-col">
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Select UI Theme</h2>
+                    <div class="muted">Aesthetic skin</div>
+                  </div>
+                  <div class="settings-theme-grid">
+                    <div class="theme-card-option active" data-theme="default">
+                      <div class="theme-preview-bars">
+                        <span style="background:#0a0e27"></span>
+                        <span style="background:#2563eb"></span>
+                        <span style="background:#4f46e5"></span>
+                      </div>
+                      <span class="t-label">Indigo Night</span>
+                    </div>
+                    <div class="theme-card-option" data-theme="space">
+                      <div class="theme-preview-bars">
+                        <span style="background:#020617"></span>
+                        <span style="background:#4f46e5"></span>
+                        <span style="background:#6366f1"></span>
+                      </div>
+                      <span class="t-label">Deep Space</span>
+                    </div>
+                    <div class="theme-card-option" data-theme="emerald">
+                      <div class="theme-preview-bars">
+                        <span style="background:#020806"></span>
+                        <span style="background:#059669"></span>
+                        <span style="background:#10b981"></span>
+                      </div>
+                      <span class="t-label">Emerald Glow</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="card section" style="margin-top:14px; background:rgba(239,68,68,0.03); border-color:rgba(239,68,68,0.22)">
+              <h2 style="color:#fca5a5">Danger Zone</h2>
+              <p style="font-size:12px; color:var(--muted); margin:4px 0 10px 0">Clears all custom jobs postings, pipeline stages, interview registries, schedules, and preferences logs.</p>
+              <button class="btn" id="danger-wipe-btn" type="button" style="background:#ef4444; border-color:#ef4444; color:white">Reset All Company Data</button>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Datalist for candidate selection autocomplete -->
+    <datalist id="registered-candidates-datalist"></datalist>
+
+    <script type="module" src="./company.js?v=1.0.9-scheduler"></script>
+    <script type="text/babel" src="./candidates.jsx"></script>
+  </body>
+</html>

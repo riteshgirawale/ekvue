@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Interviewer Dashboard | EKVUE</title>
+    <!-- Add Cache Buster to stylesheet -->
+    <link rel="stylesheet" href="../dashboard.css?v=1.0.7" />
+  </head>
+  <body>
+    <div class="dash-shell">
+      <div class="surface">
+        <aside class="sidebar">
+          <div class="brandline">
+            <div class="mark">&lt;/&gt;</div>
+            <div>
+              <strong>EkVue</strong><br />
+              <span>Interviewer</span>
+            </div>
+          </div>
+
+          <!-- Sidebar SPA links -->
+          <nav class="side-nav" id="sidebar-menu" aria-label="Sidebar">
+            <a class="active" href="#" data-view="dashboard"><span class="dot"></span>Dashboard</a>
+            <a href="#" data-view="sessions"><span class="dot"></span>Sessions</a>
+            <a href="#" data-view="live-interview"><span class="dot"></span>Candidate Interview</a>
+            <a href="#" data-view="jobs"><span class="dot"></span>Active Jobs</a>
+            <a href="#" data-view="questions"><span class="dot"></span>Question Bank</a>
+            <a href="#" data-view="scorecards"><span class="dot"></span>Scorecards</a>
+            <a href="#" data-view="reports"><span class="dot"></span>Reports</a>
+            <a href="#" data-view="settings"><span class="dot"></span>Settings</a>
+          </nav>
+        </aside>
+
+        <main class="main">
+          <div class="toprow">
+            <div class="brandline" style="padding:0">
+              <div class="mark">&lt;/&gt;</div>
+              <strong>EkVue</strong>
+            </div>
+
+            <!-- Top Row Navigation SPA tabs -->
+            <div class="tabs" id="top-menu" aria-label="Top tabs">
+              <a class="active" href="#" data-view="dashboard">Dashboard</a>
+              <a href="#" data-view="sessions">Sessions</a>
+              <a href="#" data-view="live-interview">Candidate Interview</a>
+              <a href="#" data-view="jobs">Active Jobs</a>
+              <a href="#" data-view="scorecards">Scorecards</a>
+              <a href="#" data-view="reports">Reports</a>
+            </div>
+
+            <div class="userbox">
+              <div class="avatar" id="avatar">I</div>
+              <div class="pill" id="userPill">Interviewer</div>
+              <button class="btn small" id="logoutBtn" type="button">Logout</button>
+            </div>
+          </div>
+
+          <div class="welcome">
+            <h1 id="welcomeLine">Welcome!</h1>
+            <p id="welcomeSub">Run structured interviews, take notes, and generate clean summaries.</p>
+          </div>
+
+          <!-- GLOBAL KPIS SECTION -->
+          <section class="kpis" aria-label="KPI cards">
+            <div class="card kpi">
+              <div class="left">
+                <strong id="kpiSessions">0</strong>
+                <small>Sessions created</small>
+              </div>
+              <div class="ico">🎙</div>
+            </div>
+            <div class="card kpi">
+              <div class="left">
+                <strong id="kpiUpcoming">0</strong>
+                <small>Upcoming</small>
+              </div>
+              <div class="ico">📅</div>
+            </div>
+            <div class="card kpi">
+              <div class="left">
+                <strong id="kpiPending">0</strong>
+                <small>Feedback pending</small>
+              </div>
+              <div class="ico">📝</div>
+            </div>
+            <div class="card kpi">
+              <div class="left">
+                <strong id="kpiAvg">—</strong>
+                <small>Avg. score</small>
+              </div>
+              <div class="ico">⭐</div>
+            </div>
+          </section>
+
+          <!-- SPA VIEW: 1. DASHBOARD -->
+          <div id="view-dashboard" class="view-content active">
+            <section class="grid">
+              <div class="card section">
+                <div class="header-row">
+                  <div>
+                    <h2>Interview sessions</h2>
+                    <div class="muted">Your scheduled sessions (stored locally)</div>
+                  </div>
+                  <button class="btn small primary" type="button" onclick="window.switchView('sessions'); document.getElementById('sessCandidateName')?.focus();">New session</button>
+                </div>
+                <div id="dashboard-sessions-list" class="list"></div>
+              </div>
+
+              <div class="action-col">
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Quick actions</h2>
+                    <div class="muted">Shortcuts</div>
+                  </div>
+                  <a class="action" href="#" data-action="sessions"><div>Start live session<br /><span>Open interview room</span></div><span>→</span></a>
+                  <a class="action" href="#" data-action="questions"><div>Open question bank<br /><span>Pick a challenge</span></div><span>→</span></a>
+                  <a class="action" href="#" data-action="reports"><div>Generate report<br /><span>Summarize candidate</span></div><span>→</span></a>
+                  <a class="action" href="#" data-action="scorecards"><div>Review scorecards<br /><span>Calibrate team</span></div><span>→</span></a>
+                </div>
+
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Create an interview session</h2>
+                    <div class="muted">Saved to your sessions list</div>
+                  </div>
+                  <form id="createForm" class="form">
+                    <div class="field">
+                      <label for="candidateName">Candidate name</label>
+                      <input id="candidateName" name="candidateName" placeholder="e.g. Priya Sharma" list="registered-candidates-datalist" required />
+                    </div>
+                    <div class="field">
+                      <label for="sessionType">Session type</label>
+                      <input id="sessionType" name="sessionType" placeholder="e.g. Live Coding" required />
+                    </div>
+                    <div class="field">
+                      <label for="agenda">Agenda / notes</label>
+                      <textarea id="agenda" name="agenda" placeholder="What will you cover?"></textarea>
+                    </div>
+                    <button class="btn primary" type="submit">Create</button>
+                    <div id="formMsg" class="msg error" style="display:none"></div>
+                    <div id="formOk" class="msg ok" style="display:none"></div>
+                  </form>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- SPA VIEW: 2. SESSIONS & LIVE INTERVIEW ROOM -->
+          <div id="view-sessions" class="view-content">
+            <div class="workspace-container">
+              <!-- Left search and filter panel -->
+              <div class="workspace-sidebar">
+                <div class="card section search-filter-box">
+                  <input type="text" id="session-search" class="workspace-search" placeholder="Search candidate..." />
+                  <select id="session-filter-status" class="workspace-select">
+                    <option value="all">All statuses</option>
+                    <option value="Upcoming">Upcoming</option>
+                    <option value="Feedback Pending">Feedback Pending</option>
+                    <option value="Completed">Completed</option>
+                  </select>
+                </div>
+                
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Scheduled sessions</h2>
+                  </div>
+                  <div id="sessions-sidebar-list" class="workspace-problems-list">
+                    <!-- Loaded dynamically -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right workspace panels (Details OR Live Simulation) -->
+              <div class="editor-workspace">
+                <!-- PANEL A: SESSION DETAILS CARD -->
+                <div id="session-details-panel" class="card section" style="padding:20px;">
+                  <div id="session-selected-placeholder" style="text-align:center; padding: 40px var(--muted);">
+                    <p style="font-size:28px; margin-bottom:12px;">🎙</p>
+                    <h3>Select a session</h3>
+                    <p>Pick a scheduled candidate from the left panel to review details or launch the live interview assessment.</p>
+                    <button class="btn primary" style="margin-top:14px;" onclick="document.getElementById('sessCandidateName')?.focus();">Or, Schedule New</button>
+                  </div>
+                  
+                  <div id="session-details-content" style="display:none">
+                    <!-- Session content details populated dynamically -->
+                  </div>
+                </div>
+
+                <!-- PANEL B: SCHEDULE NEW SESSION FORM -->
+                <div id="session-create-panel" class="card section" style="margin-top: 14px;">
+                  <div class="header-row">
+                    <h2>Schedule a new assessment</h2>
+                    <div class="muted">Add details below to queue in the master index</div>
+                  </div>
+                  <form id="sessionCreatorForm" class="form">
+                    <div class="form-group-row">
+                      <div class="field">
+                        <label for="sessCandidateName">Candidate name</label>
+                        <input id="sessCandidateName" placeholder="e.g. Priyanjali Sen" list="registered-candidates-datalist" required />
+                      </div>
+                      <div class="field">
+                        <label for="sessType">Assessment Type</label>
+                        <select id="sessType" class="workspace-select" style="padding: 10px 12px; border-radius:12px;">
+                          <option value="Live Coding">Live Coding Round</option>
+                          <option value="System Design">System Design Review</option>
+                          <option value="Technical Interview">General Technical Interview</option>
+                          <option value="Behavioral Assessment">Behavioral / Culture Fit</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group-row">
+                      <div class="field">
+                        <label for="sessDate">Interview Date</label>
+                        <input id="sessDate" type="date" required />
+                      </div>
+                      <div class="field">
+                        <label for="sessTime">Interview Time</label>
+                        <input id="sessTime" type="time" required />
+                      </div>
+                    </div>
+                    <div class="field">
+                      <label for="sessAgenda">Agenda or Instructions</label>
+                      <textarea id="sessAgenda" placeholder="Describe instructions, interview challenges links, and goals."></textarea>
+                    </div>
+                    <button class="btn primary" type="submit">Schedule Interview</button>
+                    <div id="sessFormMsg" class="msg error" style="display:none"></div>
+                    <div id="sessFormOk" class="msg ok" style="display:none"></div>
+                  </form>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- SPA VIEW: 7. Dedicated Candidate Interview panel (Lobby & Proctor Room) -->
+          <div id="view-live-interview" class="view-content">
+            <!-- Lobby: shown when no live call is active -->
+            <div id="live-interview-lobby-panel" class="card section" style="padding:20px;">
+              <div class="header-row" style="border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 14px;">
+                <div>
+                  <h2 style="font-size: 18px; margin: 0 0 4px 0; color: white;">Candidate Live Interview Lobby</h2>
+                  <div class="muted">Select and launch upcoming candidate assessment round rooms to establish real-time camera/IDE handshakes</div>
+                </div>
+              </div>
+              <div id="live-lobby-sessions-list" class="list" style="display:flex; flex-direction:column; gap:12px; margin-top:14px;">
+                <!-- Populated dynamically with upcoming sessions list -->
+              </div>
+            </div>
+
+            <!-- Active Google Meet proctor room (Isolated Redesign) -->
+            <div id="session-live-simulator-panel" style="display:none;">
+              
+              <!-- Proctor Workspace Top Header -->
+              <div class="proctor-workspace-header">
+                <div class="header-left">
+                  <span class="webcam-dot-pulse"></span>
+                  <h1>Interviewer View</h1>
+                </div>
+                <div class="header-right" style="display:flex; align-items:center; gap:8px;">
+                  <!-- Media Controls Toolbar -->
+                  <div class="interviewer-media-controls" id="interviewer-media-controls" style="display:flex; align-items:center; gap:6px; padding:4px 8px; background:rgba(15,23,42,0.7); border:1px solid rgba(255,255,255,0.08); border-radius:10px; backdrop-filter:blur(10px);">
+                    <button class="media-ctrl-btn active" id="interviewerMicBtn" title="Toggle Microphone" style="width:34px; height:34px; border-radius:50%; border:1px solid rgba(16,185,129,0.4); background:rgba(16,185,129,0.12); color:#10b981; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; transition:all 0.25s ease;">
+                      🎙️
+                    </button>
+                    <button class="media-ctrl-btn active" id="interviewerCamBtn" title="Toggle Camera" style="width:34px; height:34px; border-radius:50%; border:1px solid rgba(99,102,241,0.4); background:rgba(99,102,241,0.12); color:#6366f1; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; transition:all 0.25s ease;">
+                      📹
+                    </button>
+                    <button class="media-ctrl-btn" id="interviewerScreenBtn" title="Share Screen" style="width:34px; height:34px; border-radius:50%; border:1px solid rgba(251,191,36,0.3); background:rgba(251,191,36,0.08); color:#fbbf24; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; transition:all 0.25s ease;">
+                      🖥️
+                    </button>
+                  </div>
+                  <button class="btn small" id="livePauseBtn" style="display:none;"></button>
+                  <button class="btn" id="interviewer-layout-toggle-btn" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); font-weight:700; color:#e2e8f0; font-size:12px; border-radius:8px; padding:6px 12px; cursor:pointer; vertical-align:middle;">🖥️ Focus View</button>
+                  <button class="btn primary" id="liveCompleteBtn">✓ Finish Interview</button>
+                  <button class="btn-options-more" title="More Options">•••</button>
+                </div>
+              </div>
+
+              <!-- Proctor Workspace Main Grid -->
+              <div class="proctor-workspace-grid">
+                
+                <!-- Left Column: Live Candidate & Session Info -->
+                <div class="proctor-col-left">
+                  <!-- Live Candidate stream card -->
+                  <div class="card proctor-candidate-card">
+                    <div class="proctor-webcam-wrapper" id="liveCandidateWebcamFrame">
+                      <!-- Active webcam video stream -->
+                      <video id="proctor-candidate-video" autoplay playsinline style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; z-index:5; display:none;"></video>
+
+                      <!-- Active webcam signal label -->
+                      <span class="webcam-signal-active">
+                        <span class="signal-dot"></span>Candidate
+                      </span>
+                      
+                      <!-- Real-time Candidate initials/simulation view -->
+                      <div class="webcam-avatar-proctor" id="liveCandidateAvatar">C</div>
+
+                      <!-- Visual dynamic equalizer -->
+                      <div class="audio-equalizer-proctor">
+                        <span class="proctor-eq-bar active" style="animation-delay: 0.2s"></span>
+                        <span class="proctor-eq-bar active" style="animation-delay: 0.4s"></span>
+                        <span class="proctor-eq-bar active" style="animation-delay: 0.1s"></span>
+                        <span class="proctor-eq-bar active" style="animation-delay: 0.3s"></span>
+                        <span class="proctor-eq-bar active" style="animation-delay: 0.5s"></span>
+                      </div>
+                    </div>
+                    <div class="candidate-stream-footer">
+                      <span id="liveCandidateLabel">Candidate Stream</span>
+                      <button class="btn-pip-fullscreen" id="liveCandidateFullscreenBtn" title="Toggle Fullscreen">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4"/></svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Interviewer Self-View Camera PiP -->
+                  <div class="interviewer-pip-container" id="interviewer-pip-container" style="position:absolute; bottom:12px; right:12px; width:160px; height:120px; border-radius:10px; overflow:hidden; border:2px solid rgba(99,102,241,0.5); box-shadow:0 8px 32px rgba(0,0,0,0.5); z-index:50; background:#0a0e1a; cursor:move; transition:box-shadow 0.3s ease;">
+                    <video id="interviewer-self-video" autoplay playsinline muted style="width:100%; height:100%; object-fit:cover; transform:scaleX(-1);"></video>
+                    <div id="interviewer-self-avatar" style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #1e1b4b, #312e81); color:#a5b4fc; font-size:28px; font-weight:900; font-family:'Inter',sans-serif; z-index:2;">I</div>
+                    <div style="position:absolute; bottom:4px; left:6px; font-size:9px; color:rgba(255,255,255,0.7); font-weight:700; z-index:10; text-shadow:0 1px 4px rgba(0,0,0,0.8); pointer-events:none;">You</div>
+                    <div id="interviewer-mic-indicator" style="position:absolute; top:4px; right:4px; width:18px; height:18px; border-radius:50%; background:rgba(16,185,129,0.2); border:1px solid rgba(16,185,129,0.4); display:flex; align-items:center; justify-content:center; z-index:10;">
+                      <span style="font-size:8px;">🎙️</span>
+                    </div>
+                    <!-- PiP resize handle -->
+                    <div class="pip-resize-handle" style="position:absolute; bottom:0; right:0; width:14px; height:14px; cursor:nwse-resize; z-index:20;"></div>
+                  </div>
+
+                  <!-- Session Info Details card -->
+                  <div class="card proctor-info-card">
+                    <h2>Session Info</h2>
+                    <div class="info-details-rows">
+                      <div class="info-detail-item">
+                        <span class="lbl">Role</span>
+                        <span class="val" id="info-val-role">Frontend Developer</span>
+                      </div>
+                      <div class="info-detail-item">
+                        <span class="lbl">Experience</span>
+                        <span class="val" id="info-val-exp">2+ Years</span>
+                      </div>
+                      <div class="info-detail-item">
+                        <span class="lbl">Round</span>
+                        <span class="val" id="info-val-round">Technical Interview</span>
+                      </div>
+                      <div class="info-detail-item">
+                        <span class="lbl">Time Elapsed</span>
+                        <span class="val timer-highlight" id="liveRoomTimer">00:00</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Center Column: Live Code Editor Monitor -->
+                <div class="proctor-col-center">
+                  <div class="card proctor-editor-card">
+                    <div class="editor-monitor-header">
+                      <div class="title-left">
+                        <span class="code-indicator-dot"></span>
+                        <h2 id="interviewer-editor-title">Code Editor</h2>
+                      </div>
+                    </div>
+
+                    <!-- Code mirror stream panel -->
+                    <div class="editor-monitor-body" id="liveIdeBody">
+                      <pre>// Loading candidate editor monitor feed...
+// Select a question from the list above to view prompt and preview reference implementation details.</pre>
+                    </div>
+
+                    <!-- Interviewer Console Panel -->
+                    <div class="interviewer-console-panel" id="interviewer-console-panel" style="display:none; height:180px; background:#05070f; border-top:1px solid rgba(255,255,255,0.08); padding:10px; box-sizing:border-box; overflow-y:auto; font-family:'Fira Code', monospace; font-size:11px; flex-shrink:0;">
+                      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px; margin-bottom:6px; color:#64748b;">
+                        <span style="font-weight:800; color:#cbd5e1; font-size:10px; text-transform:uppercase; letter-spacing:0.5px;">▷ Console Output</span>
+                        <button id="close-interviewer-console" style="background:none; border:none; color:#f43f5e; cursor:pointer; font-size:14px; font-weight:800;">×</button>
+                      </div>
+                      <pre id="interviewer-console-output" style="margin:0; color:#cbd5e1; white-space:pre-wrap;">Ready to run code...</pre>
+                    </div>
+
+                    <!-- Editor footer -->
+                    <div class="editor-monitor-footer">
+                      <div class="footer-left-actions" style="display:flex; align-items:center;">
+                        <button class="btn-proctor-editor active" id="btn-interviewer-live-monitor">Live Monitor</button>
+                        <button class="btn-proctor-editor" id="btn-interviewer-run-code" style="background:#4f46e5; color:white; font-weight:800; border-radius:6px; padding:6px 12px; border:none; cursor:pointer; margin-left:8px; font-size:11px; transition:all 0.2s ease;">▷ Run Candidate Code</button>
+                        <button class="btn-proctor-editor" id="btn-proctor-run-tests" style="display:none;"></button>
+                      </div>
+                      <div class="footer-status">
+                        <span class="status-indicator-dot"></span>
+                        <span id="liveIdeStatus">● Online Stream</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right Column: Notes & Live Chat -->
+                <div class="proctor-col-right">
+                  <!-- Rich Notes widget -->
+                  <div class="card proctor-notes-card">
+                    <div class="notes-header">
+                      <h2>Interview Notes</h2>
+                    </div>
+                    <!-- Editor toolbar formatting icons -->
+                    <div class="notes-format-toolbar">
+                      <button type="button" class="tool-btn" title="Bold">B</button>
+                      <button type="button" class="tool-btn" title="Italic" style="font-style: italic;">I</button>
+                      <button type="button" class="tool-btn" title="Bullet List">☰</button>
+                      <button type="button" class="tool-btn" title="Undo">⟲</button>
+                      <button type="button" class="tool-btn" title="Code block">&lt;&gt;</button>
+                      <button type="button" class="tool-btn" title="Insert Link">🔗</button>
+                    </div>
+                    <textarea class="proctor-notes-area" id="liveNotesInput" placeholder="Write your notes about the candidate..."></textarea>
+                  </div>
+
+                  <!-- Real-time Live Chat widget -->
+                  <div class="card proctor-chat-card">
+                    <div class="chat-header-bar">
+                      <h2>Live Chat</h2>
+                    </div>
+                    <!-- Message timeline feed -->
+                    <div class="chat-feed-timeline" id="liveChatFeed">
+                      <p style="color:var(--muted); font-style:italic; margin:0;">Waiting for candidate to connect...</p>
+                    </div>
+                    <!-- Footer message input bar -->
+                    <div class="chat-footer-bar">
+                      <input type="text" id="liveChatInput" placeholder="Type your message..." />
+                      <button class="btn-send-interviewer-chat" id="liveSendChatBtn" title="Send Message">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Dummy placeholder to store Host initials avatar and satisfy javascript selectors -->
+              <div id="liveHostAvatar" style="display:none;">I</div>
+            </div>
+            </div>
+
+          <!-- SPA VIEW: 3. QUESTION BANK -->
+          <div id="view-questions" class="view-content">
+            <div class="workspace-container">
+              <div class="workspace-sidebar">
+                <div class="card section search-filter-box">
+                  <input type="text" id="question-search" class="workspace-search" placeholder="Search challenges..." />
+                  <select id="question-filter-category" class="workspace-select">
+                    <option value="all">All categories</option>
+                    <option value="Arrays">Arrays & Hashing</option>
+                    <option value="Strings">String Manipulations</option>
+                    <option value="Trees">Trees & BSTs</option>
+                    <option value="DP">Dynamic Programming</option>
+                    <option value="System Design">System Design</option>
+                    <option value="Behavioral">Behavioral</option>
+                  </select>
+                  <select id="question-filter-difficulty" class="workspace-select">
+                    <option value="all">All difficulties</option>
+                    <option value="Easy">Easy</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Hard">Hard</option>
+                  </select>
+                </div>
+
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Technical questions</h2>
+                  </div>
+                  <div id="questions-sidebar-list" class="workspace-problems-list">
+                    <!-- Dynamically populated questions list -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Main details view & Custom question creator form -->
+              <div class="editor-workspace">
+                <div id="question-details-panel" class="card section" style="padding:20px;">
+                  <div id="question-selected-placeholder" style="text-align:center; padding: 40px var(--muted);">
+                    <p style="font-size:28px; margin-bottom:12px;">📁</p>
+                    <h3>Choose a challenge</h3>
+                    <p>Select any technical challenge from the sidebar to inspect descriptions, inputs/outputs, and templates.</p>
+                  </div>
+
+                  <div id="question-details-content" style="display:none">
+                    <!-- Populated dynamically -->
+                  </div>
+                </div>
+
+                <!-- Custom question creator form -->
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Add custom challenge to bank</h2>
+                    <div class="muted">Add a custom coding or behavioral prompt to your private library</div>
+                  </div>
+                  <form id="questionCreatorForm" class="form">
+                    <div class="form-group-row">
+                      <div class="field">
+                        <label for="qTitle">Title</label>
+                        <input id="qTitle" placeholder="e.g. Reverse Linked List" required />
+                      </div>
+                      <div class="field">
+                        <label for="qCategory">Category</label>
+                        <select id="qCategory" class="workspace-select" style="padding:10px 12px; border-radius:12px;">
+                          <option value="Arrays">Arrays & Hashing</option>
+                          <option value="Strings">String Manipulations</option>
+                          <option value="Trees">Trees & BSTs</option>
+                          <option value="DP">Dynamic Programming</option>
+                          <option value="System Design">System Design</option>
+                          <option value="Behavioral">Behavioral</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group-row">
+                      <div class="field">
+                        <label for="qDifficulty">Difficulty</label>
+                        <select id="qDifficulty" class="workspace-select" style="padding:10px 12px; border-radius:12px;">
+                          <option value="Easy">Easy</option>
+                          <option value="Medium">Medium</option>
+                          <option value="Hard">Hard</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label for="qTimeLimit">Time Limit</label>
+                        <input id="qTimeLimit" placeholder="e.g. 20 mins" />
+                      </div>
+                    </div>
+                    <div class="field">
+                      <label for="qDescription">Description / Task Prompt</label>
+                      <textarea id="qDescription" placeholder="Explain the problem statement, parameters, expectations..." required></textarea>
+                    </div>
+                    <div class="field">
+                      <label for="qCodeTemplate">Code Reference Template (Node.js / Pseudo)</label>
+                      <textarea id="qCodeTemplate" placeholder="function solve(arr) { ... }" style="font-family:monospace; font-size:12px;"></textarea>
+                    </div>
+                    <button class="btn primary" type="submit">Create Challenge</button>
+                    <div id="qFormMsg" class="msg error" style="display:none"></div>
+                    <div id="qFormOk" class="msg ok" style="display:none"></div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SPA VIEW: 4. EVALUATION SCORECARDS -->
+          <div id="view-scorecards" class="view-content">
+            <div class="workspace-container">
+              <!-- Left sidebar lists evaluation-pending sessions -->
+              <div class="workspace-sidebar">
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Pending Evaluations</h2>
+                    <div class="muted">Star indicates grading is locked</div>
+                  </div>
+                  <div id="scorecard-sidebar-list" class="workspace-problems-list">
+                    <!-- Populated dynamically -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Main evaluation builder panel -->
+              <div class="editor-workspace">
+                <div class="card section" id="scorecard-builder-panel" style="padding:20px;">
+                  <div id="scorecard-selected-placeholder" style="text-align:center; padding:40px var(--muted)">
+                    <p style="font-size:28px; margin-bottom:12px;">📝</p>
+                    <h3>Start candidate grading</h3>
+                    <p>Select any candidate session on the left to grade coding competence, structure systems design, and log assessment reports.</p>
+                  </div>
+
+                  <div id="scorecard-builder-content" style="display:none">
+                    <div class="header-row" style="border-bottom:1px solid var(--border); padding-bottom:8px; margin-bottom:14px;">
+                      <div>
+                        <h2 id="scCandidateName">Grading Priya Sharma</h2>
+                        <div class="muted" id="scMetaInfo">Live Coding • Scheduled 2026-05-23</div>
+                      </div>
+                      <span class="badge" id="scStatusBadge" style="background:rgba(245,158,11,0.1); color:#f59e0b; border-color:rgba(245,158,11,0.2)">Evaluation Pending</span>
+                    </div>
+
+                    <form id="evaluationForm" class="form">
+                      <div class="score-dimension-group">
+                        <!-- Dimension 1: Code Quality -->
+                        <div class="dimension-row">
+                          <span class="dimension-label">1. Code Quality & Cleanliness</span>
+                          <div class="rating-stars-input" data-dimension="codeQuality">
+                            <button type="button" class="star-btn" data-value="1">★</button>
+                            <button type="button" class="star-btn" data-value="2">★</button>
+                            <button type="button" class="star-btn" data-value="3">★</button>
+                            <button type="button" class="star-btn" data-value="4">★</button>
+                            <button type="button" class="star-btn" data-value="5">★</button>
+                          </div>
+                          <span class="dimension-value" id="val-codeQuality">0/5</span>
+                        </div>
+
+                        <!-- Dimension 2: Problem Solving -->
+                        <div class="dimension-row">
+                          <span class="dimension-label">2. Problem-Solving Skill</span>
+                          <div class="rating-stars-input" data-dimension="problemSolving">
+                            <button type="button" class="star-btn" data-value="1">★</button>
+                            <button type="button" class="star-btn" data-value="2">★</button>
+                            <button type="button" class="star-btn" data-value="3">★</button>
+                            <button type="button" class="star-btn" data-value="4">★</button>
+                            <button type="button" class="star-btn" data-value="5">★</button>
+                          </div>
+                          <span class="dimension-value" id="val-problemSolving">0/5</span>
+                        </div>
+
+                        <!-- Dimension 3: Technical Knowledge -->
+                        <div class="dimension-row">
+                          <span class="dimension-label">3. Technical Knowledge</span>
+                          <div class="rating-stars-input" data-dimension="techKnowledge">
+                            <button type="button" class="star-btn" data-value="1">★</button>
+                            <button type="button" class="star-btn" data-value="2">★</button>
+                            <button type="button" class="star-btn" data-value="3">★</button>
+                            <button type="button" class="star-btn" data-value="4">★</button>
+                            <button type="button" class="star-btn" data-value="5">★</button>
+                          </div>
+                          <span class="dimension-value" id="val-techKnowledge">0/5</span>
+                        </div>
+
+                        <!-- Dimension 4: Communication -->
+                        <div class="dimension-row">
+                          <span class="dimension-label">4. Communication Skill</span>
+                          <div class="rating-stars-input" data-dimension="communication">
+                            <button type="button" class="star-btn" data-value="1">★</button>
+                            <button type="button" class="star-btn" data-value="2">★</button>
+                            <button type="button" class="star-btn" data-value="3">★</button>
+                            <button type="button" class="star-btn" data-value="4">★</button>
+                            <button type="button" class="star-btn" data-value="5">★</button>
+                          </div>
+                          <span class="dimension-value" id="val-communication">0/5</span>
+                        </div>
+
+                        <!-- Dimension 5: System Design -->
+                        <div class="dimension-row">
+                          <span class="dimension-label">5. System Design / Architecture</span>
+                          <div class="rating-stars-input" data-dimension="systemDesign">
+                            <button type="button" class="star-btn" data-value="1">★</button>
+                            <button type="button" class="star-btn" data-value="2">★</button>
+                            <button type="button" class="star-btn" data-value="3">★</button>
+                            <button type="button" class="star-btn" data-value="4">★</button>
+                            <button type="button" class="star-btn" data-value="5">★</button>
+                          </div>
+                          <span class="dimension-value" id="val-systemDesign">0/5</span>
+                        </div>
+                      </div>
+
+                      <div class="form-group-row">
+                        <div class="field">
+                          <label for="scRecommendation">Overall Hiring Decision</label>
+                          <select id="scRecommendation" class="workspace-select" style="padding:10px 12px; border-radius:12px;" required>
+                            <option value="Strong Hire">Strong Hire (L4/L5 Match)</option>
+                            <option value="Hire">Hire</option>
+                            <option value="No Hire">No Hire / Reject</option>
+                          </select>
+                        </div>
+                        <div class="field">
+                          <label>Calculated Global Score</label>
+                          <input id="scGlobalScore" style="background:rgba(2, 6, 23, 0.5); font-weight:800; color:#fbbf24;" readonly placeholder="—" />
+                        </div>
+                      </div>
+
+                      <div class="field">
+                        <label for="scStrengths">Key Strengths</label>
+                        <textarea id="scStrengths" placeholder="Describe where the candidate shined..." required></textarea>
+                      </div>
+
+                      <div class="field">
+                        <label for="scImprovements">Areas for Improvement</label>
+                        <textarea id="scImprovements" placeholder="Describe knowledge gaps, coding speed optimizations, and growth zones..." required></textarea>
+                      </div>
+
+                      <div class="field">
+                        <label for="scNotes">Interviewer Summary & Final Evaluation</label>
+                        <textarea id="scNotes" placeholder="Write structured comments on candidate performance, edge-case coverage..." required></textarea>
+                      </div>
+
+                      <button class="btn primary" type="submit">Submit Scorecard & Lock Grade</button>
+                      <div id="scFormMsg" class="msg error" style="display:none"></div>
+                      <div id="scFormOk" class="msg ok" style="display:none"></div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SPA VIEW: 5. ATS PRINTABLE REPORTS -->
+          <div id="view-reports" class="view-content">
+            <div class="reports-layout">
+              <!-- Left panel: list of completed reports -->
+              <div class="card section reports-list-card">
+                <div class="header-row">
+                  <div>
+                    <h2>Assessment reports</h2>
+                    <div class="muted">Select a graded candidate to preview ATS report sheet</div>
+                  </div>
+                </div>
+                <div id="reports-list-container" class="list">
+                  <!-- Filled dynamically -->
+                </div>
+              </div>
+
+              <!-- Right panel: A4 print isolated view -->
+              <div class="report-preview-panel">
+                <div class="card section" style="padding: 10px; display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:12px; font-weight:800;">A4 PDF Export isolation</span>
+                  <button class="btn small primary" id="printReportBtn" disabled>Print / Save PDF</button>
+                </div>
+
+                <div id="report-selected-placeholder" class="card section" style="text-align:center; padding: 60px var(--muted);">
+                  <p style="font-size:28px; margin-bottom:12px;">📁</p>
+                  <h3>Select graded candidate</h3>
+                  <p>Pick any candidate from the left list to review detailed score sheets and download ATS-perfect reports.</p>
+                </div>
+
+                <!-- Printable Report Sheet (A4 formatted) -->
+                <div class="report-preview-sheet" id="report-preview-sheet" style="display:none;" data-theme="Creative">
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                      <h1 id="repCandidateName">Priya Sharma</h1>
+                      <div class="r-subtitle" id="repJobTitle">Live Coding Round Assessment</div>
+                    </div>
+                    <div id="repRecommendationBadge" class="report-recommendation-badge strong-hire">Strong Hire</div>
+                  </div>
+
+                  <div class="r-meta-grid">
+                    <div><strong>Assessment Date:</strong> <span id="repDate">2026-05-23</span></div>
+                    <div><strong>Assessed By:</strong> <span id="repInterviewer">EkVue AI (Senior Host)</span></div>
+                    <div><strong>Session Status:</strong> Graded & Sealed</div>
+                    <div><strong>Calculated Average:</strong> <span id="repAvgScore">4.6/5.0</span></div>
+                  </div>
+
+                  <h2>Multi-Dimensional Evaluation</h2>
+                  <div id="report-scores-meter-grid" style="margin-bottom:12px;">
+                    <!-- Evaluated charts filled dynamically -->
+                  </div>
+
+                  <h2>Key Assessment Summary</h2>
+                  <div id="repAssSummary" class="report-comments-box" style="margin-bottom:10px;">
+                    Candidate showed strong algorithmic competence. Solved Trees traversal problems in sub-optimal complexity initially, but adjusted structure gracefully when prompted. Code cleanliness is extremely high.
+                  </div>
+
+                  <h2>Strengths Demonstrated</h2>
+                  <div id="repStrengths" class="report-comments-box" style="background:#ecfdf5; border-color:#d1fae5; color:#065f46; margin-bottom:10px;">
+                    - Deep expertise in Javascript closures and array mapping.<br>
+                    - Communication is precise and proactive.
+                  </div>
+
+                  <h2>Areas for Growth</h2>
+                  <div id="repImprovements" class="report-comments-box" style="background:#fffbeb; border-color:#fef3c7; color:#92400e; margin-bottom:10px;">
+                    - Should focus more on edge-case parameter checks (e.g. empty lists, overflow thresholds).
+                  </div>
+
+                  <div style="text-align:center; font-size:8px; color:#94a3b8; border-top:1px solid #e2e8f0; padding-top:14px; margin-top: 14px;">
+                    Powered by EKVUE AI Evaluation Engine • Confidential Recruiting Document
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SPA VIEW: 7. ACTIVE JOBS -->
+          <div id="view-jobs" class="view-content">
+            <div class="workspace-container">
+              <div class="workspace-sidebar">
+                <div class="card section search-filter-box">
+                  <input type="text" id="job-search-input" class="workspace-search" placeholder="Search jobs by title..." />
+                  <select id="job-filter-status" class="workspace-select">
+                    <option value="all">All statuses</option>
+                    <option value="Active">🟢 Active</option>
+                    <option value="Draft">🟡 Draft</option>
+                    <option value="Closed">🔴 Closed</option>
+                  </select>
+                </div>
+
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Published Jobs</h2>
+                    <span class="badge" id="jobs-total-badge" style="background:rgba(99,102,241,0.1); color:#818cf8; border-color:rgba(99,102,241,0.2)">0</span>
+                  </div>
+                  <div id="jobs-sidebar-list" class="workspace-problems-list">
+                    <!-- Dynamically populated jobs list -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Main details view of selected job -->
+              <div class="editor-workspace">
+                <div id="job-details-panel" class="card section" style="padding:20px;">
+                  <div id="job-selected-placeholder" style="text-align:center; padding: 40px var(--muted);">
+                    <p style="font-size:32px; margin-bottom:12px;">🏢</p>
+                    <h3>Choose a job posting</h3>
+                    <p>Select any corporate job posting from the left to inspect applicant counts, proctored pipelines, and full role descriptions.</p>
+                  </div>
+
+                  <div id="job-details-content" style="display:none">
+                    <!-- Populated dynamically -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SPA VIEW: 6. PROFILE SETTINGS -->
+          <div id="view-settings" class="view-content">
+            <section class="grid">
+              <div class="card section">
+                <div class="header-row">
+                  <h2>Interviewer profile settings</h2>
+                  <div class="muted">Configured details populate in reports and calendars</div>
+                </div>
+                <form id="profileSettingsForm" class="form">
+                  <div class="form-group-row">
+                    <div class="field">
+                      <label for="profileName">Interviewer Name</label>
+                      <input id="profileName" placeholder="e.g. EkVue AI" required />
+                    </div>
+                    <div class="field">
+                      <label for="profileRole">Title / Role</label>
+                      <input id="profileRole" placeholder="e.g. Staff Software Engineer" required />
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="profileDep">Department</label>
+                    <input id="profileDep" placeholder="e.g. Core Engineering Platform" />
+                  </div>
+                  <div class="field">
+                    <label for="profileBio">Bio / Interview Introduction</label>
+                    <textarea id="profileBio" placeholder="Say a brief word about your role and what candidates should expect..."></textarea>
+                  </div>
+                  <button class="btn primary" type="submit">Save Settings</button>
+                  <div id="settingsFormMsg" class="msg error" style="display:none"></div>
+                  <div id="settingsFormOk" class="msg ok" style="display:none"></div>
+                </form>
+              </div>
+
+              <div class="action-col">
+                <!-- Theme Configurator matching matching user templates -->
+                <div class="card section">
+                  <div class="header-row">
+                    <h2>Portal themes</h2>
+                    <div class="muted">Choose a theme skin to apply across the dashboard</div>
+                  </div>
+                  <div class="settings-theme-grid">
+                    <div class="theme-card-option active" data-theme="default">
+                      <div class="theme-preview-bars">
+                        <span style="background:#4f46e5"></span>
+                        <span style="background:#0a0e27"></span>
+                        <span style="background:#1a1f3a"></span>
+                      </div>
+                      <span class="t-label">Indigo Glow</span>
+                    </div>
+
+                    <div class="theme-card-option" data-theme="space">
+                      <div class="theme-preview-bars">
+                        <span style="background:#4f46e5"></span>
+                        <span style="background:#020617"></span>
+                        <span style="background:#0b0f2d"></span>
+                      </div>
+                      <span class="t-label">Deep Space</span>
+                    </div>
+
+                    <div class="theme-card-option" data-theme="emerald">
+                      <div class="theme-preview-bars">
+                        <span style="background:#10b981"></span>
+                        <span style="background:#020806"></span>
+                        <span style="background:#051610"></span>
+                      </div>
+                      <span class="t-label">Emerald Glow</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card section" style="border-color: rgba(239, 68, 68, 0.3);">
+                  <div class="header-row">
+                    <h2 style="color:#ef4444;">Danger zone</h2>
+                    <div class="muted">Commands</div>
+                  </div>
+                  <p style="font-size:12px; margin:0 0 8px 0; color:var(--muted)">Clearing the database wipes all interviewer schedules, custom technical questions, candidate evaluation grades, and resets profiles settings.</p>
+                  <button class="btn" id="wipeDataBtn" style="border-color:rgba(239, 68, 68, 0.4); background:rgba(239, 68, 68, 0.1); color:#fecaca;" type="button">Reset Dashboard</button>
+                  <div id="wipeMsg" class="msg ok" style="display:none; margin-top:8px;"></div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <!-- Centralized dynamic error boundaries -->
+    <div id="interviewer-error-boundary" style="display:none"></div>
+
+    <!-- Datalist for candidate selection autocomplete -->
+    <datalist id="registered-candidates-datalist"></datalist>
+
+    <script type="module" src="./interviewer.js?v=1.0.7-navfix2"></script>
+  </body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up | EKVUE</title>
+  <link rel="stylesheet" href="styles.css?v=1.0.4" />
+
+    <script src="/dashboards/mongo-sync.js"></script>
+</head>
+<body>
+  <div class="page-shell get-started-shell">
+    <nav class="site-nav">
+      <div class="brand">
+        <div class="brand-mark">E</div>
+        <span>EKVUE</span>
+      </div>
+      <div class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="../index.html#features">Features</a>
+        <a href="../index.html#pricing">Pricing</a>
+        <a href="../index.html#resources">Resources</a>
+      </div>
+      <div class="nav-actions">
+        <a class="nav-text" href="index.html">Back to login</a>
+        <a class="button button-primary" href="index.html">Sign in</a>
+      </div>
+    </nav>
+
+    <main class="get-started-main">
+      <section class="get-started-hero">
+        <p class="eyebrow">Create Account</p>
+        <h1>Build your EKVUE profile</h1>
+        <p>Choose your role and add the details we need for the right Candidate, Interviewer, or Company experience.</p>
+      </section>
+
+      <section class="role-portal">
+        <div class="section-header">
+          <p class="section-title">Choose your role</p>
+          <p class="section-subtitle">The signup flow captures the right profile details for each account type.</p>
+        </div>
+
+        <div class="role-tabs">
+          <button type="button" class="role-tab active" data-role="candidate">Candidate</button>
+          <button type="button" class="role-tab" data-role="interviewer">Interviewer</button>
+          <button type="button" class="role-tab" data-role="company">Company</button>
+        </div>
+
+        <!-- Candidate form -->
+        <form id="candidateSignupForm" class="role-content">
+          <div class="role-content-inner">
+            <div class="role-section active" data-role="candidate">
+              <div class="role-summary">
+                <h3>Candidate signup</h3>
+                <p>Register as a student or job seeker, save your interview progress, and apply to companies with confidence.</p>
+              </div>
+
+              <div class="form-field">
+                <label for="fullName">Full name</label>
+                <input id="fullName" type="text" class="form-input" placeholder="Your full name" required />
+                <div class="field-error" id="fullNameError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="email">Email address</label>
+                <div class="email-verify-group">
+                  <input id="email" type="email" class="form-input" placeholder="you@example.com" required />
+                  <button type="button" class="btn-verify-send" id="btnSendOtp-candidate">Send OTP</button>
+                </div>
+                <div class="field-error" id="emailError" aria-live="polite"></div>
+                
+                <div id="otpSection-candidate" class="otp-section hidden">
+                  <label>Enter 4-digit OTP sent to your email</label>
+                  <div class="otp-input-group">
+                    <input type="text" maxlength="1" class="otp-digit" id="otp-candidate-1" />
+                    <input type="text" maxlength="1" class="otp-digit" id="otp-candidate-2" />
+                    <input type="text" maxlength="1" class="otp-digit" id="otp-candidate-3" />
+                    <input type="text" maxlength="1" class="otp-digit" id="otp-candidate-4" />
+                    <button type="button" class="btn-verify-confirm" id="btnVerifyOtp-candidate">Verify</button>
+                  </div>
+                  <div class="field-error" id="otpError-candidate" aria-live="polite"></div>
+                </div>
+                <input type="hidden" id="emailVerified-candidate" value="false" />
+              </div>
+
+              <div class="form-field">
+                <label for="password">Password</label>
+                <input id="password" type="password" class="form-input" placeholder="Create a strong password" required />
+                <div class="field-error" id="passwordError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="confirmPassword">Confirm password</label>
+                <input id="confirmPassword" type="password" class="form-input" placeholder="Confirm your password" required />
+                <div class="field-error" id="confirmPasswordError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="school">College or University</label>
+                <input id="school" type="text" class="form-input" placeholder="Your college or program" required />
+                <div class="field-error" id="schoolError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="field">Field of study</label>
+                <select id="field" class="form-input" required>
+                  <option value="">Select your field</option>
+                  <option value="Computer Engineering">Computer Engineering</option>
+                  <option value="Computer Science and Engineering (CSE)">Computer Science and Engineering (CSE)</option>
+                  <option value="Information Technology (IT)">Information Technology (IT)</option>
+                  <option value="Artificial Intelligence and Machine Learning (AI & ML)">Artificial Intelligence and Machine Learning (AI & ML)</option>
+                  <option value="Artificial Intelligence and Data Science (AI & DS)">Artificial Intelligence and Data Science (AI & DS)</option>
+                  <option value="Data Science">Data Science</option>
+                  <option value="Cyber Security">Cyber Security</option>
+                  <option value="Software Engineering">Software Engineering</option>
+                  <option value="Electronics and Telecommunication Engineering (ENTC)">Electronics and Telecommunication Engineering (ENTC)</option>
+                  <option value="Electronics Engineering">Electronics Engineering</option>
+                  <option value="Electrical Engineering">Electrical Engineering</option>
+                  <option value="Mechanical Engineering">Mechanical Engineering</option>
+                  <option value="Civil Engineering">Civil Engineering</option>
+                  <option value="Chemical Engineering">Chemical Engineering</option>
+                  <option value="Production Engineering">Production Engineering</option>
+                  <option value="Automobile Engineering">Automobile Engineering</option>
+                  <option value="Robotics Engineering">Robotics Engineering</option>
+                  <option value="Mechatronics Engineering">Mechatronics Engineering</option>
+                  <option value="Biomedical Engineering">Biomedical Engineering</option>
+                  <option value="Biotechnology Engineering">Biotechnology Engineering</option>
+                  <option value="Aeronautical Engineering">Aeronautical Engineering</option>
+                  <option value="Aerospace Engineering">Aerospace Engineering</option>
+                  <option value="Environmental Engineering">Environmental Engineering</option>
+                  <option value="Instrumentation Engineering">Instrumentation Engineering</option>
+                  <option value="Industrial Engineering">Industrial Engineering</option>
+                  <option value="Agricultural Engineering">Agricultural Engineering</option>
+                  <option value="Mining Engineering">Mining Engineering</option>
+                  <option value="Petroleum Engineering">Petroleum Engineering</option>
+                  <option value="Metallurgical Engineering">Metallurgical Engineering</option>
+                  <option value="Textile Engineering">Textile Engineering</option>
+                  <option value="Food Technology">Food Technology</option>
+                  <option value="Other">Other</option>
+                </select>
+                <div class="field-error" id="fieldError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="level">Candidate level</label>
+                <select id="level" class="form-input" required>
+                  <option value="">Select your level</option>
+                  <option value="Student">Student</option>
+                  <option value="Graduate">Graduate</option>
+                  <option value="Professional">Professional</option>
+                </select>
+                <div class="field-error" id="levelError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="interests">Professional Interests</label>
+                <input id="interests" list="interests-list" class="form-input" placeholder="Type or select an interest..." required />
+                <datalist id="interests-list">
+                  <option value="Software Engineer">
+                  <option value="Frontend Developer">
+                  <option value="Backend Developer">
+                  <option value="Full Stack Developer">
+                  <option value="Java Developer">
+                  <option value="Python Developer">
+                  <option value="C++ Developer">
+                  <option value=".NET Developer">
+                  <option value="PHP Developer">
+                  <option value="Node.js Developer">
+                  <option value="AI Engineer">
+                  <option value="Machine Learning Engineer">
+                  <option value="Deep Learning Engineer">
+                  <option value="Generative AI Engineer">
+                  <option value="Prompt Engineer">
+                  <option value="LLM Engineer">
+                  <option value="Computer Vision Engineer">
+                  <option value="NLP Engineer">
+                  <option value="Data Scientist">
+                  <option value="Data Analyst">
+                  <option value="Data Engineer">
+                  <option value="Business Analyst">
+                  <option value="BI Developer">
+                  <option value="Big Data Engineer">
+                  <option value="Cyber Security Analyst">
+                  <option value="Security Engineer">
+                  <option value="SOC Analyst">
+                  <option value="Ethical Hacker">
+                  <option value="Penetration Tester">
+                  <option value="Security Consultant">
+                  <option value="Cloud Engineer">
+                  <option value="Cloud Architect">
+                  <option value="AWS Engineer">
+                  <option value="Azure Engineer">
+                  <option value="GCP Engineer">
+                  <option value="Cloud Security Engineer">
+                  <option value="DevOps Engineer">
+                  <option value="Site Reliability Engineer">
+                  <option value="Platform Engineer">
+                  <option value="Infrastructure Engineer">
+                  <option value="Release Engineer">
+                  <option value="Android Developer">
+                  <option value="iOS Developer">
+                  <option value="Flutter Developer">
+                  <option value="React Native Developer">
+                  <option value="Mobile Engineer">
+                  <option value="UI Designer">
+                  <option value="UX Designer">
+                  <option value="Product Designer">
+                  <option value="Interaction Designer">
+                </datalist>
+                <div class="field-error" id="interestsError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-actions">
+                <div class="terms-checkbox-wrapper">
+                  <input type="checkbox" id="candidateTerms" class="custom-checkbox" required />
+                  <label for="candidateTerms">I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a></label>
+                </div>
+                <button type="submit" class="create-account-btn gradient-button">Create Account &rarr;</button>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <!-- Interviewer form -->
+        <form id="interviewerSignupForm" class="role-content">
+          <div class="role-content-inner">
+            <div class="role-section" data-role="interviewer">
+              <div class="role-summary">
+                <h3>Interviewer signup</h3>
+                <p>Join as an interviewer to manage candidate sessions, review submissions, and collaborate with your hiring team.</p>
+              </div>
+
+              <div class="form-field">
+                <label for="interviewerFullName">Full name</label>
+                <input id="interviewerFullName" type="text" class="form-input" placeholder="Your full name" required />
+                <div class="field-error" id="interviewerFullNameError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="interviewerEmail">Email address</label>
+                <div class="email-verify-group">
+                  <input id="interviewerEmail" type="email" class="form-input" placeholder="recruiter@example.com" required />
+                  <button type="button" class="btn-verify-send" id="btnSendOtp-interviewer">Send OTP</button>
+                </div>
+                <div class="field-error" id="interviewerEmailError" aria-live="polite"></div>
+                
+                <div id="otpSection-interviewer" class="otp-section hidden">
+                  <label>Enter 4-digit OTP sent to your email</label>
+                  <div class="otp-input-group">
+                    <input type="text" maxlength="1" class="otp-digit" id="otp-interviewer-1" />
+                    <input type="text" maxlength="1" class="otp-digit" id="otp-interviewer-2" />
+                    <input type="text" maxlength="1" class="otp-digit" id="otp-interviewer-3" />
+                    <input type="text" maxlength="1" class="otp-digit" id="otp-interviewer-4" />
+                    <button type="button" class="btn-verify-confirm" id="btnVerifyOtp-interviewer">Verify</button>
+                  </div>
+                  <div class="field-error" id="otpError-interviewer" aria-live="polite"></div>
+                </div>
+                <input type="hidden" id="emailVerified-interviewer" value="false" />
+              </div>
+
+              <div class="form-field">
+                <label for="interviewerPassword">Password</label>
+                <input id="interviewerPassword" type="password" class="form-input" placeholder="Create a strong password" required />
+                <div class="field-error" id="interviewerPasswordError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="interviewerConfirmPassword">Confirm password</label>
+                <input id="interviewerConfirmPassword" type="password" class="form-input" placeholder="Confirm your password" required />
+                <div class="field-error" id="interviewerConfirmPasswordError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="interviewerCompany">Company name</label>
+                <input id="interviewerCompany" type="text" class="form-input" placeholder="Your company" required />
+                <div class="field-error" id="interviewerCompanyError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="interviewerTitle">Job title</label>
+                <input id="interviewerTitle" type="text" class="form-input" placeholder="Engineering Manager, Recruiter, etc." required />
+                <div class="field-error" id="interviewerTitleError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="interviewerExperience">Years of experience</label>
+                <input id="interviewerExperience" type="number" class="form-input" placeholder="5" min="0" required />
+                <div class="field-error" id="interviewerExperienceError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-actions">
+                <div class="terms-checkbox-wrapper">
+                  <input type="checkbox" id="interviewerTerms" class="custom-checkbox" required />
+                  <label for="interviewerTerms">I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a></label>
+                </div>
+                <button type="submit" class="create-account-btn gradient-button">Create Account &rarr;</button>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <!-- Company form -->
+        <form id="companySignupForm" class="role-content">
+          <div class="role-content-inner">
+            <div class="role-section" data-role="company">
+              <div class="role-summary">
+                <h3>Company signup</h3>
+                <p>Register your company to build hiring workflows, manage interview pipelines, and invite your team to collaborate.</p>
+              </div>
+
+              <div class="form-field">
+                <label for="companyName">Full name</label>
+                <input id="companyName" type="text" class="form-input" placeholder="Your full name" required />
+                <div class="field-error" id="companyNameError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="companyEmail">Email address</label>
+                <div class="email-verify-group">
+                  <input id="companyEmail" type="email" class="form-input" placeholder="recruiter@company.com" required />
+                  <button type="button" class="btn-verify-send" id="btnSendOtp-company">Send OTP</button>
+                </div>
+                <div class="field-error" id="companyEmailError" aria-live="polite"></div>
+                
+                <div id="otpSection-company" class="otp-section hidden">
+                  <label>Enter 4-digit OTP sent to your email</label>
+                  <div class="otp-input-group">
+                    <input type="text" maxlength="1" class="otp-digit" id="otp-company-1" />
+                    <input type="text" maxlength="1" class="otp-digit" id="otp-company-2" />
+                    <input type="text" maxlength="1" class="otp-digit" id="otp-company-3" />
+                    <input type="text" maxlength="1" class="otp-digit" id="otp-company-4" />
+                    <button type="button" class="btn-verify-confirm" id="btnVerifyOtp-company">Verify</button>
+                  </div>
+                  <div class="field-error" id="otpError-company" aria-live="polite"></div>
+                </div>
+                <input type="hidden" id="emailVerified-company" value="false" />
+              </div>
+
+              <div class="form-field">
+                <label for="companyPassword">Password</label>
+                <input id="companyPassword" type="password" class="form-input" placeholder="Create a strong password" required />
+                <div class="field-error" id="companyPasswordError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="companyConfirmPassword">Confirm password</label>
+                <input id="companyConfirmPassword" type="password" class="form-input" placeholder="Confirm your password" required />
+                <div class="field-error" id="companyConfirmPasswordError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="companyIndustry">Industry</label>
+                <input id="companyIndustry" type="text" class="form-input" placeholder="Tech, Finance, etc." required />
+                <div class="field-error" id="companyIndustryError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="companySize">Company size</label>
+                <select id="companySize" class="form-input" required>
+                  <option value="">Select size</option>
+                  <option value="1-10">1-10</option>
+                  <option value="11-50">11-50</option>
+                  <option value="51-200">51-200</option>
+                  <option value="201-1000">201-1000</option>
+                  <option value="1000+">1000+</option>
+                </select>
+                <div class="field-error" id="companySizeError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-field">
+                <label for="companyWebsite">Website</label>
+                <input id="companyWebsite" type="url" class="form-input" placeholder="https://yourcompany.com" required />
+                <div class="field-error" id="companyWebsiteError" aria-live="polite"></div>
+              </div>
+
+              <div class="form-actions">
+                <div class="terms-checkbox-wrapper">
+                  <input type="checkbox" id="companyTerms" class="custom-checkbox" required />
+                  <label for="companyTerms">I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a></label>
+                </div>
+                <button type="submit" class="create-account-btn gradient-button">Create Account &rarr;</button>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <div id="signup-message" class="login-response" aria-live="polite" style="margin-top: 12px;"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-brand">
+        <div class="brand-mark">E</div>
+        <span>EKVUE</span>
+      </div>
+      <div class="footer-links">
+        <a href="../index.html#features">Features</a>
+        <a href="../index.html#pricing">Pricing</a>
+        <a href="../index.html#resources">Resources</a>
+        <a href="../index.html#contact">Contact</a>
+      </div>
+      <div class="footer-copy">© 2026 EKVUE. Built for interview teams that move fast.</div>
+    </footer>
+  </div>
+
+  <script src="signup.js?v=1.0.4" defer></script>
+  <!-- Real-time Multi-Laptop Network Sync Bridge -->
+  <script src="../dashboards/utils.js" type="module"></script>
+  <!-- Global Help Assistant Chatbot -->
+  <script src="../help-chatbot.js?v=1.0.4" type="module"></script>
+</body>
+</html>
+

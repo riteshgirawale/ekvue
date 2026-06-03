@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interviewer Evaluation | EKVUE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --surface-dark: rgba(15, 23, 42, 0.45);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --accent-color: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.4);
+      --star-color: #fbbf24;
+      --star-glow: rgba(251, 191, 36, 0.5);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 40%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    .glass-card {
+      background: var(--surface-dark);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 40px 30px;
+      width: 100%;
+      max-width: 580px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      text-align: center;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .header-group {
+      margin-bottom: 30px;
+    }
+
+    .brand-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #818cf8;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    .interviewer-profile {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 24px auto;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      width: fit-content;
+    }
+
+    .avatar-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4f46e5 0%, #312e81 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .profile-details {
+      text-align: left;
+    }
+
+    .profile-details strong {
+      font-size: 14px;
+      color: #fff;
+      display: block;
+    }
+
+    .profile-details span {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .rating-section {
+      margin: 30px 0;
+    }
+
+    .rating-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #a5b4fc;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .stars-container {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .star {
+      font-size: 32px;
+      color: rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-shadow: 0 0 10px transparent;
+    }
+
+    .star:hover {
+      transform: scale(1.25);
+    }
+
+    .star.selected {
+      color: var(--star-color);
+      text-shadow: 0 0 15px var(--star-glow);
+    }
+
+    .star.active-hover {
+      color: var(--star-color);
+    }
+
+    .score-feedback {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      min-height: 26px;
+      margin-top: 10px;
+    }
+
+    .slider-group {
+      margin: 25px 0;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .slider-header label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .slider-header span {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-color);
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent-color);
+      box-shadow: 0 0 10px var(--accent-glow);
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .field {
+      text-align: left;
+      margin-bottom: 24px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #a5b4fc;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      background: rgba(2, 6, 23, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #fff;
+      font-size: 13px;
+      resize: none;
+      outline: none;
+      transition: all 0.25s ease;
+    }
+
+    textarea:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 12px var(--accent-glow);
+      background: rgba(2, 6, 23, 0.6);
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      outline: none;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
+      transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(16, 185, 129, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 12px 24px;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 100;
+    }
+
+    .toast.show {
+      bottom: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glass-card">
+    <div class="header-group">
+      <span class="brand-badge">EkVue Live Interview</span>
+      <h1>How was your interview?</h1>
+      <p class="subtitle">Your feedback is 100% confidential and is used to calibrate and improve recruiters' assessment round standards.</p>
+    </div>
+
+    <!-- Active Interviewer profile header card -->
+    <div class="interviewer-profile" id="interviewerProfileCard">
+      <div class="avatar-circle" id="interviewerAvatar">I</div>
+      <div class="profile-details">
+        <strong id="interviewerName">Senior Interviewer</strong>
+        <span id="interviewRole">Live Coding Session</span>
+      </div>
+    </div>
+
+    <!-- 10-Star Rating Segment -->
+    <div class="rating-section">
+      <span class="rating-label">Rate Overall Experience</span>
+      <div class="stars-container" id="starsContainer">
+        <!-- 10 Stars generated dynamically -->
+      </div>
+      <div class="score-feedback" id="scoreFeedback">Select a star to rate</div>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 25px 0;">
+
+    <!-- Slider assessment segments -->
+    <div class="slider-group">
+      <div class="slider-row">
+        <div class="slider-header">
+          <label>Interviewer Professionalism & Friendliness</label>
+          <span id="val-professionalism">8/10</span>
+        </div>
+        <input type="range" id="slider-professionalism" min="1" max="10" value="8">
+      </div>
+
+      <div class="slider-row">
+        <div class="slider-header">
+          <label>Technical Helpfulness & Clarity</label>
+          <span id="val-helpfulness">8/10</span>
+        </div>
+        <input type="range" id="slider-helpfulness" min="1" max="10" value="8">
+      </div>
+    </div>
+
+    <!-- Text area feedback -->
+    <div class="field">
+      <label for="feedbackComments">Share your thoughts (Optional)</label>
+      <textarea id="feedbackComments" placeholder="What did the interviewer do well? What could be improved?"></textarea>
+    </div>
+
+    <button class="btn-submit" id="submitReviewBtn" type="button">Submit Feedback</button>
+  </div>
+
+  <div class="toast" id="successToast">✓ Review submitted successfully! Redirecting...</div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let selectedRating = 0;
+      let meetingId = '';
+      let interviewerName = 'Senior Interviewer';
+      let candidateName = 'Candidate';
+
+      // Load last meeting details from ekvueLiveInterviews
+      try {
+        const raw = localStorage.getItem('ekvueLiveInterviews');
+        const meetings = raw ? JSON.parse(raw) : [];
+        // Sort by lastUpdated or pick the most recent one that was Completed or active
+        if (meetings.length > 0) {
+          // Sort descending
+          meetings.sort((a, b) => new Date(b.lastUpdated || 0) - new Date(a.lastUpdated || 0));
+          const latest = meetings[0];
+          meetingId = latest.meetingId;
+          interviewerName = latest.interviewerName || 'Sarah Johnson';
+          candidateName = latest.candidateName || 'Candidate';
+          
+          document.getElementById('interviewerName').textContent = interviewerName;
+          document.getElementById('interviewerAvatar').textContent = interviewerName.charAt(0).toUpperCase();
+          document.getElementById('interviewRole').textContent = (latest.selectedLanguage ? latest.selectedLanguage + ' Assessment' : 'Live Coding Session');
+        }
+      } catch (e) {
+        console.error('Failed to parse active interview details', e);
+      }
+
+      // Generate 10 Stars dynamically
+      const starsContainer = document.getElementById('starsContainer');
+      const scoreFeedback = document.getElementById('scoreFeedback');
+      
+      const ratingDescriptions = {
+        1: 'Extremely Poor (1/10)',
+        2: 'Very Poor (2/10)',
+        3: 'Poor (3/10)',
+        4: 'Below Average (4/10)',
+        5: 'Average Experience (5/10)',
+        6: 'Satisfactory (6/10)',
+        7: 'Good experience (7/10)',
+        8: 'Very Good (8/10)',
+        9: 'Outstanding Round (9/10)',
+        10: 'Perfect Interview! (10/10)'
+      };
+
+      for (let i = 1; i <= 10; i++) {
+        const star = document.createElement('span');
+        star.className = 'star';
+        star.innerHTML = '★';
+        star.dataset.value = i;
+        
+        star.addEventListener('mouseenter', () => {
+          highlightStars(i);
+          scoreFeedback.textContent = ratingDescriptions[i] || `${i}/10`;
+        });
+
+        star.addEventListener('mouseleave', () => {
+          highlightStars(selectedRating);
+          scoreFeedback.textContent = selectedRating ? (ratingDescriptions[selectedRating] || `${selectedRating}/10`) : 'Select a star to rate';
+        });
+
+        star.addEventListener('click', () => {
+          selectedRating = i;
+          highlightStars(i);
+          scoreFeedback.textContent = ratingDescriptions[i] || `${i}/10`;
+          star.classList.add('selected');
+        });
+
+        starsContainer.appendChild(star);
+      }
+
+      function highlightStars(count) {
+        const stars = starsContainer.querySelectorAll('.star');
+        stars.forEach((star, index) => {
+          if (index < count) {
+            star.classList.add('selected');
+          } else {
+            star.classList.remove('selected');
+          }
+        });
+      }
+
+      // Bind Slider change feeds
+      const sliders = ['professionalism', 'helpfulness'];
+      sliders.forEach(id => {
+        const slider = document.getElementById(`slider-${id}`);
+        const indicator = document.getElementById(`val-${id}`);
+        slider.addEventListener('input', () => {
+          indicator.textContent = `${slider.value}/10`;
+        });
+      });
+
+      // Submit Review Action
+      const submitBtn = document.getElementById('submitReviewBtn');
+      submitBtn.addEventListener('click', () => {
+        if (selectedRating === 0) {
+          alert('Please select a star rating out of 10 for your overall experience.');
+          return;
+        }
+
+        const comments = document.getElementById('feedbackComments').value;
+        const professionalism = document.getElementById('slider-professionalism').value;
+        const helpfulness = document.getElementById('slider-helpfulness').value;
+
+        // Build review object
+        const review = {
+          id: 'rev_' + Date.now() + '_' + Math.floor(Math.random()*1000),
+          meetingId,
+          interviewerName,
+          candidateName,
+          overallRating: selectedRating,
+          professionalismRating: parseInt(professionalism),
+          helpfulnessRating: parseInt(helpfulness),
+          comments,
+          submittedAt: new Date().toISOString()
+        };
+
+        // Save review record to localStorage
+        try {
+          const raw = localStorage.getItem('ekvueInterviewerReviews');
+          let reviews = raw ? JSON.parse(raw) : [];
+          if (!Array.isArray(reviews)) reviews = [];
+          reviews.push(review);
+          localStorage.setItem('ekvueInterviewerReviews', JSON.stringify(reviews));
+        } catch (e) {
+          console.error('Failed to commit interviewer review', e);
+        }
+
+        // Show elegant success toast
+        const toast = document.getElementById('successToast');
+        toast.classList.add('show');
+
+        // Redirect smoothly after 2 seconds
+        setTimeout(() => {
+          window.location.href = './candidate.html';
+        }, 2000);
+      });
+    });
+  </script>
+</body>
+</html>

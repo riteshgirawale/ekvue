@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Site Administrator | EKVUE</title>
+    <link rel="stylesheet" href="./admin.css" />
+  
+    <script src="/dashboards/mongo-sync.js"></script>
+</head>
+  <body>
+    <div class="dash-shell">
+      <div class="surface">
+        <aside class="sidebar">
+          <div class="brandline">
+            <div class="mark">&lt;AD/&gt;</div>
+            <div>
+              <strong>EkVue Admin</strong><br />
+              <span style="color:#d8b4fe; font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">Super Administrator</span>
+            </div>
+          </div>
+
+          <nav class="side-nav" id="sidebar-menu">
+            <a class="active" href="#" data-view="dashboard"><span class="dot"></span>Diagnostics</a>
+            <a href="#" data-view="accounts"><span class="dot"></span>Accounts Registry</a>
+            <a href="#" data-view="live-monitor"><span class="dot"></span>Live Call Monitor</a>
+            <a href="#" data-view="system-logs"><span class="dot"></span>System Logs</a>
+          </nav>
+          
+          <div style="margin-top:auto; padding:16px; border-top:1px solid rgba(255,255,255,0.06); text-align:center;">
+            <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.2); padding:4px 10px; border-radius:50px; font-size:10.5px; color:#10b981; font-weight:700; font-family:monospace;">
+              <span class="webcam-dot" style="width:7px; height:7px; background:#10b981; border-radius:50%; display:inline-block;"></span>
+              RELAY ACTIVE
+            </div>
+          </div>
+        </aside>
+
+        <main class="main">
+          <div class="toprow">
+            <div class="brandline" style="padding:0">
+              <div class="mark" style="background:linear-gradient(135deg, #a855f7, #6366f1)">&lt;AD/&gt;</div>
+              <strong style="font-size:16px;">EkVue Console</strong>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:14px; margin-left:auto;">
+              <div style="text-align:right; font-family:monospace; font-size:11px; color:#64748b;">
+                Active: <span id="session-active-clock" style="color:#a78bfa; font-weight:800;">00:00</span>
+              </div>
+              <div class="userbox" style="margin:0;">
+                <div class="avatar" style="background:linear-gradient(135deg, #a855f7, #6366f1)">A</div>
+                <div class="pill" style="border-color:rgba(168,85,247,0.3); color:#d8b4fe">Admin</div>
+                <button class="btn small" id="logoutBtn" type="button" style="border-color:rgba(239,68,68,0.2); background:rgba(239,68,68,0.05); color:#fca5a5;">Exit Shell</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Dashboard / Diagnostics
+               ========================================== -->
+          <div id="view-dashboard" class="view-content active">
+            <div class="welcome">
+              <h1>System Diagnostics Console</h1>
+              <p>Real-time analytics dashboard monitoring serverless WebSocket traffic and client registries.</p>
+            </div>
+
+            <section class="kpis">
+              <div class="card kpi">
+                <div class="left">
+                  <strong id="kpiTotalUsers">0</strong>
+                  <small>Accounts Created</small>
+                </div>
+                <div class="ico" style="background:rgba(99,102,241,0.08); color:#6366f1;">👥</div>
+              </div>
+              <div class="card kpi">
+                <div class="left">
+                  <strong id="kpiLiveInterviews">0</strong>
+                  <small>Conducted Exams</small>
+                </div>
+                <div class="ico" style="background:rgba(16,185,129,0.08); color:#10b981;">🎙️</div>
+              </div>
+              <div class="card kpi">
+                <div class="left">
+                  <strong id="kpiAtsAvg">0%</strong>
+                  <small>Avg Resume ATS</small>
+                </div>
+                <div class="ico" style="background:rgba(245,158,11,0.08); color:#f59e0b;">📄</div>
+              </div>
+              <div class="card kpi">
+                <div class="left">
+                  <strong id="kpiNetworkSpike">1.8 kb/s</strong>
+                  <small>WebSockets Latency</small>
+                </div>
+                <div class="ico" style="background:rgba(236,72,153,0.08); color:#ec4899;">⚡</div>
+              </div>
+            </section>
+
+            <section class="grid">
+              <div class="card section" style="padding:16px;">
+                <div class="header-row">
+                  <div>
+                    <h2>Engagement Duration Analytics</h2>
+                    <div class="muted">Active candidate/recruiter session durations</div>
+                  </div>
+                  <span style="font-family:monospace; font-size:11px; color:#10b981; background:rgba(16,185,129,0.05); border:1px solid rgba(16,185,129,0.2); padding:2px 8px; border-radius:50px; font-weight:700;">LIVE FEED</span>
+                </div>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:14px;">
+                  <div style="background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); border-radius:12px; padding:14px; text-align:center;">
+                    <small style="color:#64748b; font-weight:800; text-transform:uppercase; font-size:10px; display:block; margin-bottom:4px;">Candidate Proctoring Duration</small>
+                    <strong style="font-size:32px; color:white; font-family:monospace;" id="stats-candidate-time">00m 00s</strong>
+                    <div style="font-size:11.5px; color:#cbd5e1; margin-top:8px;">Avg active assessment duration logged.</div>
+                  </div>
+                  <div style="background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); border-radius:12px; padding:14px; text-align:center;">
+                    <small style="color:#64748b; font-weight:800; text-transform:uppercase; font-size:10px; display:block; margin-bottom:4px;">Interviewer Live Duration</small>
+                    <strong style="font-size:32px; color:white; font-family:monospace;" id="stats-interviewer-time">00m 00s</strong>
+                    <div style="font-size:11.5px; color:#cbd5e1; margin-top:8px;">Average call sync monitoring loop.</div>
+                  </div>
+                </div>
+
+                <div style="margin-top:16px; border-top:1px solid rgba(255,255,255,0.06); padding-top:14px;">
+                  <h3 style="font-size:12.5px; color:white; margin:0 0 10px 0;">Role Demographic Breakdown</h3>
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <div>
+                      <div style="display:flex; justify-content:space-between; font-size:11.5px; margin-bottom:4px;">
+                        <span>Candidates (Students)</span>
+                        <span id="pct-label-candidates" style="font-weight:800;">0%</span>
+                      </div>
+                      <div class="progress-track" style="height:6px; background:rgba(255,255,255,0.03); border-radius:10px; overflow:hidden;">
+                        <div id="progress-bar-candidates" style="width:0%; height:100%; background:linear-gradient(90deg, #6366f1, #a855f7); transition:width .5s ease;"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div style="display:flex; justify-content:space-between; font-size:11.5px; margin-bottom:4px;">
+                        <span>Companies (Recruiters)</span>
+                        <span id="pct-label-companies" style="font-weight:800;">0%</span>
+                      </div>
+                      <div class="progress-track" style="height:6px; background:rgba(255,255,255,0.03); border-radius:10px; overflow:hidden;">
+                        <div id="progress-bar-companies" style="width:0%; height:100%; background:linear-gradient(90deg, #f59e0b, #eab308); transition:width .5s ease;"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div style="display:flex; justify-content:space-between; font-size:11.5px; margin-bottom:4px;">
+                        <span>Interviewers (TA & Leads)</span>
+                        <span id="pct-label-interviewers" style="font-weight:800;">0%</span>
+                      </div>
+                      <div class="progress-track" style="height:6px; background:rgba(255,255,255,0.03); border-radius:10px; overflow:hidden;">
+                        <div id="progress-bar-interviewers" style="width:0%; height:100%; background:linear-gradient(90deg, #10b981, #059669); transition:width .5s ease;"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="action-col">
+                <div class="card section" style="padding:16px;">
+                  <div class="header-row">
+                    <h2>Core Data Operations</h2>
+                    <div class="muted">Seed or clear database</div>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:12px; margin-top:12px;">
+                    <button class="btn primary" id="seedDatabaseBtn" type="button" style="background:linear-gradient(90deg, #8b5cf6, #6366f1); border-color:rgba(139,92,246,0.3); font-weight:800; font-size:12.5px; padding:10px;">
+                      🌱 Seed Database (Demo Mode)
+                    </button>
+                    <p style="font-size:11px; color:#64748b; line-height:1.4; margin:0;">
+                      Seeds candidate scorecards, scheduled calendars, job openings, and default mock accounts.
+                    </p>
+                    
+                    <button class="btn" id="simulateSpikeBtn" type="button" style="background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.06); color:white; font-size:12px; padding:8px 12px; font-weight:700;">
+                      ⚡ Simulate WebSocket Spikes
+                    </button>
+                    
+                    <button class="btn" id="wipeAllDataBtn" type="button" style="background:rgba(239,68,68,0.1); border-color:rgba(239,68,68,0.2); color:#fecaca; font-size:12px; padding:8px 12px; font-weight:700; margin-top:8px;">
+                      ⚠️ Danger: Flush EKVUE Local DB
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Accounts Registry
+               ========================================== -->
+          <div id="view-accounts" class="view-content">
+            <div class="welcome">
+              <h1>Registered Accounts Directory</h1>
+              <p>Manage and filter all candidate, recruiter company, and interviewer user registries. Deletions propagate globally in real time.</p>
+            </div>
+
+            <div class="card section" style="padding:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:14px; flex-wrap:wrap;">
+                <div style="display:flex; gap:10px; align-items:center; flex-grow:1; max-width:400px;">
+                  <input type="text" id="account-search-input" class="workspace-search" style="margin:0; padding:8px 12px;" placeholder="Search by name, email, or credentials...">
+                </div>
+                <div style="display:flex; gap:10px; align-items:center;">
+                  <select id="account-role-filter" class="workspace-select" style="margin:0; padding:6px 12px; height:34px; font-size:12px;">
+                    <option value="all">All Roles</option>
+                    <option value="Candidate">Candidates</option>
+                    <option value="Company">Companies</option>
+                    <option value="Interviewer">Interviewers</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="overflow-x:auto;">
+                <table class="admin-data-table">
+                  <thead>
+                    <tr>
+                      <th>User Profile</th>
+                      <th>Registered Role</th>
+                      <th>Registered Credentials</th>
+                      <th>Creation Timestamp</th>
+                      <th style="text-align:right;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="accounts-table-body">
+                    <!-- Dynamic from JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: Live Call Monitor Feed
+               ========================================== -->
+          <div id="view-live-monitor" class="view-content">
+            <div class="welcome">
+              <h1>WebSockets Exam Call Monitor</h1>
+              <p>Continuous network synchronization interceptor tracking active proctor telemetry scorecards and proctor alarms.</p>
+            </div>
+
+            <div class="card section" style="padding:16px;">
+              <div class="header-row">
+                <div>
+                  <h2>Active Handshake Assessors</h2>
+                  <div class="muted">Exams securely connected over global PieSocket</div>
+                </div>
+                <div id="monitor-active-indicator" style="display:inline-flex; align-items:center; gap:6px; background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.2); padding:4px 10px; border-radius:50px; font-size:10.5px; color:#10b981; font-weight:800; font-family:monospace;">
+                  <span class="webcam-dot" style="width:7px; height:7px; background:#10b981; border-radius:50%; display:inline-block;"></span>
+                  LISTENING...
+                </div>
+              </div>
+
+              <div id="active-live-monitor-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px;">
+                <!-- Dynamic cards from JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- ==========================================
+               VIEW: System Diagnostics Log Ledger
+               ========================================== -->
+          <div id="view-system-logs" class="view-content">
+            <div class="welcome">
+              <h1>System Audit Logs Ledger</h1>
+              <p>Audit ledger scroll capturing core recruiter bookings, completed scorecards, and proctoring infractions.</p>
+            </div>
+
+            <div class="card section" style="padding:16px; background:#040612; border-color:rgba(168,85,247,0.2);">
+              <div class="header-row" style="border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:10px; margin-bottom:12px;">
+                <h2 style="font-family:monospace; font-size:14px; color:#a78bfa;">ledger_diagnostics_shell.sh</h2>
+                <button class="btn small" id="clearSystemLogsBtn" type="button" style="background:rgba(255,255,255,0.02); border-color:rgba(255,255,255,0.06); color:#94a3b8; font-size:11px; padding:4px 10px;">Clear Console</button>
+              </div>
+
+              <div id="diagnostics-terminal-feed" class="terminal-feed-scroll">
+                <!-- Dynamic ledger timeline from JS -->
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script type="module" src="./admin.js"></script>
+  </body>
+</html>
