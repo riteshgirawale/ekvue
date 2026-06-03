@@ -268,7 +268,7 @@ function setupOTPVerification(rolePrefix, emailInputId) {
       
       if (data.success) {
         otpSection.classList.remove('hidden');
-        errorEl.textContent = 'OTP sent! Please check your email.';
+        errorEl.textContent = data.message || 'OTP sent! Please check your email.';
         errorEl.style.color = '#22c55e';
         digits[0].focus();
       } else {
