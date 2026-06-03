@@ -1478,26 +1478,13 @@ Important guidelines:
     };
 
     let response;
-    try {
-      response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`
-        },
-        body: JSON.stringify(apiPayload)
-      });
-    } catch (directErr) {
-      console.warn("Direct OpenAI fetch failed, attempting proxy fallback...", directErr);
-      response = await fetch("https://corsproxy.io/?url=" + encodeURIComponent("https://api.openai.com/v1/chat/completions"), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`
-        },
-        body: JSON.stringify(apiPayload)
-      });
-    }
+    response = await fetch("/api/generate-challenge", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(apiPayload)
+    });
 
     if (!response.ok) {
       throw new Error(`API returned HTTP error ${response.status}`);
