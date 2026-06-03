@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="space">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Coding Board | EKVUE</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../dashboard.css?v=1.0.3">
+  <link rel="stylesheet" href="mock-interview.css">
+  
+  <!-- MediaPipe Face Detection -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/face_detection.js" crossorigin="anonymous"></script>
+</head>
+<body data-theme="space">
+
+  <div class="app-wrapper">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="top-left">
+        <div class="logo-brand">
+          <span class="logo-icon-badge">&lt;/&gt;</span>
+          <span>EkVue</span>
+        </div>
+        <div class="board-title">Live Coding Board with Interviewer rite</div>
+      </div>
+      <div class="top-right">
+        <div class="proctor-badge">AI Proctoring Active</div>
+        <div class="timer">01:58</div>
+        <button class="end-btn-top" id="endBtnTop">End Interview</button>
+      </div>
+    </div>
+
+    <!-- Lobby Wrapper -->
+    <div class="lobby-wrapper" id="lobbyWrapper">
+      <div class="lobby-left">
+        <div class="lobby-header-text">
+          <div>
+            <h2>Join the Interview</h2>
+            <p>Make sure your camera, mic & internet are working properly.</p>
+          </div>
+          <button class="help-btn">❔ Need Help?</button>
+        </div>
+        
+        <div class="lobby-video-box">
+          <video id="lobbyPreviewVideo" autoplay muted playsinline></video>
+          <div class="lobby-badge top-left"><span style="color:var(--color-emerald)">●</span> You (Candidate)</div>
+          <div class="lobby-gear">⚙️</div>
+          <div class="lobby-badge bottom-left">⚏ Background Blur <span style="color:var(--color-emerald); margin-left:4px;">✓ On</span></div>
+        </div>
+        
+        <div class="device-checks">
+          <div class="device-card">
+            <div class="device-icon">📹</div>
+            <div class="device-text">
+              <strong>Camera</strong>
+              <span>HD Camera</span>
+            </div>
+            <div class="device-ok">✓</div>
+          </div>
+          <div class="device-card">
+            <div class="device-icon">🎙️</div>
+            <div class="device-text">
+              <strong>Microphone</strong>
+              <span style="color:var(--color-emerald)">Working Properly</span>
+            </div>
+            <div class="device-ok">✓</div>
+          </div>
+          <div class="device-card">
+            <div class="device-icon">📶</div>
+            <div class="device-text">
+              <strong>Internet</strong>
+              <span style="color:var(--color-emerald)">Stable Connection</span>
+            </div>
+            <div class="device-ok">✓</div>
+          </div>
+        </div>
+        
+        <button class="join-huge-btn" id="lobbyJoinBtn">📹 Join Now</button>
+        <div class="join-notice">🔒 You will join the interview session</div>
+      </div>
+      
+      <div class="lobby-right">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+          <span style="font-size:20px; color:var(--color-purple);">💡</span>
+          <h3 style="margin:0; font-size:16px;">Instructions</h3>
+        </div>
+        <ul class="instructions-list">
+          <li><span class="check-circle">✓</span> Ensure you are in a quiet environment</li>
+          <li><span class="check-circle">✓</span> Keep your camera ON throughout the session</li>
+          <li><span class="check-circle">✓</span> Do not refresh or leave the page</li>
+          <li><span class="check-circle">✓</span> Click "Join Now" when you are ready</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Live Board Wrapper (Hidden Initially) -->
+    <div id="liveBoardWrapper" class="hidden" style="display:flex; flex-direction:column; flex:1; min-height:0; gap:12px;">
+      <!-- Main Grid -->
+      <div class="main-grid">
+      
+      <!-- Left Column (Video + IDE) -->
+      <div class="left-column">
+        <!-- Video Section -->
+        <div class="video-section">
+          <video id="mainVideo" class="main-video-feed" autoplay muted playsinline></video>
+          <div class="rec-indicator">REC</div>
+          <div class="face-bounding-box hidden" id="boundingBox"></div>
+          
+          <div class="camera-off-placeholder hidden" id="cameraOffPlaceholder">
+            <div class="placeholder-avatar">R</div>
+            <div class="placeholder-text">Camera is turned off</div>
+          </div>
+          
+          <div class="ai-loading" id="aiLoading">Loading AI Models...</div>
+          
+          <div class="video-label-bottom">
+            <div class="mic-level"><span></span><span></span><span></span></div>
+            rite (Candidate)
+          </div>
+
+          <div class="stability-container">
+            <div class="stability-label">Stability Lock: <span id="stabilityScoreText">100%</span></div>
+            <div class="stability-bar-bg">
+              <div class="stability-bar-fill" id="stabilityBarFill" style="width: 100%;"></div>
+            </div>
+          </div>
+
+          <div class="pip-video-container">
+            <video id="pipVideo" class="pip-video" autoplay muted playsinline></video>
+            <div class="pip-label">rite (Interviewer)</div>
+          </div>
+        </div>
+
+        <!-- Editor Section -->
+        <div class="editor-section">
+          <!-- Live Code (Left Pane) -->
+          <div class="ide-left">
+            <div class="ide-header">
+              <div class="ide-tabs">
+                <button class="ide-tab active">Live Code</button>
+                <button class="ide-tab">Run</button>
+              </div>
+              <div class="ide-controls">
+                <select class="lang-select" id="langSelect">
+                  <option value="typescript-deno">JavaScript / TypeScript (Deno)</option>
+                  <option value="python-3.14">Python 3.14</option>
+                  <option value="g++-15">C++ (G++ 15)</option>
+                  <option value="gcc-15">C (GCC 15)</option>
+                  <option value="openjdk-25">Java (OpenJDK 25)</option>
+                  <option value="dotnet-csharp-9">C# (.NET 9)</option>
+                  <option value="dotnet-fsharp-9">F# (.NET 9)</option>
+                  <option value="php-8.5">PHP 8.5</option>
+                  <option value="ruby-4.0">Ruby 4.0</option>
+                  <option value="go-1.26">Go 1.26</option>
+                  <option value="rust-1.93">Rust 1.93</option>
+                  <option value="haskell-9.12">Haskell 9.12</option>
+                </select>
+                <button class="toolbar-btn">⛶</button>
+              </div>
+            </div>
+            
+            <div class="code-area">
+              <div class="line-numbers" id="lineNumbers">1</div>
+              <textarea class="code-editor" id="codeEditor" spellcheck="false" wrap="off">
+function lengthOfLongestSubstring(s) {
+  let maxLength = 0;
+  let start = 0;
+  const seen = new Map();
+
+  for (let i = 0; i < s.length; i += 1) {
+    if (seen.has(s[i])) {
+      start = Math.max(start, seen.get(s[i]) + 1);
+    }
+    seen.set(s[i], i);
+  }
+  return maxLength;
+}
+</textarea>
+            </div>
+            
+            <div class="ide-footer">
+              <div style="display:flex; gap:12px;">
+                <button class="run-btn" id="runBtn">▶ Run Code</button>
+                <button class="reset-btn" id="resetBtn">Reset</button>
+              </div>
+              <div class="status-text">Status: <span>Open for coding</span></div>
+            </div>
+          </div>
+
+          <!-- Prompt / Console (Right Pane) -->
+          <div class="ide-right">
+            <div class="ide-header">
+              <div class="ide-tabs">
+                <button class="ide-tab active" data-target="promptView">Prompt</button>
+                <button class="ide-tab" data-target="consoleView">Console</button>
+                <button class="ide-tab">Testcases</button>
+              </div>
+              <button class="toolbar-btn" style="font-size:12px;">Clear</button>
+            </div>
+            
+            <!-- Prompt View -->
+            <div class="prompt-content" id="promptView">
+              <h2>Longest Substring Without Repeating Characters</h2>
+              <div class="tag-line">String • Medium</div>
+              <p>Given a string `s`, find the length of the longest substring without repeating characters. Optimal solutions should operate inside linear O(N) time.</p>
+            </div>
+            
+            <!-- Console View -->
+            <div class="console-content hidden" id="consoleView">
+              Ready to compile...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column (Chat + Notes) -->
+      <div class="right-column">
+        <!-- Live Chat Section -->
+        <div class="chat-section">
+          <div class="panel-header">
+            <h3>💬 Live Chat</h3>
+            <div class="dropdown-badge">Everyone ⌄</div>
+          </div>
+          
+          <div class="chat-history" id="chatHistory">
+            <div class="chat-msg msg-interviewer">
+              <strong>rite</strong>
+              Hi rit! I'm Sarah Johnson. Welcome to your live technical assessment round. I'll be assessing your engineering capabilities today. To kick off, please introduce yourself and outline any recent complex engineering trade-offs you balanced.
+            </div>
+            
+            <div class="proctor-alert-box">
+              <h4>System Proctor</h4>
+              <p>PROCTOR SECURITY LOCK: Candidate shared secondary window. Telemetry is active.</p>
+            </div>
+          </div>
+          
+          <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Type a message...">
+            <button class="send-btn" id="chatSendBtn">➤</button>
+          </div>
+        </div>
+
+        <!-- Notes Section -->
+        <div class="notes-section">
+          <div class="panel-header">
+            <h3>📝 Notes</h3>
+          </div>
+          <div class="notes-toolbar">
+            <button class="toolbar-btn">B</button>
+            <button class="toolbar-btn">I</button>
+            <button class="toolbar-btn">≡</button>
+            <button class="toolbar-btn">ul</button>
+            <button class="toolbar-btn">&lt;&gt;</button>
+            <button class="toolbar-btn">🔗</button>
+          </div>
+          <textarea class="notes-area" placeholder="Write your notes here..."></textarea>
+          <div class="notes-footer">
+            <span>Saved automatically</span>
+            <span style="color:var(--color-emerald)">✓</span>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="bottom-bar">
+      <button class="control-pill active-state" id="bottomMic">🎙️ Mic</button>
+      <button class="control-pill active-state" id="bottomCam">📷 Camera</button>
+      <button class="control-pill active-state purple">💻 Screen Share</button>
+      <button class="control-pill active-state" id="bottomChat">💬 Chat</button>
+      <button class="control-pill active-state" id="bottomNotes">📝 Notes</button>
+      <button class="control-pill active-state" id="bottomEditor">💻 Code Editor</button>
+      <button class="control-pill">✋ Raise Hand</button>
+      <button class="control-pill">••• More</button>
+      <button class="control-pill end-call">End Interview</button>
+      
+      <button class="icon-btn-circle">👤</button>
+    </div>
+    </div> <!-- liveBoardWrapper -->
+  </div> <!-- app-wrapper -->
+
+  <script src="mock-interview.js"></script>
+</body>
+</html>
