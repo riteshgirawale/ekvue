@@ -225,12 +225,13 @@
                   <div class="workspace-selectors-row" style="display: flex; gap: 16px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 16px;">
                     <div style="display: flex; flex-direction: column; gap: 6px; flex: 1;">
                       <label style="font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Topic</label>
-                      <select id="workspace-topic-select" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: white; border-radius: 8px; padding: 8px 12px; font-size: 12.5px; font-weight: 700; outline: none; cursor: pointer; width: 100%;">
-                        <option value="Array">Arrays & Hashing</option>
-                        <option value="String">Strings</option>
-                        <option value="Tree">Trees & DFS/BFS</option>
-                        <option value="Dynamic Programming">Dynamic Programming</option>
-                      </select>
+                      <input list="workspace-topic-options" id="workspace-topic-select" placeholder="e.g. System Design..." style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: white; border-radius: 8px; padding: 8px 12px; font-size: 12.5px; font-weight: 700; outline: none; width: 100%;">
+                      <datalist id="workspace-topic-options">
+                        <option value="Arrays & Hashing"></option>
+                        <option value="Strings"></option>
+                        <option value="Trees & DFS/BFS"></option>
+                        <option value="Dynamic Programming"></option>
+                      </datalist>
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 6px; flex: 1;">
                       <label style="font-size: 11px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;">Difficulty</label>
