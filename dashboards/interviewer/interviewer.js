@@ -1630,7 +1630,7 @@ async function executeWithJudge0Interviewer(sourceCode, language, stdin = '') {
   const customApiKey = localStorage.getItem('ekvueOnlineCompilerApiKey') || localStorage.getItem('onlineCompilerApiKey');
 
   try {
-    const response = await fetch('http://localhost:3000/run-code', {
+    const response = await fetch('/run-code', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

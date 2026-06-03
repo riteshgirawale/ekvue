@@ -37,7 +37,7 @@
     var customApiKey = localStorage.getItem('ekvueOnlineCompilerApiKey') || localStorage.getItem('onlineCompilerApiKey');
 
     try {
-      var response = await fetch('http://localhost:3000/run-code', {
+      var response = await fetch('/run-code', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

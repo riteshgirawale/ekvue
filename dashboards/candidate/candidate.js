@@ -1406,7 +1406,7 @@ async function generateAiQuestion() {
     statementCard.appendChild(loader);
   }
 
-  const apiKey = 'YOUR_OPENAI_API_KEY';
+  // API key removed for security; using backend proxy
   let generatedProblem = null;
 
   try {
