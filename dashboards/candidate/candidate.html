@@ -28,6 +28,7 @@
             <a href="#" data-view="problems"><span class="dot"></span>Problems</a>
             <a href="#" data-view="practice"><span class="dot"></span>Practice</a>
             <a href="#" data-view="mock-interviews"><span class="dot"></span>Mock Interviews</a>
+            <a href="#" data-view="saved-notes"><span class="dot"></span>Saved Notes</a>
             <a href="#" data-view="progress"><span class="dot"></span>Progress</a>
             <a href="#" data-view="leaderboard"><span class="dot"></span>Leaderboard</a>
             <a href="#" data-view="resume-builder"><span class="dot"></span>Resume Builder</a>
@@ -91,7 +92,20 @@
             </div>
           </div>
 
+
           <!-- ==========================================
+               SAVED NOTES VIEW
+               ========================================== -->
+          <div id="view-saved-notes" class="view-content">
+            <div class="welcome">
+              <h2>Your Saved Notes</h2>
+              <p>Review the notes you took during your mock interviews.</p>
+            </div>
+            <div id="saved-notes-react-root"></div>
+          </div>
+
+          <!-- ==========================================
+
                VIEW: Dashboard
                ========================================== -->
           <div id="view-dashboard" class="view-content active">
@@ -965,6 +979,8 @@ Hosted mock peer interview rooms, supporting active scorecard reviews.</textarea
     <script src="./candidate.js?v=2.0.0-nomod"></script>
     <!-- Load active jobs React component (JSX script compiled by Babel standalone) -->
     <script type="text/babel" src="./active-jobs.js"></script>
+    <script type="text/babel" src="./saved-notes.js"></script>
+    <script type="text/babel" src="./saved-notes.js"></script>
   </body>
 </html>
 
