@@ -2658,11 +2658,20 @@ function renderJobDetails() {
 // VIEW 6: INTERVIEWER SETTINGS
 // ==========================================
 function renderSettings() {
-  // Populate form inputs
-  document.getElementById('profileName').value = state.profile.name;
-  document.getElementById('profileRole').value = state.profile.role;
+  // Populate form inputs from profile and user account
+  document.getElementById('profileName').value = state.profile.name || '';
+  document.getElementById('profileRole').value = state.profile.role || '';
   document.getElementById('profileDep').value = state.profile.dep || '';
   document.getElementById('profileBio').value = state.profile.bio || '';
+
+  // Populate new fields from user account data
+  const emailEl = document.getElementById('profileEmail');
+  const companyEl = document.getElementById('profileCompany');
+  const expEl = document.getElementById('profileExperience');
+
+  if (emailEl) emailEl.value = (state.user && state.user.email) || state.profile.email || '';
+  if (companyEl) companyEl.value = state.profile.company || (state.user && state.user.company) || '';
+  if (expEl) expEl.value = state.profile.experience || (state.user && state.user.experience) || '';
 
   // Render Theme selections
   const cards = document.querySelectorAll('.theme-card-option');
@@ -2686,6 +2695,8 @@ function setupSettingsListeners() {
       const role = document.getElementById('profileRole').value.trim();
       const dep = document.getElementById('profileDep').value.trim();
       const bio = document.getElementById('profileBio').value.trim();
+      const company = (document.getElementById('profileCompany') || {}).value || '';
+      const experience = (document.getElementById('profileExperience') || {}).value || '';
 
       if (!name || !role) {
         if (errMsg) {
@@ -2695,19 +2706,36 @@ function setupSettingsListeners() {
         return;
       }
 
-      state.profile = { name, role, dep, bio };
+      // Save all fields to profile
+      state.profile = { name, role, dep, bio, company: company.trim(), experience: experience.trim(), email: (state.user && state.user.email) || state.profile.email || '' };
       localStorage.setItem(PROFILE_KEY, JSON.stringify(state.profile));
 
-      // Propagate name change to Session
+      // Propagate changes to user session
       if (state.user) {
         state.user.name = name;
         state.user.fullName = name;
+        state.user.title = role;
+        state.user.company = company.trim();
+        state.user.experience = experience.trim();
         localStorage.setItem(LS_KEYS.currentUser, JSON.stringify(state.user));
+
+        // Also update the master accounts list so changes persist across logins
+        try {
+          const accounts = loadList('ekvueAccounts');
+          const updated = accounts.map(acc => {
+            if (acc.email === state.user.email) {
+              return { ...acc, name, title: role, company: company.trim(), experience: experience.trim() };
+            }
+            return acc;
+          });
+          saveList('ekvueAccounts', updated);
+        } catch (e) { console.warn('Could not update master accounts:', e); }
       }
 
       if (okMsg) {
-        okMsg.textContent = 'Interviewer settings saved successfully!';
+        okMsg.textContent = '✅ All interviewer settings saved successfully!';
         okMsg.style.display = 'block';
+        setTimeout(() => { okMsg.style.display = 'none'; }, 3000);
       }
 
       // Update dashboard values immediately

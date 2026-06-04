@@ -806,17 +806,33 @@
                 <form id="profileSettingsForm" class="form">
                   <div class="form-group-row">
                     <div class="field">
-                      <label for="profileName">Interviewer Name</label>
-                      <input id="profileName" placeholder="e.g. EkVue AI" required />
+                      <label for="profileName">Full Name</label>
+                      <input id="profileName" placeholder="e.g. Pravin Kumar" required />
                     </div>
+                    <div class="field">
+                      <label for="profileEmail">Email Address</label>
+                      <input id="profileEmail" type="email" placeholder="e.g. pravin@company.com" readonly style="opacity:0.7; cursor:not-allowed;" />
+                    </div>
+                  </div>
+                  <div class="form-group-row">
                     <div class="field">
                       <label for="profileRole">Title / Role</label>
                       <input id="profileRole" placeholder="e.g. Staff Software Engineer" required />
                     </div>
+                    <div class="field">
+                      <label for="profileCompany">Company</label>
+                      <input id="profileCompany" placeholder="e.g. EkVue Technologies" />
+                    </div>
                   </div>
-                  <div class="field">
-                    <label for="profileDep">Department</label>
-                    <input id="profileDep" placeholder="e.g. Core Engineering Platform" />
+                  <div class="form-group-row">
+                    <div class="field">
+                      <label for="profileDep">Department</label>
+                      <input id="profileDep" placeholder="e.g. Core Engineering Platform" />
+                    </div>
+                    <div class="field">
+                      <label for="profileExperience">Years of Experience</label>
+                      <input id="profileExperience" placeholder="e.g. 5 years" />
+                    </div>
                   </div>
                   <div class="field">
                     <label for="profileBio">Bio / Interview Introduction</label>
