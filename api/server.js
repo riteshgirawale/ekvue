@@ -52,7 +52,7 @@ app.post('/send-otp', async (req, res) => {
 
   try {
     const sendPromise = mailer.sendOTP(email, otp);
-    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP_TIMEOUT')), 3000));
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP_TIMEOUT')), 15000));
     
     const info = await Promise.race([sendPromise, timeoutPromise]);
     console.log(`[SUCCESS] OTP Email sent to ${email} via Gmail. ID: ${info.messageId}`);
@@ -76,7 +76,7 @@ app.post('/api/send-notification', async (req, res) => {
 
   try {
     const sendPromise = mailer.sendNotificationEmail(email, title, message);
-    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP_TIMEOUT')), 3000));
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP_TIMEOUT')), 15000));
     
     const info = await Promise.race([sendPromise, timeoutPromise]);
     console.log(`[SUCCESS] Notification Email sent to ${email} via Gmail. ID: ${info.messageId}`);
