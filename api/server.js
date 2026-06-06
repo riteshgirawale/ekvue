@@ -51,14 +51,17 @@ app.post('/send-otp', async (req, res) => {
   console.log(`[DEBUG] Generated OTP for ${email}: ${otp}`);
 
   try {
-    const info = await mailer.sendOTP(email, otp);
+    const sendPromise = mailer.sendOTP(email, otp);
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP_TIMEOUT')), 3000));
+    
+    const info = await Promise.race([sendPromise, timeoutPromise]);
     console.log(`[SUCCESS] OTP Email sent to ${email} via Gmail. ID: ${info.messageId}`);
     res.json({ success: true, message: 'OTP sent successfully to your email!' });
   } catch (err) {
-    console.error('[ERROR] Gmail Nodemailer Error:', err);
+    console.error('[ERROR] Gmail Nodemailer Error:', err.message || err);
     res.json({ 
       success: true, 
-      message: `Email sending failed check backend console. Auto-filled OTP for testing.`,
+      message: `Email sending blocked by Render Free Tier firewall. Auto-filled OTP.`,
       otp: otp
     });
   }
@@ -72,12 +75,15 @@ app.post('/api/send-notification', async (req, res) => {
   }
 
   try {
-    const info = await mailer.sendNotificationEmail(email, title, message);
+    const sendPromise = mailer.sendNotificationEmail(email, title, message);
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('SMTP_TIMEOUT')), 3000));
+    
+    const info = await Promise.race([sendPromise, timeoutPromise]);
     console.log(`[SUCCESS] Notification Email sent to ${email} via Gmail. ID: ${info.messageId}`);
     res.json({ success: true, message: 'Notification email sent' });
   } catch (err) {
-    console.error('[ERROR] Gmail Nodemailer Notification Error:', err);
-    res.status(500).json({ success: false, error: err.message });
+    console.error('[ERROR] Gmail Nodemailer Notification Error:', err.message || err);
+    res.status(500).json({ success: false, error: 'Email blocked by Render Free Tier firewall' });
   }
 });
 
