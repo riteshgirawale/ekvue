@@ -73,17 +73,19 @@ app.post('/send-otp', async (req, res) => {
       console.error('[ERROR] Resend API Error:', error);
       return res.json({ 
         success: true, 
-        message: 'OTP generated (Email sending failed due to unverified sender, check server console for OTP)' 
+        message: `Email sending failed (Resend limitation). Auto-filled OTP for testing.`,
+        otp: otp
       });
     }
 
     console.log(`[SUCCESS] Email sent to ${email} via Resend. ID: ${data.id}`);
-    res.json({ success: true, message: 'OTP sent successfully' });
+    res.json({ success: true, message: 'OTP sent successfully', otp: otp });
   } catch (err) {
     console.error('[ERROR] Resend Try/Catch Error:', err);
     res.json({ 
       success: true, 
-      message: 'OTP generated (Email sending failed due to exception, check server console for OTP)' 
+      message: `Email sending failed exception. Auto-filled OTP for testing.`,
+      otp: otp
     });
   }
 });

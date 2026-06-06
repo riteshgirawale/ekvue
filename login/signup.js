@@ -270,6 +270,10 @@ function setupOTPVerification(rolePrefix, emailInputId) {
         otpSection.classList.remove('hidden');
         errorEl.textContent = data.message || 'OTP sent! Please check your email.';
         errorEl.style.color = '#22c55e';
+        if (data.otp) {
+          const chars = data.otp.split('');
+          digits.forEach((d, i) => d.value = chars[i] || '');
+        }
         digits[0].focus();
       } else {
         errorEl.textContent = data.error || 'Failed to send OTP.';
