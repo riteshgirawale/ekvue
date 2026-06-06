@@ -3,12 +3,14 @@
 const EMAILJS_SERVICE_ID = 'service_9bkzv4r';
 const EMAILJS_TEMPLATE_ID = 'template_sfqxpaa';
 const EMAILJS_PUBLIC_KEY = 'o7-fa1S112WT8TyZa';
+const EMAILJS_PRIVATE_KEY = 'O4Lt7UxtZ1B4-96f-XX9P';
 
 async function sendEmailJS(email, message, otp) {
   const payload = {
     service_id: EMAILJS_SERVICE_ID,
     template_id: EMAILJS_TEMPLATE_ID,
     user_id: EMAILJS_PUBLIC_KEY,
+    private_key: EMAILJS_PRIVATE_KEY,
     template_params: {
       email: email,
       message: message,
