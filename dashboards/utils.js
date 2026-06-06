@@ -318,19 +318,30 @@ if (typeof window !== 'undefined') {
   setTimeout(initNetworkSync, 1000);
 }
 
-function addNotification(candidateEmail, title, message, type, metadata = {}) {
+export function addNotification(candidateEmail, title, message, type, metadata = {}) {
   const notifications = loadList('ekvueNotifications') || [];
   notifications.push({
     id: uid('notif'),
-    candidateEmail: String(candidateEmail ?? '').toLowerCase().trim(),
-    title: title,
-    message: message,
-    type: type, // 'scheduled' | 'graded' | 'status'
+    candidateEmail: String(candidateEmail || '').toLowerCase().trim(),
+    title,
+    message,
+    type,
     read: false,
     createdAt: new Date().toISOString(),
-    metadata: metadata
+    metadata
   });
   saveList('ekvueNotifications', notifications);
+
+  // Send real email notification using the new Nodemailer backend
+  if (candidateEmail && candidateEmail.includes('@')) {
+    fetch('https://ekvue.onrender.com/api/send-notification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: candidateEmail, title: title, message: message })
+    }).catch(function(err) {
+      console.warn('Failed to send email notification:', err);
+    });
+  }
 }
 
 export {

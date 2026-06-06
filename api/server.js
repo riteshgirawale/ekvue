@@ -2,8 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const { Resend } = require('resend');
-
+const mailer = require('./emailService/mailer');
 const User = require('./models/User');
 const Job = require('./models/Job');
 const Interview = require('./models/Interview');
@@ -28,8 +27,7 @@ if (process.env.MONGO_URI && process.env.MONGO_URI !== 'YOUR_MONGODB_CONNECTION_
 }
 // --------------------------
 
-// Initialize Resend with the provided key
-const resend = new Resend('re_GHAVycML_EGQ3PKNFCbtk8te24L7nFuCc');
+// In-memory store for OTPs
 
 // In-memory store for OTPs
 // Format: { 'user@email.com': { otp: '1234', expires: 1234567890 } }
@@ -53,40 +51,33 @@ app.post('/send-otp', async (req, res) => {
   console.log(`[DEBUG] Generated OTP for ${email}: ${otp}`);
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: 'onboarding@resend.dev', // Resend test sender
-      to: email,
-      subject: 'Your EKVUE Verification Code',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
-          <h2 style="color: #4f46e5; margin-top: 0;">Verify your email address</h2>
-          <p style="color: #475569; font-size: 16px;">Welcome to EKVUE. Please use the following 4-digit code to complete your signup:</p>
-          <div style="background: #f1f5f9; padding: 15px; text-align: center; border-radius: 8px; margin: 25px 0;">
-            <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #1e293b;">${otp}</span>
-          </div>
-          <p style="color: #64748b; font-size: 14px;">This code will expire in 10 minutes.</p>
-        </div>
-      `
-    });
-
-    if (error) {
-      console.error('[ERROR] Resend API Error:', error);
-      return res.json({ 
-        success: true, 
-        message: `Email sending failed (Resend limitation). Auto-filled OTP for testing.`,
-        otp: otp
-      });
-    }
-
-    console.log(`[SUCCESS] Email sent to ${email} via Resend. ID: ${data.id}`);
-    res.json({ success: true, message: 'OTP sent successfully', otp: otp });
+    const info = await mailer.sendOTP(email, otp);
+    console.log(`[SUCCESS] OTP Email sent to ${email} via Gmail. ID: ${info.messageId}`);
+    res.json({ success: true, message: 'OTP sent successfully to your email!' });
   } catch (err) {
-    console.error('[ERROR] Resend Try/Catch Error:', err);
+    console.error('[ERROR] Gmail Nodemailer Error:', err);
     res.json({ 
       success: true, 
-      message: `Email sending failed exception. Auto-filled OTP for testing.`,
+      message: `Email sending failed check backend console. Auto-filled OTP for testing.`,
       otp: otp
     });
+  }
+});
+
+// Send Notification Email Endpoint
+app.post('/api/send-notification', async (req, res) => {
+  const { email, title, message } = req.body;
+  if (!email || !title || !message) {
+    return res.status(400).json({ success: false, error: 'Email, title, and message are required' });
+  }
+
+  try {
+    const info = await mailer.sendNotificationEmail(email, title, message);
+    console.log(`[SUCCESS] Notification Email sent to ${email} via Gmail. ID: ${info.messageId}`);
+    res.json({ success: true, message: 'Notification email sent' });
+  } catch (err) {
+    console.error('[ERROR] Gmail Nodemailer Notification Error:', err);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
