@@ -172,14 +172,6 @@ function attachHandler({ formId, role, inputMap, requiredKeys, extraBuilder, red
 
       setLoading(submitBtn, true);
 
-      // uniqueness
-      const existing = findExisting(values.email, role);
-      if (existing) {
-        setInputError(inputMap.email.id, inputMap.email.errorId, 'An account with this email already exists.');
-        showMessage('Account already exists. Please log in instead.', true);
-        return;
-      }
-
       const extra = extraBuilder?.build ? extraBuilder.build(values) : {};
       const newAccount = {
         role,
@@ -190,9 +182,22 @@ function attachHandler({ formId, role, inputMap, requiredKeys, extraBuilder, red
         ...extra,
       };
 
-      const accounts = getAccounts();
-      accounts.push(newAccount);
-      saveAccounts(accounts);
+      // Save to MongoDB backend
+      const res = await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newAccount)
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        if (res.status === 400 && errorData.error?.includes('already exists')) {
+          setInputError(inputMap.email.id, inputMap.email.errorId, 'An account with this email already exists.');
+          showMessage('Account already exists. Please log in instead.', true);
+          return;
+        }
+        throw new Error(errorData.error || 'Failed to save user to database');
+      }
 
       // Canonical session used across the whole app.
       localStorage.setItem(

@@ -118,7 +118,7 @@ function validateCredentials(email, password) {
   return true;
 }
 
-function handleRoleLogin(event) {
+async function handleRoleLogin(event) {
   event.preventDefault();
   const form = event.currentTarget;
   const role = form.dataset.role;
@@ -141,24 +141,33 @@ function handleRoleLogin(event) {
   }
 
   const accountRole = roleLabels[role] || role;
-  const account = findAccount(email, accountRole);
-  if (!account) {
-    showMessage('No account found for this role. Please create a new account first.', true);
-    return;
-  }
-
-  if (account.password !== password) {
-    showMessage('Incorrect password. Please check your credentials.', true);
-    return;
-  }
-
-  saveSession(email, accountRole, account?.name);
-  showMessage(`Logged in successfully as ${accountRole}.`);
   
-  setTimeout(() => {
-    const dashboardPath = dashboardPaths[accountRole] || '../dashboards/candidate/candidate.html';
-    window.location.href = dashboardPath;
-  }, 800);
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, role: accountRole })
+    });
+    
+    const data = await res.json();
+    
+    if (!res.ok || !data.success) {
+      showMessage(data.error || 'Login failed. Please check your credentials.', true);
+      return;
+    }
+
+    const account = data.user;
+    saveSession(email, accountRole, account?.name);
+    showMessage(`Logged in successfully as ${accountRole}.`);
+    
+    setTimeout(() => {
+      const dashboardPath = dashboardPaths[accountRole] || '../dashboards/candidate/candidate.html';
+      window.location.href = dashboardPath;
+    }, 800);
+  } catch (err) {
+    console.error('Login error:', err);
+    showMessage('Unable to connect to server.', true);
+  }
 }
 
 function getQueryParam(name) {

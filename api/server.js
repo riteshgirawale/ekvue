@@ -150,11 +150,32 @@ app.get('/api/users', async (req, res) => {
 
 app.post('/api/users', async (req, res) => {
   try {
+    const existing = await User.findOne({ email: req.body.email, role: req.body.role });
+    if (existing) {
+      return res.status(400).json({ error: 'User with this email and role already exists.' });
+    }
     const newUser = new User(req.body);
     await newUser.save();
     res.json(newUser);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// Login Endpoint
+app.post('/api/login', async (req, res) => {
+  const { email, password, role } = req.body;
+  try {
+    const user = await User.findOne({ email, role });
+    if (!user) {
+      return res.status(401).json({ success: false, error: 'No account found for this role.' });
+    }
+    if (user.password !== password) {
+      return res.status(401).json({ success: false, error: 'Incorrect password.' });
+    }
+    res.json({ success: true, user });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
