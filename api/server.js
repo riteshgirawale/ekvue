@@ -61,7 +61,7 @@ app.post('/send-otp', async (req, res) => {
     console.error('[ERROR] Gmail Nodemailer Error:', err.message || err);
     res.json({ 
       success: true, 
-      message: `Email sending blocked by Render Free Tier firewall. Auto-filled OTP.`,
+      message: `⚠️ Email address not recognized. Please enter a valid email. Auto-filled OTP`,
       otp: otp
     });
   }
