@@ -318,7 +318,7 @@ if (typeof window !== 'undefined') {
   setTimeout(initNetworkSync, 1000);
 }
 
-export function addNotification(candidateEmail, title, message, type, metadata = {}) {
+function addNotification(candidateEmail, title, message, type, metadata = {}) {
   const notifications = loadList('ekvueNotifications') || [];
   notifications.push({
     id: uid('notif'),
