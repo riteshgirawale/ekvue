@@ -3581,23 +3581,38 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
 
       const sig = meeting.signaling;
 
-      // Ensure we only process new offers, allowing candidate reconnects
-      if (webrtcPc && webrtcPc.signalingState === 'stable' && sig.candidateOffer.timestamp > lastProcessedOfferTimestamp) {
-        console.log('[WebRTC] Processing Candidate Offer');
-        lastProcessedOfferTimestamp = sig.candidateOffer.timestamp;
-        
-        await webrtcPc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: sig.candidateOffer.sdp }));
-        
-        const answer = await webrtcPc.createAnswer();
-        await webrtcPc.setLocalDescription(answer);
-        
-        saveInterviewerSignal(meetingId, { type: 'answer', sdp: answer.sdp });
-        
-        // Apply remote ICE candidates
-        if (sig.candidateCandidates) {
-          sig.candidateCandidates.forEach(cand => {
-            webrtcPc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
-          });
+      // Handle reconnects: If candidate refreshed, they send a new offer timestamp.
+      if (sig.candidateOffer.timestamp > lastProcessedOfferTimestamp) {
+        if (webrtcPc && lastProcessedOfferTimestamp > 0) {
+          console.log('[WebRTC] Candidate reconnected. Re-initializing peer connection...');
+          webrtcPc.close();
+          webrtcPc = null;
+          addedCandidateIce.clear();
+          initInterviewerWebRTC(meetingId, state.interviewerStream);
+          return; // initInterviewerWebRTC will call checkAndProcessOffer again
+        }
+
+        if (webrtcPc && webrtcPc.signalingState === 'stable') {
+          console.log('[WebRTC] Processing Candidate Offer');
+          lastProcessedOfferTimestamp = sig.candidateOffer.timestamp;
+          
+          await webrtcPc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: sig.candidateOffer.sdp }));
+          
+          const answer = await webrtcPc.createAnswer();
+          await webrtcPc.setLocalDescription(answer);
+          
+          saveInterviewerSignal(meetingId, { type: 'answer', sdp: answer.sdp });
+          
+          // Apply remote ICE candidates immediately
+          if (sig.candidateCandidates) {
+            sig.candidateCandidates.forEach(cand => {
+              const candStr = cand.candidate;
+              if (!addedCandidateIce.has(candStr)) {
+                webrtcPc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
+                addedCandidateIce.add(candStr);
+              }
+            });
+          }
         }
       }
     } catch (err) {
