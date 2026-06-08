@@ -2454,11 +2454,18 @@ function init() {
 // ==========================================
 // 8. REAL-TIME INVITE CHECKER LOOP
 // ==========================================
-function checkActiveLiveInterviews() {
+async function checkActiveLiveInterviews() {
   const banner = document.getElementById('live-call-notification-banner');
   const details = document.getElementById('live-call-invitation-details');
   const joinBtn = document.getElementById('join-live-call-btn');
   if (!banner) return;
+
+  const myEmail = state.user?.email || '';
+  const myName = state.user?.name || state.user?.fullName || '';
+  if (!myEmail && !myName) {
+    banner.classList.add('hidden');
+    return;
+  }
 
   // Load meeting records from local storage
   let meetings = [];
@@ -2470,21 +2477,38 @@ function checkActiveLiveInterviews() {
     meetings = [];
   }
 
-  // Find any active meeting that fits this logged in candidate's email or name (verify active interviewer heartbeat)
-  const myEmail = state.user?.email || '';
-  const myName = state.user?.name || state.user?.fullName || '';
-  if (!myEmail && !myName) {
-    banner.classList.add('hidden');
-    return;
+  // Fetch meeting records from backend API (cross-browser support)
+  try {
+    const qParams = new URLSearchParams();
+    if (myEmail) qParams.append('email', myEmail);
+    if (myName) qParams.append('name', myName);
+    const res = await fetch('/api/live-meetings?' + qParams.toString());
+    if (res.ok) {
+      const serverMeetings = await res.json();
+      serverMeetings.forEach(sm => {
+        // Upsert into local meetings array
+        const idx = meetings.findIndex(m => m.meetingId === sm.meetingId);
+        if (idx > -1) {
+          if (new Date(sm.lastUpdated) > new Date(meetings[idx].lastUpdated || 0)) {
+            meetings[idx] = { ...meetings[idx], ...sm };
+          }
+        } else {
+          meetings.push(sm);
+        }
+      });
+      // Save back so UI components reading from localStorage get updates
+      localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
+    }
+  } catch (err) {
+    // silently fallback to localStorage only
   }
+
   const now = new Date();
   const activeMeeting = meetings.find((m) => {
     const isMe = (myEmail && m.candidateEmail?.toLowerCase() === myEmail.toLowerCase()) ||
                  (myName && m.candidateName?.toLowerCase().trim() === myName.toLowerCase().trim());
     const isLaunched = m.status === 'Launched';
     
-    // Heartbeat check: only display banner if interviewer has updated the record in the last 15 seconds (15000 ms)
-    // Relaxed from 4s to 15s to be extremely robust against background tab throttling in Chrome/Edge
     let isInterviewerActive = false;
     if (m.lastUpdated) {
       const diffMs = now - new Date(m.lastUpdated);
@@ -2502,9 +2526,14 @@ function checkActiveLiveInterviews() {
 
     if (joinBtn) {
       joinBtn.onclick = () => {
-        // Update meeting state to active
+        // Update meeting state to active locally and on server
         activeMeeting.status = 'Active';
         localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
+        fetch('/api/live-meeting', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(activeMeeting)
+        }).catch(()=>{});
 
         // Redirect candidate directly into the proctored Meet room with meetingId parameter
         window.location.href = `./mock-interview/mock-interview.html?meetingId=${activeMeeting.meetingId}`;

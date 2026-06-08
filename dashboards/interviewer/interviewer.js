@@ -827,6 +827,15 @@ function enterLiveRoom(session) {
   }
   localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
 
+  // Sync to backend server for cross-browser/cross-laptop live interview handshake
+  try {
+    fetch('/api/live-meeting', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(handshakeRecord)
+    }).catch(err => console.warn('[LiveSync] Failed to post meeting to backend:', err));
+  } catch(e) { console.warn('[LiveSync] Post error:', e); }
+
   // Start Clock and sync loops
   startLiveRoomTimer();
   runLiveProctorSyncLoop();
@@ -1382,6 +1391,15 @@ function runLiveProctorSyncLoop() {
     // Write real-time interviewer heartbeat to handshake record
     meeting.lastUpdated = new Date().toISOString();
     localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
+
+    // Sync heartbeat to backend for cross-laptop candidate detection
+    try {
+      fetch('/api/live-meeting', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ meetingId: meeting.meetingId, candidateName: meeting.candidateName, candidateEmail: meeting.candidateEmail, interviewerName: meeting.interviewerName, status: meeting.status, lastUpdated: meeting.lastUpdated })
+      }).catch(() => {});
+    } catch(e) {}
 
     // Check candidate connection status
     if (meeting.status === 'Active') {

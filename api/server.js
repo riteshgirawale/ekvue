@@ -300,6 +300,60 @@ app.post('/api/generate-challenge', async (req, res) => {
   }
 });
 
+// ==========================================
+// LIVE MEETING SYNC (Cross-Browser/Cross-Laptop)
+// ==========================================
+const liveMeetings = new Map();
+
+// Auto-cleanup stale meetings older than 2 hours
+setInterval(() => {
+  const now = Date.now();
+  liveMeetings.forEach((meeting, id) => {
+    if (now - new Date(meeting.lastUpdated || 0).getTime() > 7200000) {
+      liveMeetings.delete(id);
+    }
+  });
+}, 300000);
+
+// Create or update a live meeting record
+app.post('/api/live-meeting', (req, res) => {
+  const data = req.body;
+  if (!data.meetingId) {
+    return res.status(400).json({ error: 'meetingId is required' });
+  }
+  data.lastUpdated = new Date().toISOString();
+  liveMeetings.set(data.meetingId, data);
+  res.json({ success: true });
+});
+
+// Get active live meetings for a specific candidate
+app.get('/api/live-meetings', (req, res) => {
+  const email = (req.query.email || '').toLowerCase().trim();
+  const name = (req.query.name || '').toLowerCase().trim();
+  const now = Date.now();
+
+  const results = [];
+  liveMeetings.forEach((meeting) => {
+    const meetEmail = (meeting.candidateEmail || '').toLowerCase().trim();
+    const meetName = (meeting.candidateName || '').toLowerCase().trim();
+    const isMe = (email && meetEmail === email) || (name && meetName === name);
+    const isActive = meeting.status === 'Launched' || meeting.status === 'Active';
+    const isRecent = (now - new Date(meeting.lastUpdated || 0).getTime()) < 120000;
+
+    if (isMe && isActive && isRecent) {
+      results.push(meeting);
+    }
+  });
+
+  res.json(results);
+});
+
+// Delete/end a live meeting
+app.delete('/api/live-meeting/:meetingId', (req, res) => {
+  liveMeetings.delete(req.params.meetingId);
+  res.json({ success: true });
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`EKVUE Auth API running on http://localhost:${PORT}`);
