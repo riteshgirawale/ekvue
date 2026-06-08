@@ -907,6 +907,8 @@ async function startInterviewerMedia() {
   const avatar = document.getElementById('interviewer-self-avatar');
   const initials = String(state.profile.name || 'I').trim()[0].toUpperCase();
 
+  state.cameraInitialized = false;
+
   // Try video + audio first
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -920,6 +922,7 @@ async function startInterviewerMedia() {
     }
     if (avatar) avatar.style.display = 'none';
     updateMediaButtonStates();
+    state.cameraInitialized = true;
     return;
   } catch (err) {
     console.warn('Video+Audio failed, trying fallbacks:', err.message);
@@ -938,6 +941,7 @@ async function startInterviewerMedia() {
     }
     if (avatar) avatar.style.display = 'none';
     updateMediaButtonStates();
+    state.cameraInitialized = true;
     return;
   } catch (err) {
     console.warn('Video-only also failed, trying audio only:', err.message);
@@ -956,6 +960,7 @@ async function startInterviewerMedia() {
     }
     if (video) video.style.display = 'none';
     updateMediaButtonStates();
+    state.cameraInitialized = true;
     return;
   } catch (err) {
     console.warn('All media requests failed:', err.message);
@@ -970,6 +975,7 @@ async function startInterviewerMedia() {
   }
   if (video) video.style.display = 'none';
   updateMediaButtonStates();
+  state.cameraInitialized = true;
 }
 
 function stopInterviewerMedia() {
@@ -1426,7 +1432,9 @@ function runLiveProctorSyncLoop() {
       
       if (proctorVideo) {
         if (!webrtcPc) {
-          initInterviewerWebRTC(state.liveSessionId, state.interviewerStream);
+          if (state.cameraInitialized) {
+            initInterviewerWebRTC(state.liveSessionId, state.interviewerStream);
+          }
         } else {
           // Process Candidate Offer SDP and ICE candidates continuously
           checkAndProcessOffer(state.liveSessionId);

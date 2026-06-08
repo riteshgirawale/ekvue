@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const stabilityBarFill = document.getElementById('stabilityBarFill');
 
   // Initialize Camera
+  let cameraInitPromise = null;
   async function initCamera() {
     try {
       localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -96,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   
-  initCamera();
+  cameraInitPromise = initCamera();
 
   // AI Face Tracking Engine
   function initAITracking() {
@@ -194,12 +195,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Lobby Join Button
   if (lobbyJoinBtn) {
-    lobbyJoinBtn.addEventListener('click', () => {
+    lobbyJoinBtn.addEventListener('click', async () => {
       lobbyWrapper.classList.add('hidden');
       liveBoardWrapper.classList.remove('hidden');
       
       // Start AI only after joining
       initAITracking();
+      
+      // Wait for camera to initialize before starting WebRTC
+      if (cameraInitPromise) await cameraInitPromise;
       
       // Start WebRTC Peer connection to stream webcam to interviewer
       initWebRTCPeer();
