@@ -3526,7 +3526,12 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
     
     try {
       webrtcPc = new RTCPeerConnection({
-        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+          { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+          { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+        ]
       });
 
       // Add interviewer camera tracks
@@ -3565,6 +3570,8 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
     }
   }
 
+  let lastProcessedOfferTimestamp = 0;
+
   async function checkAndProcessOffer(meetingId) {
     try {
       const raw = localStorage.getItem('ekvueLiveInterviews');
@@ -3574,8 +3581,11 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
 
       const sig = meeting.signaling;
 
-      if (webrtcPc && webrtcPc.signalingState === 'stable' && !webrtcPc.currentRemoteDescription) {
+      // Ensure we only process new offers, allowing candidate reconnects
+      if (webrtcPc && webrtcPc.signalingState === 'stable' && sig.candidateOffer.timestamp > lastProcessedOfferTimestamp) {
         console.log('[WebRTC] Processing Candidate Offer');
+        lastProcessedOfferTimestamp = sig.candidateOffer.timestamp;
+        
         await webrtcPc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: sig.candidateOffer.sdp }));
         
         const answer = await webrtcPc.createAnswer();
