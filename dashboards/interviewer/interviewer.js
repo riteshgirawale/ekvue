@@ -69,6 +69,9 @@ const state = {
   interviewerScreenStream: null
 };
 
+// Candidates fetched from MongoDB for datalist and email lookup
+let fetchedCandidates = [];
+
 // --- WebRTC Peer Connection (Interviewer Side Global Object) ---
 let webrtcPc = null;
 
@@ -583,6 +586,13 @@ function renderSessionDetails() {
 // VIEW 2C: LIVE INTERVIEW ROOM SIMULATOR (LIVE SYNC)
 // ==========================================
 function lookupCandidateEmail(name) {
+  // 1. Check candidates fetched from MongoDB first
+  if (fetchedCandidates.length > 0) {
+    const matched = fetchedCandidates.find(a => (a.name || a.fullName || '').toLowerCase() === name.toLowerCase());
+    if (matched && matched.email) return matched.email;
+  }
+
+  // 2. Check localStorage accounts
   try {
     const accounts = loadList('ekvueAccounts');
     const matched = accounts.find(a => (a.name || a.fullName || '').toLowerCase() === name.toLowerCase() && a.role === 'Candidate');
@@ -590,9 +600,8 @@ function lookupCandidateEmail(name) {
   } catch (e) {
     // ignore
   }
-  // Safe fallbacks
-  if (name.toLowerCase().includes('priya')) return 'priya@example.com';
-  if (name.toLowerCase().includes('aarav')) return 'aarav@example.com';
+
+  // 3. Fallback
   return `${name.toLowerCase().replace(/\s+/g, '')}@example.com`;
 }
 
@@ -3253,31 +3262,59 @@ function init() {
   }
 }
 
-function populateCandidatesDatalist() {
+async function populateCandidatesDatalist() {
   const datalist = document.getElementById('registered-candidates-datalist');
   if (!datalist) return;
 
   datalist.innerHTML = '';
+
+  const uniqueNames = new Set();
+
+  // 1. Fetch candidates from MongoDB backend
+  try {
+    const response = await fetch('/api/users');
+    if (response.ok) {
+      const allUsers = await response.json();
+      const dbCandidates = allUsers.filter(u => u.role === 'Candidate');
+      fetchedCandidates = dbCandidates;
+
+      // Sync to localStorage for offline fallback
+      const existing = loadList('ekvueAccounts');
+      dbCandidates.forEach(c => {
+        const name = c.name || c.fullName;
+        if (name) uniqueNames.add(name);
+        // Merge into localStorage if not already present
+        if (c.email && !existing.some(e => e.email === c.email && e.role === 'Candidate')) {
+          existing.push({ name: c.name, fullName: c.fullName, email: c.email, role: 'Candidate' });
+        }
+      });
+      saveList('ekvueAccounts', existing);
+      console.log(`[CandidateSync] Loaded ${dbCandidates.length} candidates from MongoDB.`);
+    }
+  } catch (err) {
+    console.warn('[CandidateSync] API fetch failed, using localStorage fallback:', err);
+  }
+
+  // 2. Also merge from localStorage as fallback
   try {
     const accounts = loadList('ekvueAccounts');
-    const candidates = accounts.filter(a => a.role === 'Candidate');
-    
-    const uniqueNames = new Set();
-    candidates.forEach(c => {
+    const localCandidates = accounts.filter(a => a.role === 'Candidate');
+    localCandidates.forEach(c => {
       const name = c.name || c.fullName;
-      if (name) {
-        uniqueNames.add(name);
-      }
-    });
-
-    uniqueNames.forEach(name => {
-      const option = document.createElement('option');
-      option.value = name;
-      datalist.appendChild(option);
+      if (name) uniqueNames.add(name);
     });
   } catch (err) {
-    console.warn('Failed to populate candidates datalist:', err);
+    console.warn('Failed to load candidates from localStorage:', err);
   }
+
+  // 3. Populate datalist with all unique names
+  uniqueNames.forEach(name => {
+    const option = document.createElement('option');
+    option.value = name;
+    datalist.appendChild(option);
+  });
+
+  console.log(`[CandidateSync] Datalist populated with ${uniqueNames.size} candidate names.`);
 }
 
 if (document.readyState === 'loading') {
