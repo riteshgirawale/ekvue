@@ -3588,6 +3588,7 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
           webrtcPc.close();
           webrtcPc = null;
           addedCandidateIce.clear();
+          lastProcessedOfferTimestamp = 0; // Fix infinite loop
           initInterviewerWebRTC(meetingId, state.interviewerStream);
           return; // initInterviewerWebRTC will call checkAndProcessOffer again
         }
