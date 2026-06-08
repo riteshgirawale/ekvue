@@ -740,6 +740,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  const addedInterviewerIce = new Set();
   function checkSignalingSignals() {
     try {
       const raw = localStorage.getItem('ekvueLiveInterviews');
@@ -757,14 +758,22 @@ document.addEventListener('DOMContentLoaded', () => {
             // Apply queued remote ICE candidates
             if (sig.interviewerCandidates) {
               sig.interviewerCandidates.forEach(cand => {
-                pc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
+                const candStr = cand.candidate;
+                if (!addedInterviewerIce.has(candStr)) {
+                  pc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
+                  addedInterviewerIce.add(candStr);
+                }
               });
             }
           })
           .catch(e => console.error('[WebRTC] Error setting answer:', e));
       } else if (sig.interviewerCandidates && pc && pc.remoteDescription) {
         sig.interviewerCandidates.forEach(cand => {
-          pc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
+          const candStr = cand.candidate;
+          if (!addedInterviewerIce.has(candStr)) {
+            pc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
+            addedInterviewerIce.add(candStr);
+          }
         });
       }
     } catch (e) {}

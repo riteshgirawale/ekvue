@@ -3566,7 +3566,7 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
 
       const sig = meeting.signaling;
 
-      if (webrtcPc && webrtcPc.signalingState === 'stable') {
+      if (webrtcPc && webrtcPc.signalingState === 'stable' && !webrtcPc.currentRemoteDescription) {
         console.log('[WebRTC] Processing Candidate Offer');
         await webrtcPc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: sig.candidateOffer.sdp }));
         
@@ -3613,6 +3613,8 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
     }
   }
 
+  const addedCandidateIce = new Set();
+  
   function checkInterviewerSignalingCandidates(meetingId) {
     try {
       const raw = localStorage.getItem('ekvueLiveInterviews');
@@ -3624,7 +3626,11 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
 
       if (sig.candidateCandidates && webrtcPc && webrtcPc.remoteDescription) {
         sig.candidateCandidates.forEach(cand => {
-          webrtcPc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
+          const candStr = cand.candidate;
+          if (!addedCandidateIce.has(candStr)) {
+            webrtcPc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
+            addedCandidateIce.add(candStr);
+          }
         });
       }
     } catch (e) {}
