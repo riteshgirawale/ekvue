@@ -566,7 +566,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Listen for storage events (messages sent by interviewer)
+  // Listen for storage events (messages sent by interviewer on same laptop fallback)
   window.addEventListener('storage', (e) => {
     if (e.key === 'ekvueLiveInterviews') {
       loadChatMessages();
@@ -575,8 +575,51 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Background check fail-safe
-  setInterval(checkMeetingStatus, 1000);
+  // Background check polling (Cross-browser Sync)
+  async function backgroundSyncLoop() {
+    try {
+      const raw = localStorage.getItem('ekvueLiveInterviews');
+      const meetings = raw ? JSON.parse(raw) : [];
+      const meeting = meetings.find(m => m.meetingId === meetingId);
+      
+      // Fetch from Server
+      try {
+        const res = await fetch(`/api/live-meeting/${meetingId}`);
+        if (res.ok) {
+          const serverMeeting = await res.json();
+          if (!meeting || new Date(serverMeeting.lastUpdated) > new Date(meeting.lastUpdated || 0)) {
+            // Apply server state
+            const idx = meetings.findIndex(m => m.meetingId === meetingId);
+            if (idx > -1) {
+              meetings[idx] = { ...meetings[idx], ...serverMeeting };
+            } else {
+              meetings.push(serverMeeting);
+            }
+            localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
+            loadChatMessages();
+            checkSignalingSignals();
+            checkMeetingStatus();
+          }
+        }
+      } catch (err) { /* offline */ }
+
+      // Push local state to server
+      if (meeting) {
+        try {
+          fetch('/api/live-meeting', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(meeting)
+          }).catch(()=>{});
+        } catch(e) {}
+      }
+    } catch (e) {
+      console.error('[SYNC] Error in background sync', e);
+    }
+  }
+
+  // Poll server every 800ms
+  setInterval(backgroundSyncLoop, 800);
 
   // Initial load
   loadChatMessages();

@@ -1345,7 +1345,7 @@ function runLiveProctorSyncLoop() {
 
   if (state.liveSyncIntervalId) clearInterval(state.liveSyncIntervalId);
 
-  state.liveSyncIntervalId = setInterval(() => {
+  state.liveSyncIntervalId = setInterval(async () => {
     if (!state.liveActive) {
       clearInterval(state.liveSyncIntervalId);
       return;
@@ -1361,8 +1361,23 @@ function runLiveProctorSyncLoop() {
       meetings = [];
     }
 
-    const meeting = meetings.find(m => m.meetingId === state.liveSessionId);
+    let meeting = meetings.find(m => m.meetingId === state.liveSessionId);
     if (!meeting) return;
+
+    // --- FETCH FROM BACKEND (Cross-Browser Sync) ---
+    try {
+      const res = await fetch(`/api/live-meeting/${state.liveSessionId}`);
+      if (res.ok) {
+        const serverMeeting = await res.json();
+        if (new Date(serverMeeting.lastUpdated) > new Date(meeting.lastUpdated || 0)) {
+          // Merge server state into local state
+          meeting = { ...meeting, ...serverMeeting };
+          const idx = meetings.findIndex(m => m.meetingId === state.liveSessionId);
+          meetings[idx] = meeting;
+          localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
+        }
+      }
+    } catch (e) { /* silently continue offline */ }
 
     // Check if the candidate has completed/ended the interview!
     if (meeting.status === 'Completed') {
@@ -1392,12 +1407,12 @@ function runLiveProctorSyncLoop() {
     meeting.lastUpdated = new Date().toISOString();
     localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
 
-    // Sync heartbeat to backend for cross-laptop candidate detection
+    // Sync heartbeat and full state to backend for cross-laptop candidate detection
     try {
       fetch('/api/live-meeting', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ meetingId: meeting.meetingId, candidateName: meeting.candidateName, candidateEmail: meeting.candidateEmail, interviewerName: meeting.interviewerName, status: meeting.status, lastUpdated: meeting.lastUpdated })
+        body: JSON.stringify(meeting)
       }).catch(() => {});
     } catch(e) {}
 

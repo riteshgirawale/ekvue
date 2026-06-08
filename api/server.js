@@ -315,15 +315,60 @@ setInterval(() => {
   });
 }, 300000);
 
-// Create or update a live meeting record
+// Create or update a live meeting record with intelligent merging
 app.post('/api/live-meeting', (req, res) => {
   const data = req.body;
   if (!data.meetingId) {
     return res.status(400).json({ error: 'meetingId is required' });
   }
-  data.lastUpdated = new Date().toISOString();
-  liveMeetings.set(data.meetingId, data);
-  res.json({ success: true });
+  
+  const existing = liveMeetings.get(data.meetingId) || {};
+  
+  // Merge ChatLogs (take the longest to avoid overwrites)
+  let mergedChatLogs = existing.chatLogs || [];
+  if (data.chatLogs && data.chatLogs.length > mergedChatLogs.length) {
+    mergedChatLogs = data.chatLogs;
+  } else if (data.chatLogs && data.chatLogs.length === mergedChatLogs.length) {
+    // If same length, take the newest data just in case
+    mergedChatLogs = data.chatLogs;
+  }
+
+  // Merge Signaling (Offers, Answers, and ICE candidates)
+  const sig = { ...(existing.signaling || {}), ...(data.signaling || {}) };
+  
+  // Merge Candidate ICE
+  if (data.signaling && data.signaling.candidateCandidates) {
+    const existingIce = existing.signaling?.candidateCandidates || [];
+    const newIce = data.signaling.candidateCandidates;
+    const mergedIce = [...existingIce];
+    newIce.forEach(nc => {
+       if (!mergedIce.some(ec => ec.candidate === nc.candidate)) mergedIce.push(nc);
+    });
+    sig.candidateCandidates = mergedIce;
+  }
+  // Merge Interviewer ICE
+  if (data.signaling && data.signaling.interviewerCandidates) {
+    const existingIce = existing.signaling?.interviewerCandidates || [];
+    const newIce = data.signaling.interviewerCandidates;
+    const mergedIce = [...existingIce];
+    newIce.forEach(nc => {
+       if (!mergedIce.some(ec => ec.candidate === nc.candidate)) mergedIce.push(nc);
+    });
+    sig.interviewerCandidates = mergedIce;
+  }
+
+  const merged = { ...existing, ...data, signaling: sig, chatLogs: mergedChatLogs };
+  merged.lastUpdated = new Date().toISOString();
+  
+  liveMeetings.set(data.meetingId, merged);
+  res.json({ success: true, meeting: merged });
+});
+
+// Fetch a single meeting by ID
+app.get('/api/live-meeting/:id', (req, res) => {
+  const meeting = liveMeetings.get(req.params.id);
+  if (meeting) res.json(meeting);
+  else res.status(404).json({ error: 'Not found' });
 });
 
 // Get active live meetings for a specific candidate
