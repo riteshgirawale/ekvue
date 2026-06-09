@@ -711,7 +711,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const jitsiContainer = document.getElementById('jitsi-container');
     if (!jitsiContainer || typeof JitsiMeetExternalAPI === 'undefined') return;
 
-    jitsiApiInstance = new JitsiMeetExternalAPI("vc.autistici.org", {
+    jitsiApiInstance = new JitsiMeetExternalAPI("jitsi.hamburg.ccc.de", {
       roomName: `ekvue_interview_${meetingId}`,
       parentNode: jitsiContainer,
       width: '100%',
