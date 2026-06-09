@@ -711,7 +711,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const jitsiContainer = document.getElementById('jitsi-container');
     if (!jitsiContainer || typeof JitsiMeetExternalAPI === 'undefined') return;
 
-    jitsiApiInstance = new JitsiMeetExternalAPI("meet.guifi.net", {
+    jitsiApiInstance = new JitsiMeetExternalAPI("vc.autistici.org", {
       roomName: `ekvue_interview_${meetingId}`,
       parentNode: jitsiContainer,
       width: '100%',
@@ -723,10 +723,15 @@ document.addEventListener('DOMContentLoaded', () => {
         startWithAudioMuted: false,
         startWithVideoMuted: false,
         prejoinPageEnabled: false,
-        prejoinConfig: { enabled: false }
+        prejoinConfig: { enabled: false },
+        resolution: 360,
+        disableDeepLinking: true,
+        analytics: { disabled: true }
       },
       interfaceConfigOverwrite: {
-        DISABLE_JOIN_LEAVE_NOTIFICATIONS: true
+        DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
+        SHOW_JITSI_WATERMARK: false,
+        SHOW_WATERMARK_FOR_GUESTS: false
       }
     });
   }

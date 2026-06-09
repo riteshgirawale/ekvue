@@ -1430,7 +1430,7 @@ function runLiveProctorSyncLoop() {
       const jitsiContainer = document.getElementById('interviewer-jitsi-container');
       if (jitsiContainer && typeof JitsiMeetExternalAPI !== 'undefined' && !jitsiApiInstance) {
         jitsiContainer.innerHTML = '';
-        jitsiApiInstance = new JitsiMeetExternalAPI("meet.guifi.net", {
+        jitsiApiInstance = new JitsiMeetExternalAPI("vc.autistici.org", {
           roomName: `ekvue_interview_${state.liveSessionId}`,
           parentNode: jitsiContainer,
           width: '100%',
@@ -1442,10 +1442,15 @@ function runLiveProctorSyncLoop() {
             startWithAudioMuted: false,
             startWithVideoMuted: false,
             prejoinPageEnabled: false,
-            prejoinConfig: { enabled: false }
+            prejoinConfig: { enabled: false },
+            resolution: 360,
+            disableDeepLinking: true,
+            analytics: { disabled: true }
           },
           interfaceConfigOverwrite: {
-            DISABLE_JOIN_LEAVE_NOTIFICATIONS: true
+            DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
+            SHOW_JITSI_WATERMARK: false,
+            SHOW_WATERMARK_FOR_GUESTS: false
           }
         });
       }
