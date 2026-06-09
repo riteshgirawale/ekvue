@@ -770,8 +770,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const wrapper = document.createElement('div');
         wrapper.id = track.sid;
         wrapper.style.position = 'relative';
-        wrapper.style.width = track.source === LiveKit.Track.Source.ScreenShare ? '100%' : '50%';
-        wrapper.style.height = track.source === LiveKit.Track.Source.ScreenShare ? '100%' : '50%';
+        wrapper.style.width = track.source === 'screen_share' ? '100%' : '50%';
+        wrapper.style.height = track.source === 'screen_share' ? '100%' : '50%';
         wrapper.appendChild(element);
         
         remoteVideosContainer.appendChild(wrapper);
@@ -784,7 +784,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       room.on(LiveKit.RoomEvent.LocalTrackPublished, (publication, participant) => {
-        if (publication.track.kind === 'video' && publication.track.source === LiveKit.Track.Source.Camera) {
+        if (publication.track.kind === 'video' && publication.track.source === 'camera') {
           const element = publication.track.attach();
           element.style.width = '100%';
           element.style.height = '100%';
@@ -795,7 +795,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       room.on(LiveKit.RoomEvent.LocalTrackUnpublished, (publication, participant) => {
-        if (publication.track.kind === 'video' && publication.track.source === LiveKit.Track.Source.Camera) {
+        if (publication.track.kind === 'video' && publication.track.source === 'camera') {
           localVideoContainer.innerHTML = '';
         }
       });
