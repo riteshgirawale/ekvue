@@ -3599,8 +3599,8 @@ async function initLiveKitRoom(roomId) {
       const wrapper = document.createElement('div');
       wrapper.id = track.sid;
       wrapper.style.position = 'relative';
-      wrapper.style.width = publication.source === 'screen_share' ? '100%' : '50%';
-      wrapper.style.height = publication.source === 'screen_share' ? '100%' : '50%';
+      wrapper.style.width = '100%';
+      wrapper.style.height = '100%';
       wrapper.appendChild(element);
       
       remoteVideosContainer.appendChild(wrapper);
