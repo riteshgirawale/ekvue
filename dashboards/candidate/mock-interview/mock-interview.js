@@ -737,7 +737,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('[LiveKit] Connecting to Room on Candidate side');
     const localVideoContainer = document.getElementById('local-video');
     const remoteVideosContainer = document.getElementById('remote-videos');
-    if (!localVideoContainer || !remoteVideosContainer || typeof LivekitClient === 'undefined') return;
+    if (!localVideoContainer || !remoteVideosContainer || typeof LiveKit === 'undefined') return;
 
     try {
       // 1. Fetch Token
@@ -753,14 +753,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!res.ok) throw new Error(data.error);
 
       // 2. Create Room
-      const room = new LivekitClient.Room({
+      const room = new LiveKit.Room({
         adaptiveStream: true,
         dynacast: true,
       });
       currentRoom = room;
 
       // 3. Handle Tracks
-      room.on(LivekitClient.RoomEvent.TrackSubscribed, (track, publication, participant) => {
+      room.on(LiveKit.RoomEvent.TrackSubscribed, (track, publication, participant) => {
         const element = track.attach();
         element.style.width = '100%';
         element.style.height = '100%';
@@ -770,21 +770,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const wrapper = document.createElement('div');
         wrapper.id = track.sid;
         wrapper.style.position = 'relative';
-        wrapper.style.width = track.source === LivekitClient.Track.Source.ScreenShare ? '100%' : '50%';
-        wrapper.style.height = track.source === LivekitClient.Track.Source.ScreenShare ? '100%' : '50%';
+        wrapper.style.width = track.source === LiveKit.Track.Source.ScreenShare ? '100%' : '50%';
+        wrapper.style.height = track.source === LiveKit.Track.Source.ScreenShare ? '100%' : '50%';
         wrapper.appendChild(element);
         
         remoteVideosContainer.appendChild(wrapper);
       });
 
-      room.on(LivekitClient.RoomEvent.TrackUnsubscribed, (track, publication, participant) => {
+      room.on(LiveKit.RoomEvent.TrackUnsubscribed, (track, publication, participant) => {
         track.detach();
         const wrapper = document.getElementById(track.sid);
         if (wrapper) wrapper.remove();
       });
 
-      room.on(LivekitClient.RoomEvent.LocalTrackPublished, (publication, participant) => {
-        if (publication.track.kind === 'video' && publication.track.source === LivekitClient.Track.Source.Camera) {
+      room.on(LiveKit.RoomEvent.LocalTrackPublished, (publication, participant) => {
+        if (publication.track.kind === 'video' && publication.track.source === LiveKit.Track.Source.Camera) {
           const element = publication.track.attach();
           element.style.width = '100%';
           element.style.height = '100%';
@@ -794,8 +794,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      room.on(LivekitClient.RoomEvent.LocalTrackUnpublished, (publication, participant) => {
-        if (publication.track.kind === 'video' && publication.track.source === LivekitClient.Track.Source.Camera) {
+      room.on(LiveKit.RoomEvent.LocalTrackUnpublished, (publication, participant) => {
+        if (publication.track.kind === 'video' && publication.track.source === LiveKit.Track.Source.Camera) {
           localVideoContainer.innerHTML = '';
         }
       });
