@@ -422,35 +422,6 @@ function renderSessionsWorkspace() {
   renderSessionDetails();
 }
 
-async function renderScheduledInterviews() {
-  const container = document.getElementById('interviews-list-container');
-  if (!container) return;
-
-  const myEmail = (state.user?.email || '').toLowerCase().trim();
-
-  let upcoming = [];
-  try {
-    const res = await fetch('/api/interviews?interviewerEmail=' + encodeURIComponent(myEmail));
-    if (res.ok) {
-      upcoming = await res.json();
-    } else {
-      const allInts = loadList('ekvueCompanySchedules') || [];
-      upcoming = allInts.filter(i => (i.interviewerEmail || '').toLowerCase().trim() === myEmail);
-    }
-  } catch (err) {
-    const allInts = loadList('ekvueCompanySchedules') || [];
-    upcoming = allInts.filter(i => (i.interviewerEmail || '').toLowerCase().trim() === myEmail);
-  }
-
-  const now = new Date();
-  
-  // Exclude fully completed from the scheduled list
-  upcoming = upcoming.filter(i => i.status !== 'Completed');
-
-  container.innerHTML = '';
-
-  const searchVal = document.getElementById('session-search')?.value?.toLowerCase() ?? '';
-  const filterVal = document.getElementById('session-filter-status')?.value ?? 'all';
 
 function renderSessionsSidebar() {
   const container = document.getElementById('sessions-sidebar-list');
