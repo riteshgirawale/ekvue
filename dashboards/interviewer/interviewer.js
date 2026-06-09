@@ -3559,9 +3559,15 @@ window.addEventListener('storage', (e) => {
       renderReportsWorkspace();
     }
   } catch (err) {
-    console.warn  let socket = null;
+    console.warn('[NetworkSync] Failed to redraw interviewer views:', err);
+  }
+});
 
-  async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
+// --- WebRTC Peer Connection (Interviewer Side) ---
+
+let socket = null;
+
+async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
     console.log('[WebRTC] Initializing Peer Connection on Interviewer side for:', meetingId);
     
     socket = io();
