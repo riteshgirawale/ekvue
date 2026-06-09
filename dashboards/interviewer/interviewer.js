@@ -878,22 +878,13 @@ function exitLiveRoom() {
     state.liveStream.getTracks().forEach(track => track.stop());
     state.liveStream = null;
   }
-  const proctorVideo = document.getElementById('proctor-candidate-video');
-  if (proctorVideo) {
-    proctorVideo.srcObject = null;
-    proctorVideo.style.display = 'none';
-  }
-  if (webrtcPc) {
-    try {
-      webrtcPc.close();
-    } catch(e){}
-    webrtcPc = null;
-  }
-  const avatarEl = document.getElementById('liveCandidateAvatar');
-  if (avatarEl) avatarEl.style.display = 'flex';
   
-  const eqEl = document.querySelector('.audio-equalizer-proctor');
-  if (eqEl) eqEl.classList.remove('active');
+  if (jitsiApiInstance) {
+    try {
+      jitsiApiInstance.dispose();
+    } catch(e){}
+    jitsiApiInstance = null;
+  }
 
   // Cleanup interviewer's own camera/mic stream
   stopInterviewerMedia();
