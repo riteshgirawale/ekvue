@@ -342,7 +342,9 @@ app.post('/api/live-meeting', (req, res) => {
     const newIce = data.signaling.candidateCandidates;
     const mergedIce = [...existingIce];
     newIce.forEach(nc => {
-       if (!mergedIce.some(ec => ec.candidate === nc.candidate)) mergedIce.push(nc);
+       const idx = mergedIce.findIndex(ec => ec.candidate === nc.candidate);
+       if (idx > -1) mergedIce[idx] = nc;
+       else mergedIce.push(nc);
     });
     sig.candidateCandidates = mergedIce;
   }
@@ -352,7 +354,9 @@ app.post('/api/live-meeting', (req, res) => {
     const newIce = data.signaling.interviewerCandidates;
     const mergedIce = [...existingIce];
     newIce.forEach(nc => {
-       if (!mergedIce.some(ec => ec.candidate === nc.candidate)) mergedIce.push(nc);
+       const idx = mergedIce.findIndex(ec => ec.candidate === nc.candidate);
+       if (idx > -1) mergedIce[idx] = nc;
+       else mergedIce.push(nc);
     });
     sig.interviewerCandidates = mergedIce;
   }
