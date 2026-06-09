@@ -232,6 +232,10 @@ document.addEventListener('DOMContentLoaded', () => {
         localStream.getTracks().forEach(t => t.stop());
         localStream = null;
       }
+      const mv = document.getElementById('mainVideo');
+      const lpv = document.getElementById('lobbyPreviewVideo');
+      if (mv) mv.srcObject = null;
+      if (lpv) lpv.srcObject = null;
     });
   }
 

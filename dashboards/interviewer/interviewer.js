@@ -3589,6 +3589,8 @@ async function initLiveKitRoom(roomId) {
       state.interviewerStream.getTracks().forEach(t => t.stop());
       state.interviewerStream = null;
     }
+    const selfVid = document.getElementById('interviewer-self-video');
+    if (selfVid) selfVid.srcObject = null;
 
     await room.localParticipant.enableCameraAndMicrophone();
     if (!state.interviewerCamOn) room.localParticipant.setCameraEnabled(false);
