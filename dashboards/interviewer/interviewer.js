@@ -781,8 +781,26 @@ function renderLiveInterviewView() {
         state.sessions.push(newSess);
         saveStateSessions();
 
-        // Immediately enter live room with the new session!
-        enterLiveRoom(newSess);
+        // Check if scheduled time is > 5 mins away
+        const schedDateTime = new Date(`${date}T${time}`);
+        const now = new Date();
+        const diffMinutes = (schedDateTime - now) / 1000 / 60;
+
+        if (diffMinutes > 5) {
+          // Future session -> just schedule it
+          addNotification(
+            candidateEmail,
+            "New Interview Scheduled!",
+            `A new interview for "${sessionType}" has been scheduled with ${state.profile.name || 'EkVue AI'}. Date: ${date} | Time: ${time}`,
+            "scheduled",
+            { meetingId: newSess.id, role: sessionType, date, time, interviewer: state.profile.name || 'EkVue AI' }
+          );
+          renderLiveInterviewView(); // refresh the lobby list
+        } else {
+          // Immediately enter live room with the new session!
+          enterLiveRoom(newSess);
+        }
+        
         renderDashboard(); // refresh stats
       };
     }
