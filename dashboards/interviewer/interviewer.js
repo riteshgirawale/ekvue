@@ -2674,8 +2674,9 @@ function renderJobDetails() {
   const dateStr = current.createdAt ? new Date(current.createdAt).toLocaleDateString() : 'N/A';
 
   const associatedCandidates = state.sessions.filter(sess => {
-    const sType = (sess.sessionType || '').toLowerCase();
-    const jTitle = (current.jobTitle || '').toLowerCase();
+    const sType = (sess.sessionType || '').toLowerCase().trim();
+    const jTitle = (current.jobTitle || '').toLowerCase().trim();
+    if (!sType || !jTitle) return false;
     return sType.includes(jTitle) || jTitle.includes(sType);
   });
 
