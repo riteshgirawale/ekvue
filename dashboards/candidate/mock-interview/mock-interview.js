@@ -721,7 +721,8 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       configOverwrite: {
         startWithAudioMuted: false,
-        startWithVideoMuted: false
+        startWithVideoMuted: false,
+        prejoinPageEnabled: false
       },
       interfaceConfigOverwrite: {
         DISABLE_JOIN_LEAVE_NOTIFICATIONS: true
