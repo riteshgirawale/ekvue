@@ -845,6 +845,14 @@ document.addEventListener('DOMContentLoaded', () => {
       // 3. Handle Tracks
       room.on(LiveKit.RoomEvent.TrackSubscribed, (track, publication, participant) => {
         updateDiagnosticStatus(`Subscribed to remote track from ${participant.identity}`);
+        
+        if (track.kind === 'audio') {
+          const element = track.attach();
+          element.id = track.sid;
+          document.body.appendChild(element);
+          return;
+        }
+
         const element = track.attach();
         element.style.width = '100%';
         element.style.height = '100%';
@@ -854,8 +862,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const wrapper = document.createElement('div');
         wrapper.id = track.sid;
         wrapper.style.position = 'relative';
-        wrapper.style.width = publication.source === 'screen_share' ? '100%' : '50%';
-        wrapper.style.height = publication.source === 'screen_share' ? '100%' : '50%';
+        wrapper.style.width = '100%';
+        wrapper.style.height = '100%';
         wrapper.appendChild(element);
         
         remoteVideosContainer.appendChild(wrapper);

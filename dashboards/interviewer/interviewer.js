@@ -3590,6 +3590,14 @@ async function initLiveKitRoom(roomId) {
 
     room.on(LiveKit.RoomEvent.TrackSubscribed, (track, publication, participant) => {
       updateDiagnosticStatus(`Subscribed to remote track from ${participant.identity}`);
+      
+      if (track.kind === 'audio') {
+        const element = track.attach();
+        element.id = track.sid;
+        document.body.appendChild(element);
+        return;
+      }
+
       const element = track.attach();
       element.style.width = '100%';
       element.style.height = '100%';
