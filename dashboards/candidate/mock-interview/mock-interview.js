@@ -347,11 +347,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (localStream) {
         localStream.getTracks().forEach(t => t.stop());
       }
-      if (jitsiApiInstance) {
+      if (currentRoom) {
         try {
-          jitsiApiInstance.dispose();
+          currentRoom.disconnect();
         } catch(e){}
-        jitsiApiInstance = null;
+        currentRoom = null;
       }
       window.close();
       window.location.href = '../interviewer-review.html';
@@ -608,11 +608,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (localStream) {
           localStream.getTracks().forEach(t => t.stop());
         }
-        if (jitsiApiInstance) {
+        if (currentRoom) {
           try {
-            jitsiApiInstance.dispose();
+            currentRoom.disconnect();
           } catch(e){}
-          jitsiApiInstance = null;
+          currentRoom = null;
         }
         window.close();
         window.location.href = '../interviewer-review.html';

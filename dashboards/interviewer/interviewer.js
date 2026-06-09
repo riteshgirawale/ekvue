@@ -879,11 +879,11 @@ function exitLiveRoom() {
     state.liveStream = null;
   }
   
-  if (jitsiApiInstance) {
+  if (currentRoom) {
     try {
-      jitsiApiInstance.dispose();
+      currentRoom.disconnect();
     } catch(e){}
-    jitsiApiInstance = null;
+    currentRoom = null;
   }
 
   // Cleanup interviewer's own camera/mic stream
