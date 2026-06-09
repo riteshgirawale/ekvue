@@ -72,8 +72,8 @@ const state = {
 // Candidates fetched from MongoDB for datalist and email lookup
 let fetchedCandidates = [];
 
-// --- WebRTC Peer Connection (Interviewer Side Global Object) ---
-let webrtcPc = null;
+// --- Jitsi Global Object ---
+let jitsiApiInstance = null;
 
 // ==========================================
 // CANONICAL PRE-POPULATION DEMO DATASETS
@@ -1432,19 +1432,26 @@ function runLiveProctorSyncLoop() {
       if (waitingOverlay) waitingOverlay.style.display = 'none';
       if (hud) hud.style.display = 'flex';
 
-      // --- WebRTC Peer Connection (Real Webcam Exchange) ---
-      const proctorVideo = document.getElementById('proctor-candidate-video');
-      
-      if (proctorVideo) {
-        if (!webrtcPc) {
-          if (state.cameraInitialized) {
-            initInterviewerWebRTC(state.liveSessionId, state.interviewerStream);
+      // --- Jitsi Integration ---
+      const jitsiContainer = document.getElementById('interviewer-jitsi-container');
+      if (jitsiContainer && typeof JitsiMeetExternalAPI !== 'undefined' && !jitsiApiInstance) {
+        jitsiContainer.innerHTML = '';
+        jitsiApiInstance = new JitsiMeetExternalAPI("8x8.vc", {
+          roomName: `ekvue_interview_${state.liveSessionId}`,
+          parentNode: jitsiContainer,
+          width: '100%',
+          height: '100%',
+          userInfo: {
+            displayName: state.profile?.name || 'Interviewer'
+          },
+          configOverwrite: {
+            startWithAudioMuted: false,
+            startWithVideoMuted: false
+          },
+          interfaceConfigOverwrite: {
+            DISABLE_JOIN_LEAVE_NOTIFICATIONS: true
           }
-        } else {
-          // Process Candidate Offer SDP and ICE candidates continuously
-          checkAndProcessOffer(state.liveSessionId);
-          checkInterviewerSignalingCandidates(state.liveSessionId);
-        }
+        });
       }
 
       // Stream proctor metrics to HUD
@@ -1498,20 +1505,10 @@ function runLiveProctorSyncLoop() {
       if (hud) hud.style.display = 'none';
 
       // Cleanup stream if status goes back to waiting
-      if (state.liveStream) {
-        state.liveStream.getTracks().forEach(track => track.stop());
-        state.liveStream = null;
+      if (jitsiApiInstance) {
+        jitsiApiInstance.dispose();
+        jitsiApiInstance = null;
       }
-      const proctorVideo = document.getElementById('proctor-candidate-video');
-      if (proctorVideo) {
-        proctorVideo.srcObject = null;
-        proctorVideo.style.display = 'none';
-      }
-      const avatarEl = document.getElementById('liveCandidateAvatar');
-      if (avatarEl) avatarEl.style.display = 'flex';
-      
-      const eqEl = document.querySelector('.audio-equalizer-proctor');
-      if (eqEl) eqEl.classList.remove('active');
     }
 
     // Sync chat logs
@@ -3534,108 +3531,4 @@ window.addEventListener('storage', (e) => {
   }
 });
 
-// --- WebRTC Peer Connection (Interviewer Side) ---
 
-let socket = null;
-
-async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
-    console.log('[WebRTC] Initializing Peer Connection on Interviewer side for:', meetingId);
-    
-    socket = io();
-
-    socket.on('connect', () => {
-      console.log("Socket Connected", socket.id);
-      console.log("User Role:", "Interviewer");
-      console.log("Joining room:", meetingId);
-      console.log("User joined room:", socket.id);
-      socket.emit('join-room', meetingId, 'Interviewer');
-    });
-
-    try {
-      webrtcPc = new RTCPeerConnection({
-        iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:global.stun.twilio.com:3478' }
-        ]
-      });
-
-      webrtcPc.onconnectionstatechange = () => {
-        console.log("Connection State:", webrtcPc.connectionState);
-      };
-      webrtcPc.oniceconnectionstatechange = () => {
-        console.log("ICE State:", webrtcPc.iceConnectionState);
-      };
-
-      // Add interviewer camera tracks
-      if (localInterviewerStream) {
-        localInterviewerStream.getTracks().forEach(track => {
-          console.log("Track Added", track.kind);
-          webrtcPc.addTrack(track, localInterviewerStream);
-        });
-      }
-
-      // On remote track (Candidate camera received)
-      webrtcPc.ontrack = (event) => {
-        console.log("Remote Stream Received", event.streams);
-        const proctorVideo = document.getElementById('proctor-candidate-video');
-        const avatarEl = document.getElementById('liveCandidateAvatar');
-        const eqEl = document.querySelector('.audio-equalizer-proctor');
-        
-        if (proctorVideo) {
-          proctorVideo.srcObject = event.streams[0];
-          proctorVideo.style.display = 'block';
-          proctorVideo.play().catch(() => {});
-          if (avatarEl) avatarEl.style.display = 'none';
-          if (eqEl) eqEl.classList.add('active');
-        }
-      };
-
-      // Gather ICE candidates
-      webrtcPc.onicecandidate = (event) => {
-        if (event.candidate) {
-          console.log("ICE Generated");
-          console.log("ICE Sent");
-          socket.emit('webrtc-ice', meetingId, event.candidate);
-        }
-      };
-
-      // Listen for Offer from Candidate
-      socket.on('webrtc-offer', async (offer) => {
-        console.log("Offer Received");
-        if (webrtcPc.signalingState === 'stable') {
-          await webrtcPc.setRemoteDescription(new RTCSessionDescription(offer));
-          
-          console.log("Creating Answer");
-          const answer = await webrtcPc.createAnswer();
-          await webrtcPc.setLocalDescription(answer);
-          console.log("Answer Sent");
-          
-          socket.emit('webrtc-answer', meetingId, answer);
-        }
-      });
-
-      // Listen for ICE from Candidate
-      socket.on('webrtc-ice', async (candidate) => {
-        console.log("ICE Received");
-        if (webrtcPc.remoteDescription) {
-          await webrtcPc.addIceCandidate(new RTCIceCandidate(candidate)).catch(e => {});
-          console.log("ICE Added");
-        }
-      });
-
-    } catch (err) {
-      console.error('[WebRTC] Error initializing peer connection on interviewer:', err);
-    }
-  }
-
-  async function checkAndProcessOffer(meetingId) {
-    // Deprecated in favor of Socket.IO
-  }
-
-  function saveInterviewerSignal(meetingId, signal) {
-    // Deprecated in favor of Socket.IO
-  }
-
-  function checkInterviewerSignalingCandidates(meetingId) {
-    // Deprecated in favor of Socket.IO
-  }

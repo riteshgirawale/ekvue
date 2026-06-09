@@ -15,7 +15,7 @@
   <!-- MediaPipe Face Detection -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/face_detection.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="https://meet.jit.si/external_api.js"></script>
 </head>
 <body data-theme="space">
 
@@ -107,34 +107,8 @@
       <!-- Left Column (Video + IDE) -->
       <div class="left-column">
         <!-- Video Section -->
-        <div class="video-section">
-          <video id="mainVideo" class="main-video-feed" autoplay muted playsinline></video>
-          <div class="rec-indicator">REC</div>
-          <div class="face-bounding-box hidden" id="boundingBox"></div>
-          
-          <div class="camera-off-placeholder hidden" id="cameraOffPlaceholder">
-            <div class="placeholder-avatar">R</div>
-            <div class="placeholder-text">Camera is turned off</div>
-          </div>
-          
-          <div class="ai-loading" id="aiLoading">Loading AI Models...</div>
-          
-          <div class="video-label-bottom">
-            <div class="mic-level"><span></span><span></span><span></span></div>
-            rite (Candidate)
-          </div>
-
-          <div class="stability-container">
-            <div class="stability-label">Stability Lock: <span id="stabilityScoreText">100%</span></div>
-            <div class="stability-bar-bg">
-              <div class="stability-bar-fill" id="stabilityBarFill" style="width: 100%;"></div>
-            </div>
-          </div>
-
-          <div class="pip-video-container">
-            <video id="pipVideo" class="pip-video" autoplay playsinline></video>
-            <div class="pip-label">rite (Interviewer)</div>
-          </div>
+        <div class="video-section" style="padding: 0; background: #111;">
+          <div id="jitsi-container" style="width: 100%; height: 700px;"></div>
         </div>
 
         <!-- Editor Section -->

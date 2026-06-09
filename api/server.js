@@ -550,37 +550,6 @@ app.post('/api/global-state/:key', (req, res) => {
   res.json({ success: true });
 });
 
-// --- WebRTC Socket.IO Signaling ---
-io.on('connection', (socket) => {
-  console.log("Socket Connected", socket.id);
-
-  socket.on('join-room', (roomId, role) => {
-    socket.join(roomId);
-    console.log("User joined room:", socket.id);
-    console.log("User Role:", role);
-    console.log("Joining room:", roomId);
-  });
-
-  socket.on('webrtc-offer', (roomId, offer) => {
-    console.log("Offer Sent by", socket.id, "to room", roomId);
-    socket.to(roomId).emit('webrtc-offer', offer);
-  });
-
-  socket.on('webrtc-answer', (roomId, answer) => {
-    console.log("Answer Sent by", socket.id, "to room", roomId);
-    socket.to(roomId).emit('webrtc-answer', answer);
-  });
-
-  socket.on('webrtc-ice', (roomId, candidate) => {
-    console.log("ICE Sent by", socket.id, "to room", roomId);
-    socket.to(roomId).emit('webrtc-ice', candidate);
-  });
-  
-  socket.on('disconnect', () => {
-    console.log("Socket Disconnected", socket.id);
-  });
-});
-
 const PORT = 3000;
 server.listen(PORT, () => {
   console.log(`EKVUE Auth & Socket API running on http://localhost:${PORT}`);

@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Live Coding Board loaded');
   
-  // WebRTC Peer Connection Object
-  let pc = null;
+  // Jitsi API Object
+  let jitsiApiInstance = null;
   
   // Elements
   const mainVideo = document.getElementById('mainVideo');
@@ -224,14 +224,13 @@ document.addEventListener('DOMContentLoaded', () => {
       lobbyWrapper.classList.add('hidden');
       liveBoardWrapper.classList.remove('hidden');
       
-      // Start AI only after joining
-      initAITracking();
+      // Stop local camera to free device for Jitsi
+      if (localStream) {
+        localStream.getTracks().forEach(t => t.stop());
+        localStream = null;
+      }
       
-      // Wait for camera to initialize before starting WebRTC
-      if (cameraInitPromise) await cameraInitPromise;
-      
-      // Start WebRTC Peer connection to stream webcam to interviewer
-      initWebRTCPeer();
+      initJitsiMeet();
     });
   }
 
@@ -320,11 +319,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (localStream) {
         localStream.getTracks().forEach(t => t.stop());
       }
-      if (pc) {
+      if (jitsiApiInstance) {
         try {
-          pc.close();
+          jitsiApiInstance.dispose();
         } catch(e){}
-        pc = null;
+        jitsiApiInstance = null;
       }
       window.close();
       window.location.href = '../interviewer-review.html';
@@ -581,11 +580,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (localStream) {
           localStream.getTracks().forEach(t => t.stop());
         }
-        if (pc) {
+        if (jitsiApiInstance) {
           try {
-            pc.close();
+            jitsiApiInstance.dispose();
           } catch(e){}
-          pc = null;
+          jitsiApiInstance = null;
         }
         window.close();
         window.location.href = '../interviewer-review.html';
@@ -599,7 +598,6 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('storage', (e) => {
     if (e.key === 'ekvueLiveInterviews') {
       loadChatMessages();
-      checkSignalingSignals();
       checkMeetingStatus();
     }
   });
@@ -629,7 +627,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
             loadChatMessages();
-            checkSignalingSignals();
             checkMeetingStatus();
           }
         }
@@ -706,101 +703,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- WebRTC Peer Connection for Real-Time Camera Exchange ---
+  // --- Jitsi Meeting Initialization ---
 
-
-  let socket = null;
-
-  async function initWebRTCPeer() {
-    console.log('[WebRTC] Initializing Peer Connection on Candidate side');
+  function initJitsiMeet() {
+    console.log('[Jitsi] Initializing Meeting on Candidate side');
     
-    // Connect Socket.IO
-    socket = io();
-    
-    socket.on('connect', () => {
-      console.log("Socket Connected", socket.id);
-      console.log("User Role:", "Candidate");
-      console.log("Joining room:", meetingId);
-      console.log("User joined room:", socket.id);
-      socket.emit('join-room', meetingId, 'Candidate');
-    });
+    const jitsiContainer = document.getElementById('jitsi-container');
+    if (!jitsiContainer || typeof JitsiMeetExternalAPI === 'undefined') return;
 
-    try {
-      pc = new RTCPeerConnection({
-        iceServers: [
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:global.stun.twilio.com:3478' }
-        ]
-      });
-
-      pc.onconnectionstatechange = () => {
-        console.log("Connection State:", pc.connectionState);
-      };
-      pc.oniceconnectionstatechange = () => {
-        console.log("ICE State:", pc.iceConnectionState);
-      };
-
-      // Add local stream tracks (Candidate camera)
-      if (localStream) {
-        localStream.getTracks().forEach(track => {
-          console.log("Track Added", track.kind);
-          pc.addTrack(track, localStream);
-        });
+    jitsiApiInstance = new JitsiMeetExternalAPI("8x8.vc", {
+      roomName: `ekvue_interview_${meetingId}`,
+      parentNode: jitsiContainer,
+      width: '100%',
+      height: '100%',
+      userInfo: {
+        displayName: 'Candidate'
+      },
+      configOverwrite: {
+        startWithAudioMuted: false,
+        startWithVideoMuted: false
+      },
+      interfaceConfigOverwrite: {
+        DISABLE_JOIN_LEAVE_NOTIFICATIONS: true
       }
-
-      // On remote track (Interviewer camera received), set to pipVideo!
-      pc.ontrack = (event) => {
-        console.log("Remote Stream Received", event.streams);
-        if (pipVideo) {
-          pipVideo.srcObject = event.streams[0];
-          pipVideo.play().catch(() => {});
-        }
-      };
-
-      // Gather ICE candidates
-      pc.onicecandidate = (event) => {
-        if (event.candidate) {
-          console.log("ICE Generated");
-          console.log("ICE Sent");
-          socket.emit('webrtc-ice', meetingId, event.candidate);
-        }
-      };
-
-      // Create and save Offer
-      console.log("Creating Offer");
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
-      console.log("Offer Sent");
-      
-      socket.emit('webrtc-offer', meetingId, offer);
-
-      // Listen for Answer from Interviewer
-      socket.on('webrtc-answer', async (answer) => {
-        console.log("Answer Received");
-        if (pc.signalingState === 'have-local-offer') {
-          await pc.setRemoteDescription(new RTCSessionDescription(answer));
-        }
-      });
-
-      // Listen for ICE from Interviewer
-      socket.on('webrtc-ice', async (candidate) => {
-        console.log("ICE Received");
-        if (pc.remoteDescription) {
-          await pc.addIceCandidate(new RTCIceCandidate(candidate)).catch(e => {});
-          console.log("ICE Added");
-        }
-      });
-
-    } catch (err) {
-      console.error('[WebRTC] Error initializing peer connection on candidate:', err);
-    }
-  }
-
-  function saveCandidateSignal() {
-    // Deprecated in favor of Socket.IO
-  }
-
-  function checkSignalingSignals() {
-    // Deprecated in favor of Socket.IO
+    });
   }
 });
