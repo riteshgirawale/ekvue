@@ -403,6 +403,57 @@ app.delete('/api/live-meeting/:meetingId', (req, res) => {
   res.json({ success: true });
 });
 
+// ==========================================
+// GENERIC GLOBAL STATE SYNC (PieSocket Fallback)
+// ==========================================
+const globalStateStore = new Map();
+
+app.get('/api/global-state/:key', (req, res) => {
+  const key = req.params.key;
+  const data = globalStateStore.get(key) || [];
+  res.json(data);
+});
+
+app.post('/api/global-state/:key', (req, res) => {
+  const key = req.params.key;
+  const incomingData = req.body || [];
+  
+  // Merge lists based on ID or Timestamp
+  const existingData = globalStateStore.get(key) || [];
+  if (!Array.isArray(existingData) || !Array.isArray(incomingData)) {
+    globalStateStore.set(key, incomingData);
+    return res.json({ success: true });
+  }
+
+  const merged = [...existingData];
+  incomingData.forEach(incomingItem => {
+    const itemId = incomingItem.id || incomingItem.meetingId;
+    if (!itemId) {
+      merged.push(incomingItem);
+      return;
+    }
+    
+    const idx = merged.findIndex(m => (m.id === itemId || m.meetingId === itemId));
+    if (idx > -1) {
+      const localTime = new Date(merged[idx].lastUpdated || merged[idx].createdAt || 0).getTime();
+      const remoteTime = new Date(incomingItem.lastUpdated || incomingItem.createdAt || 0).getTime();
+      if (remoteTime >= localTime) {
+        merged[idx] = incomingItem;
+      }
+    } else {
+      merged.push(incomingItem);
+    }
+  });
+
+  // Limit memory usage: keep only the last 1000 items per key
+  if (merged.length > 1000) {
+    merged.splice(0, merged.length - 1000);
+  }
+
+  globalStateStore.set(key, merged);
+  res.json({ success: true });
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`EKVUE Auth API running on http://localhost:${PORT}`);

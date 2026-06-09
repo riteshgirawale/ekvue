@@ -190,6 +190,8 @@ function mergeMeetings(localList, remoteList) {
 // Generic state broadcaster
 function broadcastNetworkState(key, rawStateValue) {
   if (isSyncingState) return;
+  
+  // 1. WebSocket Broadcaster (Fast but unreliable free tier)
   if (syncSocket && syncSocket.readyState === WebSocket.OPEN) {
     try {
       const payload = JSON.parse(rawStateValue);
@@ -203,6 +205,16 @@ function broadcastNetworkState(key, rawStateValue) {
       console.warn('[NetworkSync] Broadcast parse failed:', err);
     }
   }
+
+  // 2. HTTP Backend Broadcaster (Slow but 100% reliable fallback for cross-laptop sync)
+  try {
+    const payload = JSON.parse(rawStateValue);
+    fetch(`/api/global-state/${key}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(() => {});
+  } catch (err) {}
 }
 
 // Legacy compatibility broadcaster
@@ -286,14 +298,36 @@ function initNetworkSync() {
       setTimeout(connectSocket, 4000);
     };
     
-    socket.onerror = () => {
-      socket.close();
-    };
-    
     syncSocket = socket;
   };
   
   connectSocket();
+
+  // 100% Reliable HTTP Polling Fallback (Polls Render Backend every 3 seconds for critical cross-laptop arrays)
+  setInterval(async () => {
+    const keysToPoll = ['ekvueNotifications', 'ekvueInterviewerScorecards'];
+    for (const targetKey of keysToPoll) {
+      try {
+        const res = await fetch(`/api/global-state/${targetKey}`);
+        if (res.ok) {
+          const remotePayload = await res.json();
+          if (Array.isArray(remotePayload) && remotePayload.length > 0) {
+            isSyncingState = true;
+            let localList = [];
+            try { localList = JSON.parse(localStorage.getItem(targetKey) || '[]'); } catch {}
+            
+            const merged = mergeGenericLists(localList, remotePayload);
+            // Only trigger storage event if something actually changed to avoid infinite loops
+            if (JSON.stringify(merged) !== JSON.stringify(localList)) {
+              localStorage.setItem(targetKey, JSON.stringify(merged));
+              window.dispatchEvent(new Event('storage'));
+            }
+            isSyncingState = false;
+          }
+        }
+      } catch (e) {}
+    }
+  }, 3000);
 }
 
 // Global setItem Interceptor to broadcast local updates instantly
