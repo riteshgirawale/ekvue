@@ -2520,7 +2520,10 @@ async function checkActiveLiveInterviews() {
 
   if (activeMeeting) {
     if (details) {
-      details.textContent = `Interviewer ${activeMeeting.interviewerName} has launched your live technical assessment round.`;
+      const dateText = activeMeeting.date ? `Date: ${activeMeeting.date}` : '';
+      const timeText = activeMeeting.time ? ` | Time: ${activeMeeting.time}` : '';
+      const durationText = activeMeeting.duration ? ` | Duration: ${activeMeeting.duration} mins` : '';
+      details.textContent = `Interviewer ${activeMeeting.interviewerName} has launched your live technical assessment round. ${dateText}${timeText}${durationText}`;
     }
     banner.classList.remove('hidden');
 

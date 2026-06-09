@@ -673,86 +673,119 @@ function renderLiveInterviewView() {
           No upcoming scheduled candidate sessions found. 
           <br>Schedule a quick interview below or click Sessions to plan detailed slots.
         </div>
-        
-        <!-- Quick Schedule Form inside Lobby -->
-        <div class="card" style="padding:16px; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:12px;">
-          <h3 style="margin:0 0 12px 0; font-size:13.5px; color:white; font-weight:800;">Quick Schedule & Launch</h3>
-          <form id="lobbyQuickScheduleForm" style="display:grid; grid-template-columns: 1fr 1fr auto; gap:12px; align-items:end;">
-            <div class="field" style="margin:0;">
-              <label style="font-size:10px; margin-bottom:4px; display:block; color:var(--muted); font-weight:700;">Candidate Name</label>
-              <input id="lobbyQuickName" placeholder="e.g. Priya Sharma" list="registered-candidates-datalist" required style="background:rgba(2, 6, 23, 0.4); border:1px solid var(--border); border-radius:6px; color:white; padding:8px 10px; font-size:12px; width:100%; box-sizing:border-box; outline:none;" />
-            </div>
-            <div class="field" style="margin:0;">
-              <label style="font-size:10px; margin-bottom:4px; display:block; color:var(--muted); font-weight:700;">Assessment Type</label>
-              <select id="lobbyQuickType" style="background:rgba(2, 6, 23, 0.4); border:1px solid var(--border); border-radius:6px; color:white; padding:8px 10px; font-size:12px; width:100%; box-sizing:border-box; outline:none; height:34px;">
-                <option value="Live Coding">Live Coding Round</option>
-                <option value="System Design">System Design Review</option>
-                <option value="Technical Interview">General Interview</option>
-              </select>
-            </div>
-            <button class="btn primary" type="submit" style="padding:8px 16px; font-size:11.5px; font-weight:800; height:34px; border-radius:6px; margin:0;">Schedule & Launch</button>
-          </form>
-        </div>
       `;
+    } else {
+      upcoming.forEach((sess) => {
+        const row = document.createElement('div');
+        row.className = 'item';
+        row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--border); border-radius:10px; background:rgba(255,255,255,0.01); margin-bottom: 12px;";
+        row.innerHTML = `
+          <div>
+            <strong style="color:white; font-size:14px;">${escapeHtml(sess.candidateName)}</strong>
+            <div class="muted" style="font-size:11.5px; margin-top:2px;">Round: ${escapeHtml(sess.sessionType)} | Scheduled: ${escapeHtml(sess.date)} (${escapeHtml(sess.time)}) ${sess.duration ? `| Duration: ${escapeHtml(sess.duration)} mins` : ''}</div>
+          </div>
+          <button class="btn primary small" id="launch-lobby-sess-${sess.id}" style="background:linear-gradient(90deg, #10b981, #059669); border-color:rgba(16,185,129,0.3); font-weight:800; font-size:11.5px; padding:6px 14px;">Launch Live Room</button>
+        `;
+        container.appendChild(row);
 
-      // Bind quick schedule submit event
-      const quickForm = document.getElementById('lobbyQuickScheduleForm');
-      if (quickForm) {
-        quickForm.onsubmit = (e) => {
-          e.preventDefault();
-          const nameInput = document.getElementById('lobbyQuickName');
-          const typeSelect = document.getElementById('lobbyQuickType');
-          
-          const candidateName = nameInput?.value.trim() || '';
-          const sessionType = typeSelect?.value || 'Live Coding';
-
-          if (!candidateName) return;
-
-          const candidateEmail = lookupCandidateEmail(candidateName);
-          const newSess = {
-            id: uid('sess'),
-            candidateName,
-            candidateEmail,
-            sessionType,
-            date: new Date().toISOString().split('T')[0],
-            time: new Date().toTimeString().split(' ')[0].substring(0, 5),
-            agenda: `Quick scheduled ${sessionType} round.`,
-            status: 'Upcoming',
-            notes: '',
-            createdAt: new Date().toISOString()
+        const btn = row.querySelector(`#launch-lobby-sess-${sess.id}`);
+        if (btn) {
+          btn.onclick = () => {
+            enterLiveRoom(sess);
           };
-
-          state.sessions.push(newSess);
-          saveStateSessions();
-
-          // Immediately enter live room with the new session!
-          enterLiveRoom(newSess);
-          renderDashboard(); // refresh stats
-        };
-      }
-      return;
+        }
+      });
     }
 
-    upcoming.forEach((sess) => {
-      const row = document.createElement('div');
-      row.className = 'item';
-      row.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--border); border-radius:10px; background:rgba(255,255,255,0.01);";
-      row.innerHTML = `
-        <div>
-          <strong style="color:white; font-size:14px;">${escapeHtml(sess.candidateName)}</strong>
-          <div class="muted" style="font-size:11.5px; margin-top:2px;">Round: ${escapeHtml(sess.sessionType)} | Scheduled: ${escapeHtml(sess.date)} (${escapeHtml(sess.time)})</div>
-        </div>
-        <button class="btn primary small" id="launch-lobby-sess-${sess.id}" style="background:linear-gradient(90deg, #10b981, #059669); border-color:rgba(16,185,129,0.3); font-weight:800; font-size:11.5px; padding:6px 14px;">Launch Live Room</button>
-      `;
-      container.appendChild(row);
+    // Always append the Quick Schedule Form inside Lobby
+    const formCard = document.createElement('div');
+    formCard.className = 'card';
+    formCard.style.cssText = "padding:16px; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:12px; margin-top: 14px;";
+    
+    const todayDate = new Date().toISOString().split('T')[0];
+    const nowTime = new Date().toTimeString().split(' ')[0].substring(0, 5);
 
-      const btn = row.querySelector(`#launch-lobby-sess-${sess.id}`);
-      if (btn) {
-        btn.onclick = () => {
-          enterLiveRoom(sess);
+    formCard.innerHTML = `
+      <h3 style="margin:0 0 12px 0; font-size:13.5px; color:white; font-weight:800;">Quick Schedule & Launch</h3>
+      <form id="lobbyQuickScheduleForm" style="display:grid; grid-template-columns: 2fr 1.5fr 1.2fr 1fr 1fr auto; gap:12px; align-items:end;">
+        <div class="field" style="margin:0;">
+          <label style="font-size:10px; margin-bottom:4px; display:block; color:var(--muted); font-weight:700;">Candidate Name</label>
+          <input id="lobbyQuickName" placeholder="e.g. Priya Sharma" list="registered-candidates-datalist" required style="background:rgba(2, 6, 23, 0.4); border:1px solid var(--border); border-radius:6px; color:white; padding:8px 10px; font-size:12px; width:100%; box-sizing:border-box; outline:none; height:34px;" />
+        </div>
+        <div class="field" style="margin:0;">
+          <label style="font-size:10px; margin-bottom:4px; display:block; color:var(--muted); font-weight:700;">Assessment Type</label>
+          <select id="lobbyQuickType" style="background:rgba(2, 6, 23, 0.4); border:1px solid var(--border); border-radius:6px; color:white; padding:8px 10px; font-size:12px; width:100%; box-sizing:border-box; outline:none; height:34px;">
+            <option value="Live Coding">Live Coding Round</option>
+            <option value="System Design">System Design Review</option>
+            <option value="Technical Interview">General Interview</option>
+          </select>
+        </div>
+        <div class="field" style="margin:0;">
+          <label style="font-size:10px; margin-bottom:4px; display:block; color:var(--muted); font-weight:700;">Date</label>
+          <input type="date" id="lobbyQuickDate" value="${todayDate}" required style="background:rgba(2, 6, 23, 0.4); border:1px solid var(--border); border-radius:6px; color:white; padding:8px 10px; font-size:12px; width:100%; box-sizing:border-box; outline:none; height:34px;" />
+        </div>
+        <div class="field" style="margin:0;">
+          <label style="font-size:10px; margin-bottom:4px; display:block; color:var(--muted); font-weight:700;">Time</label>
+          <input type="time" id="lobbyQuickTime" value="${nowTime}" required style="background:rgba(2, 6, 23, 0.4); border:1px solid var(--border); border-radius:6px; color:white; padding:8px 10px; font-size:12px; width:100%; box-sizing:border-box; outline:none; height:34px;" />
+        </div>
+        <div class="field" style="margin:0;">
+          <label style="font-size:10px; margin-bottom:4px; display:block; color:var(--muted); font-weight:700;">Duration</label>
+          <select id="lobbyQuickDuration" style="background:rgba(2, 6, 23, 0.4); border:1px solid var(--border); border-radius:6px; color:white; padding:8px 10px; font-size:12px; width:100%; box-sizing:border-box; outline:none; height:34px;">
+            <option value="30">30 mins</option>
+            <option value="45" selected>45 mins</option>
+            <option value="60">60 mins</option>
+            <option value="90">90 mins</option>
+            <option value="120">120 mins</option>
+          </select>
+        </div>
+        <button class="btn primary" type="submit" style="padding:8px 16px; font-size:11.5px; font-weight:800; height:34px; border-radius:6px; margin:0;">Schedule & Launch</button>
+      </form>
+    `;
+    
+    container.appendChild(formCard);
+
+    // Bind quick schedule submit event
+    const quickForm = document.getElementById('lobbyQuickScheduleForm');
+    if (quickForm) {
+      quickForm.onsubmit = (e) => {
+        e.preventDefault();
+        const nameInput = document.getElementById('lobbyQuickName');
+        const typeSelect = document.getElementById('lobbyQuickType');
+        const dateInput = document.getElementById('lobbyQuickDate');
+        const timeInput = document.getElementById('lobbyQuickTime');
+        const durationSelect = document.getElementById('lobbyQuickDuration');
+        
+        const candidateName = nameInput?.value.trim() || '';
+        const sessionType = typeSelect?.value || 'Live Coding';
+        const date = dateInput?.value || todayDate;
+        const time = timeInput?.value || nowTime;
+        const duration = durationSelect?.value || '45';
+
+        if (!candidateName) return;
+
+        const candidateEmail = lookupCandidateEmail(candidateName);
+        const newSess = {
+          id: uid('sess'),
+          candidateName,
+          candidateEmail,
+          sessionType,
+          date,
+          time,
+          duration,
+          agenda: `Quick scheduled ${sessionType} round.`,
+          status: 'Upcoming',
+          notes: '',
+          createdAt: new Date().toISOString()
         };
-      }
-    });
+
+        state.sessions.push(newSess);
+        saveStateSessions();
+
+        // Immediately enter live room with the new session!
+        enterLiveRoom(newSess);
+        renderDashboard(); // refresh stats
+      };
+    }
   }
 }
 
@@ -844,8 +877,9 @@ function enterLiveRoom(session) {
     interviewerName: state.profile.name,
     interviewerEmail: state.user ? state.user.email : '',
     status: "Launched",
-    date: session.date,
-    time: session.time,
+    date: session.date || new Date().toISOString().split('T')[0],
+    time: session.time || new Date().toTimeString().split(' ')[0].substring(0, 5),
+    duration: session.duration || '45',
     proctorTelemetry: {
       gazePct: 100,
       stabilityPct: 100,
@@ -879,6 +913,15 @@ function enterLiveRoom(session) {
       body: JSON.stringify(handshakeRecord)
     }).catch(err => console.warn('[LiveSync] Failed to post meeting to backend:', err));
   } catch(e) { console.warn('[LiveSync] Post error:', e); }
+
+  // Dispatch real-time candidate notification and email
+  addNotification(
+    cEmail,
+    "Live Interview Room Launched!",
+    `Your live technical interview for "${session.sessionType || 'Live Coding'}" with ${state.profile.name || 'EkVue AI'} has been launched. Date: ${handshakeRecord.date} | Time: ${handshakeRecord.time} | Duration: ${handshakeRecord.duration} mins. Please join the call now.`,
+    "live_launch",
+    { meetingId: session.id, role: session.sessionType || 'Live Coding', date: handshakeRecord.date, time: handshakeRecord.time, duration: handshakeRecord.duration, interviewer: state.profile.name || 'EkVue AI' }
+  );
 
   // Start Clock and sync loops
   startLiveRoomTimer();
