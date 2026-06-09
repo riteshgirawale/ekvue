@@ -612,23 +612,38 @@ function renderSessionDetails() {
 // VIEW 2C: LIVE INTERVIEW ROOM SIMULATOR (LIVE SYNC)
 // ==========================================
 function lookupCandidateEmail(name) {
+  const cleanName = name.trim().toLowerCase();
+  if (!cleanName) return '';
+
   // 1. Check candidates fetched from MongoDB first
   if (fetchedCandidates.length > 0) {
-    const matched = fetchedCandidates.find(a => (a.name || a.fullName || '').toLowerCase() === name.toLowerCase());
+    let matched = fetchedCandidates.find(a => (a.name || a.fullName || '').toLowerCase().trim() === cleanName);
+    if (matched && matched.email) return matched.email;
+
+    matched = fetchedCandidates.find(a => {
+      const dbName = (a.name || a.fullName || '').toLowerCase().trim();
+      return dbName.includes(cleanName) || cleanName.includes(dbName);
+    });
     if (matched && matched.email) return matched.email;
   }
 
   // 2. Check localStorage accounts
   try {
     const accounts = loadList('ekvueAccounts');
-    const matched = accounts.find(a => (a.name || a.fullName || '').toLowerCase() === name.toLowerCase() && a.role === 'Candidate');
+    let matched = accounts.find(a => (a.name || a.fullName || '').toLowerCase().trim() === cleanName && a.role === 'Candidate');
+    if (matched) return matched.email;
+
+    matched = accounts.find(a => {
+      const accName = (a.name || a.fullName || '').toLowerCase().trim();
+      return (accName.includes(cleanName) || cleanName.includes(accName)) && a.role === 'Candidate';
+    });
     if (matched) return matched.email;
   } catch (e) {
     // ignore
   }
 
   // 3. Fallback
-  return `${name.toLowerCase().replace(/\s+/g, '')}@example.com`;
+  return `${cleanName.replace(/\s+/g, '')}@example.com`;
 }
 
 function renderLiveInterviewView() {

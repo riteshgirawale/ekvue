@@ -121,7 +121,7 @@
   function addNotification(candidateEmail, title, message, type, metadata) {
     metadata = metadata || {};
     var notifications = loadList('ekvueNotifications') || [];
-    notifications.push({
+    var notificationPayload = {
       id: uid('notif'),
       candidateEmail: String(candidateEmail == null ? '' : candidateEmail).toLowerCase().trim(),
       title: title,
@@ -130,8 +130,16 @@
       read: false,
       createdAt: new Date().toISOString(),
       metadata: metadata
-    });
+    };
+    notifications.push(notificationPayload);
     saveList('ekvueNotifications', notifications);
+
+    // Save to MongoDB
+    fetch('/api/notifications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(notificationPayload)
+    }).catch(function() {});
 
     // Send real email notification using the new Nodemailer backend
     if (candidateEmail && candidateEmail.includes('@')) {

@@ -128,7 +128,18 @@ app.post('/verify-otp', (req, res) => {
 app.get('/api/notifications', async (req, res) => {
   try {
     const query = {};
-    if (req.query.candidateEmail) query.candidateEmail = req.query.candidateEmail;
+    const orConds = [];
+
+    if (req.query.candidateEmail) {
+      orConds.push({ candidateEmail: new RegExp(`^${req.query.candidateEmail}$`, 'i') });
+    }
+    if (req.query.candidateName) {
+      orConds.push({ 'metadata.candidateName': new RegExp(`^${req.query.candidateName}$`, 'i') });
+    }
+
+    if (orConds.length > 0) {
+      query.$or = orConds;
+    }
     
     const notifications = await Notification.find(query).sort({ createdAt: -1 });
     res.json(notifications);
@@ -167,11 +178,23 @@ app.put('/api/notifications/mark-read', async (req, res) => {
 app.get('/api/scorecards', async (req, res) => {
   try {
     const query = {};
-    // Allow querying by candidate name (for candidate dashboard) or company email (for company dashboard)
-    if (req.query.candidateName) {
-      // Create a case-insensitive regex for the candidate name to be safe
-      query.candidateName = new RegExp(`^${req.query.candidateName}$`, 'i');
+    
+    // Support querying by ID directly (for clicking notifications)
+    if (req.query.id) {
+      query.id = req.query.id;
+    } else {
+      const orConds = [];
+      if (req.query.candidateName) {
+        orConds.push({ candidateName: new RegExp(`^${req.query.candidateName}$`, 'i') });
+      }
+      if (req.query.candidateEmail) {
+        orConds.push({ email: new RegExp(`^${req.query.candidateEmail}$`, 'i') });
+      }
+      if (orConds.length > 0) {
+        query.$or = orConds;
+      }
     }
+    
     if (req.query.companyEmail) query.companyEmail = req.query.companyEmail;
 
     const scorecards = await Scorecard.find(query).sort({ date: -1 });

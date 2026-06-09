@@ -2611,7 +2611,7 @@ async function renderNotifications() {
   try {
     const qParams = new URLSearchParams();
     if (myEmail) qParams.append('candidateEmail', myEmail);
-    // If we only have name, we'd theoretically need a backend search, but for Notifications candidateEmail is required.
+    if (myName) qParams.append('candidateName', myName);
     const res = await fetch('/api/notifications?' + qParams.toString());
     if (res.ok) {
       myNotifs = await res.json();
@@ -2699,7 +2699,7 @@ async function renderNotifications() {
           // Open report card
           setTimeout(async () => {
             try {
-              const res = await fetch('/api/scorecards?candidateName=' + encodeURIComponent(myName));
+              const res = await fetch('/api/scorecards?id=' + encodeURIComponent(notif.metadata.scorecardId));
               const scorecards = await res.json();
               const scorecard = scorecards.find(sc => sc.id === notif.metadata.scorecardId);
               if (scorecard) showReportCardModal(scorecard);
@@ -2733,6 +2733,7 @@ async function renderInterviewResults() {
   try {
     const qParams = new URLSearchParams();
     if (myName) qParams.append('candidateName', myName);
+    if (myEmail) qParams.append('candidateEmail', myEmail);
     const res = await fetch('/api/scorecards?' + qParams.toString());
     if (res.ok) {
       myScorecards = await res.json();
