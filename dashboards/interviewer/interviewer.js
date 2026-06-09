@@ -1430,7 +1430,7 @@ function runLiveProctorSyncLoop() {
       const jitsiContainer = document.getElementById('interviewer-jitsi-container');
       if (jitsiContainer && typeof JitsiMeetExternalAPI !== 'undefined' && !jitsiApiInstance) {
         jitsiContainer.innerHTML = '';
-        jitsiApiInstance = new JitsiMeetExternalAPI("meet.jit.si", {
+        jitsiApiInstance = new JitsiMeetExternalAPI("meet.ffmuc.net", {
           roomName: `ekvue_interview_${state.liveSessionId}`,
           parentNode: jitsiContainer,
           width: '100%',
