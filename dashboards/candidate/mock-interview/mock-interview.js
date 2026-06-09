@@ -724,7 +724,7 @@ document.addEventListener('DOMContentLoaded', () => {
         startWithVideoMuted: false,
         prejoinPageEnabled: false,
         prejoinConfig: { enabled: false },
-        resolution: 360,
+        resolution: 720,
         disableDeepLinking: true,
         analytics: { disabled: true }
       },
