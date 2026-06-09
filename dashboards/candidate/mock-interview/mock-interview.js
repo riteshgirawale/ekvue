@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('Live Coding Board loaded');
   
   // LiveKit Room Object
+  const LiveKit = typeof window.LivekitClient !== 'undefined' ? window.LivekitClient : undefined;
   let currentRoom = null;
 
   function updateDiagnosticStatus(msg, isError = false) {

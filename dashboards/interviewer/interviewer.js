@@ -73,6 +73,7 @@ const state = {
 let fetchedCandidates = [];
 
 // --- LiveKit Global Object ---
+const LiveKit = typeof window.LivekitClient !== 'undefined' ? window.LivekitClient : undefined;
 let currentRoom = null;
 
 function updateDiagnosticStatus(msg, isError = false) {
