@@ -7,6 +7,8 @@ const User = require('./models/User');
 const Job = require('./models/Job');
 const Interview = require('./models/Interview');
 const Application = require('./models/Application');
+const Notification = require('./models/Notification');
+const Scorecard = require('./models/Scorecard');
 
 const path = require('path');
 
@@ -111,7 +113,79 @@ app.post('/verify-otp', (req, res) => {
   }
 });
 
-// Proxy for Code Execution to bypass CORS
+// 5. Notifications API
+app.get('/api/notifications', async (req, res) => {
+  try {
+    const query = {};
+    if (req.query.candidateEmail) query.candidateEmail = req.query.candidateEmail;
+    
+    const notifications = await Notification.find(query).sort({ createdAt: -1 });
+    res.json(notifications);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/notifications', async (req, res) => {
+  try {
+    const newNotif = new Notification(req.body);
+    await newNotif.save();
+    res.json(newNotif);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/notifications/mark-read', async (req, res) => {
+  try {
+    const candidateEmail = req.body.candidateEmail;
+    const notificationId = req.body.id;
+    
+    if (notificationId) {
+      await Notification.findOneAndUpdate({ id: notificationId }, { read: true });
+    } else if (candidateEmail) {
+      await Notification.updateMany({ candidateEmail: candidateEmail }, { read: true });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 6. Scorecards API
+app.get('/api/scorecards', async (req, res) => {
+  try {
+    const query = {};
+    // Allow querying by candidate name (for candidate dashboard) or company email (for company dashboard)
+    if (req.query.candidateName) {
+      // Create a case-insensitive regex for the candidate name to be safe
+      query.candidateName = new RegExp(`^${req.query.candidateName}$`, 'i');
+    }
+    if (req.query.companyEmail) query.companyEmail = req.query.companyEmail;
+
+    const scorecards = await Scorecard.find(query).sort({ date: -1 });
+    res.json(scorecards);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/scorecards', async (req, res) => {
+  try {
+    const existing = await Scorecard.findOne({ id: req.body.id });
+    if (existing) {
+      const updated = await Scorecard.findOneAndUpdate({ id: req.body.id }, req.body, { new: true });
+      return res.json(updated);
+    }
+    const newScorecard = new Scorecard(req.body);
+    await newScorecard.save();
+    res.json(newScorecard);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// AI Chatbot Route Execution to bypass CORS
 app.post('/run-code', async (req, res) => {
   const { compiler, code, input, apiKey: customApiKey } = req.body;
   const defaultApiKey = '1c2fdfdc0cfd60cb8ec188bf659dffe4';
@@ -182,7 +256,10 @@ app.post('/api/login', async (req, res) => {
 // 2. Jobs API
 app.get('/api/jobs', async (req, res) => {
   try {
-    const jobs = await Job.find({});
+    const query = {};
+    if (req.query.companyEmail) query.companyEmail = req.query.companyEmail;
+    
+    const jobs = await Job.find(query);
     res.json(jobs);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -220,7 +297,12 @@ app.delete('/api/jobs/:id', async (req, res) => {
 // 3. Interviews API
 app.get('/api/interviews', async (req, res) => {
   try {
-    const interviews = await Interview.find({});
+    const query = {};
+    if (req.query.candidateEmail) query.candidateEmail = req.query.candidateEmail;
+    if (req.query.interviewerEmail) query.interviewerEmail = req.query.interviewerEmail;
+    if (req.query.companyEmail) query.companyEmail = req.query.companyEmail;
+
+    const interviews = await Interview.find(query);
     res.json(interviews);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -249,7 +331,11 @@ app.put('/api/interviews/:id', async (req, res) => {
 // 4. Applications API
 app.get('/api/applications', async (req, res) => {
   try {
-    const apps = await Application.find({});
+    const query = {};
+    if (req.query.candidateEmail) query.candidateEmail = req.query.candidateEmail;
+    if (req.query.companyEmail) query.companyEmail = req.query.companyEmail;
+
+    const apps = await Application.find(query);
     res.json(apps);
   } catch (err) {
     res.status(500).json({ error: err.message });

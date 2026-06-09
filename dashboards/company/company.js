@@ -27,11 +27,11 @@ const TEAM_KEY = 'ekvueTeamRegistry';
 const SCHEDULES_KEY = 'ekvueCompanySchedules';
 const COMPANY_PROFILE_KEY = 'ekvueCompanyProfileDetails';
 
-// Centralized state container
 const state = {
   user: null,
   activeView: 'dashboard',
   jobPostings: [],
+  applications: [],
   teamMembers: [],
   schedules: [],
   selectedTheme: 'default'
@@ -130,7 +130,7 @@ function ensureRole(user) {
   }
 }
 
-function loadStateFromStorage() {
+async function loadStateFromStorage() {
   state.user = requireAuth();
   if (!state.user || state.user.role !== 'Company') {
     ensureRole(state.user);
@@ -141,13 +141,28 @@ function loadStateFromStorage() {
   state.selectedTheme = localStorage.getItem(THEME_KEY) || 'default';
   document.body.setAttribute('data-theme', state.selectedTheme);
 
-  // Job postings CRUD list
+  // Job postings CRUD list (From MongoDB)
   try {
-    const rawJobs = localStorage.getItem(LIST_KEY);
-    state.jobPostings = rawJobs ? JSON.parse(rawJobs) : [];
-    if (!Array.isArray(state.jobPostings)) state.jobPostings = [];
+    const res = await fetch('/api/jobs?companyEmail=' + encodeURIComponent(state.user.email));
+    if (res.ok) {
+      state.jobPostings = await res.json();
+    } else {
+      state.jobPostings = [];
+    }
   } catch (err) {
     state.jobPostings = [];
+  }
+
+  // Applications (From MongoDB)
+  try {
+    const resApps = await fetch('/api/applications?companyEmail=' + encodeURIComponent(state.user.email));
+    if (resApps.ok) {
+      state.applications = await resApps.json();
+    } else {
+      state.applications = [];
+    }
+  } catch (err) {
+    state.applications = [];
   }
 
   // Pre-populate demo job postings if completely empty
@@ -223,8 +238,8 @@ function updateKpiWidgets() {
 
   const activeJobsCount = state.jobPostings.filter(j => j.status === 'Active').length;
   
-  // Dynamic KPIs — compute real applied count from ekvueJobApplications
-  const allApplications = loadList('ekvueJobApplications');
+  // Dynamic KPIs — compute real applied count from state.applications
+  const allApplications = state.applications || [];
   let totalApplied = 0;
   state.jobPostings.forEach((j) => {
     const realCount = allApplications.filter(a => a.jobId === j.id).length;
@@ -435,11 +450,25 @@ function saveJob(status) {
     hrPhone: hrPhone
   };
 
-  // Save to database
-  const next = loadList(LIST_KEY);
-  next.unshift(newJob);
-  state.jobPostings = next;
-  saveList(LIST_KEY, next);
+  newJob.companyEmail = state.user?.email || '';
+
+  // Save to database (MongoDB)
+  fetch('/api/jobs', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(newJob)
+  }).then(async () => {
+    // Refresh state
+    await loadStateFromStorage();
+    renderDashboardCreatedJobs();
+    updateKpiWidgets();
+    renderJobsList();
+    
+    // Select the new job
+    activeJob = state.jobPostings.find(j => j.id === newJob.id) || newJob;
+    selectWorkspaceJob(activeJob);
+    switchView('jobs');
+  }).catch(()=>{});
 
   // Dispatch real-time candidate notifications if active posting
   if (status === 'Active') {
@@ -458,21 +487,9 @@ function saveJob(status) {
     } catch(err){}
   }
 
-  // Rerender lists
-  renderDashboardCreatedJobs();
-  updateKpiWidgets();
-
   // Reset form
   document.getElementById('postJobForm')?.reset();
-  
-  // Rerender jobs list sidebar
-  renderJobsList();
-
   alert(status === 'Active' ? 'Job vacancy published successfully!' : 'Job vacancy draft saved successfully!');
-  
-  // Transition to Jobs view and select this new job
-  activeJob = newJob;
-  switchView('jobs');
 }
 
 function previewJobOffer() {
@@ -657,10 +674,23 @@ function initJobsWorkspace() {
   const deleteBtn = document.getElementById('job-delete-btn');
 
   if (toggleStatusBtn) {
-    toggleStatusBtn.onclick = () => {
+    toggleStatusBtn.onclick = async () => {
       if (!activeJob) return;
       activeJob.status = activeJob.status === 'Active' ? 'Draft' : 'Active';
-      saveList(LIST_KEY, state.jobPostings);
+      
+      // Update in MongoDB
+      try {
+        await fetch(`/api/jobs/${activeJob.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(activeJob)
+        });
+      } catch(e){}
+
+      // Fallback update local array and rerender UI
+      const idx = state.jobPostings.findIndex(j => j.id === activeJob.id);
+      if (idx > -1) state.jobPostings[idx] = activeJob;
+
       selectWorkspaceJob(activeJob);
       renderJobsList();
       updateKpiWidgets();
@@ -668,11 +698,16 @@ function initJobsWorkspace() {
   }
 
   if (deleteBtn) {
-    deleteBtn.onclick = () => {
+    deleteBtn.onclick = async () => {
       if (!activeJob) return;
+      
+      // Delete from MongoDB
+      try {
+        await fetch(`/api/jobs/${activeJob.id}`, { method: 'DELETE' });
+      } catch(e){}
+
       const next = state.jobPostings.filter(j => j.id !== activeJob.id);
       state.jobPostings = next;
-      saveList(LIST_KEY, next);
       
       activeJob = next.length > 0 ? next[0] : null;
       selectWorkspaceJob(activeJob);
@@ -845,7 +880,7 @@ function selectWorkspaceJob(job) {
   }
 
   // Compute real applied count from application records
-  const jobApps = loadList('ekvueJobApplications').filter(a => a.jobId === job.id);
+  const jobApps = (state.applications || []).filter(a => a.jobId === job.id);
   const realAppliedCount = Math.max(jobApps.length, job.applied || 0);
   if (statApplied) statApplied.textContent = String(realAppliedCount);
   if (statInterview) statInterview.textContent = String(job.interviewed || 0);
@@ -862,7 +897,7 @@ function renderApplicantsList(jobId) {
   const container = document.getElementById('job-applicants-list');
   if (!container) return;
 
-  const apps = loadList('ekvueJobApplications').filter(a => a.jobId === jobId);
+  const apps = (state.applications || []).filter(a => a.jobId === jobId);
 
   if (apps.length === 0) {
     container.innerHTML = `
@@ -978,14 +1013,14 @@ function getRelativeTime(dateStr) {
 
 // Global function so inline onclick handlers can call it
 window.updateApplicationStatus = function(appId, newStatus) {
-  const apps = loadList('ekvueJobApplications');
+  const apps = state.applications || [];
   const updated = apps.map(a => {
     if (a.id === appId) {
       return { ...a, status: newStatus, lastUpdated: new Date().toISOString() };
     }
     return a;
   });
-  saveList('ekvueJobApplications', updated);
+  state.applications = updated;
 
   // Find the app to send notification
   const app = apps.find(a => a.id === appId);
@@ -1036,7 +1071,7 @@ window.showCandidateProfileModal = function(candidateName, candidateEmail) {
   );
 
   // Look up all applications by this candidate
-  const allApps = loadList('ekvueJobApplications').filter(a =>
+  const allApps = (state.applications || []).filter(a =>
     a.candidateEmail && a.candidateEmail.toLowerCase() === candidateEmail.toLowerCase()
   );
 

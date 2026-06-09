@@ -303,33 +303,6 @@ function initNetworkSync() {
   
   connectSocket();
 
-  // 100% Reliable HTTP Polling Fallback (Polls Render Backend every 3 seconds for critical cross-laptop arrays)
-  setInterval(async () => {
-    const keysToPoll = ['ekvueNotifications', 'ekvueInterviewerScorecards'];
-    for (const targetKey of keysToPoll) {
-      try {
-        const res = await fetch(`/api/global-state/${targetKey}`);
-        if (res.ok) {
-          const remotePayload = await res.json();
-          if (Array.isArray(remotePayload) && remotePayload.length > 0) {
-            isSyncingState = true;
-            let localList = [];
-            try { localList = JSON.parse(localStorage.getItem(targetKey) || '[]'); } catch {}
-            
-            const merged = mergeGenericLists(localList, remotePayload);
-            // Only trigger storage event if something actually changed to avoid infinite loops
-            if (JSON.stringify(merged) !== JSON.stringify(localList)) {
-              localStorage.setItem(targetKey, JSON.stringify(merged));
-              window.dispatchEvent(new Event('storage'));
-            }
-            isSyncingState = false;
-          }
-        }
-      } catch (e) {}
-    }
-  }, 3000);
-}
-
 // Global setItem Interceptor to broadcast local updates instantly
 try {
   const originalSetItem = localStorage.setItem;
@@ -337,7 +310,7 @@ try {
     originalSetItem.apply(this, arguments);
     
     // Broadcast all core recruiter + interviewer + candidate lists instantly!
-    const keysToBroadcast = ['ekvueLiveInterviews', 'ekvueCompanySchedules', 'ekvueCompanyItems', 'ekvueTeamRegistry', 'ekvueAccounts', 'ekvueInterviewerScorecards', 'ekvueNotifications', 'ekvueJobApplications'];
+    const keysToBroadcast = ['ekvueLiveInterviews', 'ekvueCompanySchedules', 'ekvueCompanyItems', 'ekvueTeamRegistry', 'ekvueAccounts', 'ekvueJobApplications'];
     if (keysToBroadcast.includes(key)) {
       broadcastNetworkState(key, value);
     }
@@ -353,9 +326,9 @@ if (typeof window !== 'undefined') {
 }
 
 function addNotification(candidateEmail, title, message, type, metadata = {}) {
-  const notifications = loadList('ekvueNotifications') || [];
-  notifications.push({
-    id: uid('notif'),
+  const notifId = uid('notif');
+  const notificationPayload = {
+    id: notifId,
     candidateEmail: String(candidateEmail || '').toLowerCase().trim(),
     title,
     message,
@@ -363,7 +336,18 @@ function addNotification(candidateEmail, title, message, type, metadata = {}) {
     read: false,
     createdAt: new Date().toISOString(),
     metadata
-  });
+  };
+
+  // Save to MongoDB
+  fetch('/api/notifications', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(notificationPayload)
+  }).catch(() => {});
+
+  // For backward compatibility while components finish migrating
+  const notifications = loadList('ekvueNotifications') || [];
+  notifications.push(notificationPayload);
   saveList('ekvueNotifications', notifications);
 
   // Send real email notification using the new Nodemailer backend

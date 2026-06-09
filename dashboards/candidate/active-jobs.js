@@ -630,18 +630,27 @@ function ActiveJobsDashboard() {
       return;
     }
 
-    // 1. Save record to ekvueJobApplications
+    // 1. Save record to ekvueJobApplications (And MongoDB)
     const apps = JSON.parse(localStorage.getItem('ekvueJobApplications') || '[]');
     const newApp = {
       id: 'app_' + Date.now(),
       jobId: job.id,
       jobTitle: job.jobTitle,
       companyName: job.companyName || 'Company',
+      companyEmail: job.companyEmail || '', // Required for MongoDB routing
       candidateEmail: currentUser.email,
       candidateName: currentUser.name || 'Student Candidate',
       appliedAt: new Date().toISOString(),
-      status: 'Applied'
+      status: 'Applied',
+      resumeLink: ''
     };
+
+    fetch('/api/applications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newApp)
+    }).catch(()=>{});
+
     localStorage.setItem('ekvueJobApplications', JSON.stringify([...apps, newApp]));
 
     // 2. Increment active job applied metrics in database (ekvueCompanyItems)

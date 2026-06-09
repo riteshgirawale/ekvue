@@ -2582,22 +2582,16 @@ function initNotificationsCenter() {
   }
 
   if (markAllBtn) {
-    markAllBtn.addEventListener('click', () => {
+    markAllBtn.addEventListener('click', async () => {
       const myEmail = (state.user?.email || '').toLowerCase().trim();
-      const myName = (state.user?.name || state.user?.fullName || '').toLowerCase().trim();
-      let notifs = loadList('ekvueNotifications') || [];
-      notifs = notifs.map(n => {
-        const notifEmail = (n.candidateEmail || '').toLowerCase().trim();
-        const isMyNotif = (myEmail && notifEmail === myEmail) ||
-          (myName && notifEmail.startsWith(myName.replace(/\s+/g, ''))) ||
-          (myName && myName.split(/\s+/).filter(w => w.length >= 2).some(w => notifEmail.split('@')[0].includes(w)));
-        if (isMyNotif) {
-          n.read = true;
-        }
-        return n;
-      });
-      saveList('ekvueNotifications', notifs);
-      renderNotifications();
+      try {
+        await fetch('/api/notifications/mark-read', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ candidateEmail: myEmail })
+        });
+        renderNotifications();
+      } catch (err) {}
     });
   }
 
@@ -2605,41 +2599,26 @@ function initNotificationsCenter() {
   renderNotifications();
 }
 
-function renderNotifications() {
+async function renderNotifications() {
   const listContainer = document.getElementById('notif-list-container');
   const badge = document.getElementById('notif-badge');
   if (!listContainer) return;
 
   const myEmail = (state.user?.email || '').toLowerCase().trim();
   const myName = (state.user?.name || state.user?.fullName || '').toLowerCase().trim();
-  const allNotifs = loadList('ekvueNotifications') || [];
-  const myNotifs = allNotifs.filter(n => {
-    const notifEmail = (n.candidateEmail || '').toLowerCase().trim();
-    // Match by exact email
-    if (myEmail && notifEmail === myEmail) return true;
-    // Match by candidateName in metadata (most reliable for graded notifications)
-    if (myName && n.metadata?.candidateName) {
-      const metaName = n.metadata.candidateName.toLowerCase().trim();
-      if (metaName === myName) return true;
-      // Partial name match (e.g. "rit" matches "rit")
-      const myWords = myName.split(/\s+/).filter(w => w.length >= 2);
-      const metaWords = metaName.split(/\s+/).filter(w => w.length >= 2);
-      if (myWords.some(w => metaWords.some(mw => mw.includes(w) || w.includes(mw)))) return true;
+  
+  let myNotifs = [];
+  try {
+    const qParams = new URLSearchParams();
+    if (myEmail) qParams.append('candidateEmail', myEmail);
+    // If we only have name, we'd theoretically need a backend search, but for Notifications candidateEmail is required.
+    const res = await fetch('/api/notifications?' + qParams.toString());
+    if (res.ok) {
+      myNotifs = await res.json();
     }
-    // Match by name-derived email (fallback emails like "rit@example.com")
-    if (myName && notifEmail.startsWith(myName.replace(/\s+/g, ''))) return true;
-    // Match by name words overlap in the email prefix
-    if (myName) {
-      const emailPrefix = notifEmail.split('@')[0];
-      const nameWords = myName.split(/\s+/).filter(w => w.length >= 2);
-      const matchCount = nameWords.filter(w => emailPrefix.includes(w)).length;
-      if (matchCount > 0 && matchCount >= Math.min(nameWords.length, 1)) return true;
-    }
-    return false;
-  });
-
-  // Sort newest first
-  myNotifs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  } catch (err) {
+    console.error('Failed to fetch notifications from MongoDB:', err);
+  }
 
   // Count unread
   const unreadCount = myNotifs.filter(n => !n.read).length;
@@ -2695,16 +2674,17 @@ function renderNotifications() {
     `;
 
     // Click handler
-    item.addEventListener('click', (e) => {
+    item.addEventListener('click', async (e) => {
       e.stopPropagation();
       
-      // Mark as read
-      const freshNotifs = loadList('ekvueNotifications') || [];
-      const match = freshNotifs.find(n => n.id === notif.id);
-      if (match) {
-        match.read = true;
-        saveList('ekvueNotifications', freshNotifs);
-      }
+      // Mark as read in MongoDB
+      try {
+        await fetch('/api/notifications/mark-read', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: notif.id })
+        });
+      } catch (err) {}
 
       // Close dropdown
       const dropdown = document.getElementById('notif-dropdown');
@@ -2716,23 +2696,15 @@ function renderNotifications() {
         switchView('interview-results');
 
         if (notif.metadata?.scorecardId) {
-          const scorecards = loadList('ekvueInterviewerScorecards') || [];
-          const scorecard = scorecards.find(sc => sc.id === notif.metadata.scorecardId);
-          if (scorecard) {
-            setTimeout(() => showReportCardModal(scorecard), 300);
-          } else {
-            // Fallback search by candidate name if ID fails
-            const candidateName = state.user?.name || state.user?.fullName || '';
-            const myEmail = (state.user?.email || '').toLowerCase().trim();
-            const fallbackSc = scorecards.find(sc => {
-              const scName = (sc.candidateName || '').toLowerCase().trim();
-              const scEmail = (sc.email || '').toLowerCase().trim();
-              return (candidateName && scName === candidateName.toLowerCase().trim()) || (myEmail && scEmail === myEmail);
-            });
-            if (fallbackSc) {
-              setTimeout(() => showReportCardModal(fallbackSc), 300);
-            }
-          }
+          // Open report card
+          setTimeout(async () => {
+            try {
+              const res = await fetch('/api/scorecards?candidateName=' + encodeURIComponent(myName));
+              const scorecards = await res.json();
+              const scorecard = scorecards.find(sc => sc.id === notif.metadata.scorecardId);
+              if (scorecard) showReportCardModal(scorecard);
+            } catch (err) {}
+          }, 300);
         }
       } else if (notif.type === 'scheduled') {
         // Switch to "Mock Interviews" or "Dashboard" view
@@ -2750,35 +2722,24 @@ function renderNotifications() {
 // ==========================================
 // INTERVIEW RESULTS & SCORECARDS VIEWER
 // ==========================================
-function renderInterviewResults() {
+async function renderInterviewResults() {
   const container = document.getElementById('interview-results-list');
   if (!container) return;
 
   const myEmail = (state.user?.email || '').toLowerCase().trim();
   const myName = (state.user?.name || state.user?.fullName || '').toLowerCase().trim();
 
-  // Load all scorecards from the shared database
-  const allScorecards = loadList('ekvueInterviewerScorecards') || [];
-
-  // Filter scorecards belonging to this candidate (match by email or name)
-  const myScorecards = allScorecards.filter(sc => {
-    const scEmail = (sc.email || '').toLowerCase().trim();
-    const scName = (sc.candidateName || '').toLowerCase().trim();
-    // Match by exact email
-    if (myEmail && scEmail === myEmail) return true;
-    // Match by candidate name
-    if (myName && scName === myName) return true;
-    // Match by name-derived email
-    if (myName && scEmail.startsWith(myName.replace(/\s+/g, ''))) return true;
-    // Match by name words overlap
-    if (myName) {
-      const nameWords = myName.split(/\s+/).filter(w => w.length >= 2);
-      const scNameWords = scName.split(/\s+/).filter(w => w.length >= 2);
-      const matchCount = nameWords.filter(w => scNameWords.some(sw => sw.includes(w) || w.includes(sw))).length;
-      if (matchCount > 0) return true;
+  let myScorecards = [];
+  try {
+    const qParams = new URLSearchParams();
+    if (myName) qParams.append('candidateName', myName);
+    const res = await fetch('/api/scorecards?' + qParams.toString());
+    if (res.ok) {
+      myScorecards = await res.json();
     }
-    return false;
-  });
+  } catch (err) {
+    console.error('Failed to fetch scorecards from MongoDB:', err);
+  }
 
   // Sort newest first
   myScorecards.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
