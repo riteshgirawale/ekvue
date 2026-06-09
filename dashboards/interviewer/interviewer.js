@@ -72,8 +72,8 @@ const state = {
 // Candidates fetched from MongoDB for datalist and email lookup
 let fetchedCandidates = [];
 
-// --- Jitsi Global Object ---
-let jitsiApiInstance = null;
+// --- LiveKit Global Object ---
+let currentRoom = null;
 
 // ==========================================
 // CANONICAL PRE-POPULATION DEMO DATASETS
@@ -1009,16 +1009,15 @@ function toggleInterviewerCamera() {
 
   const video = document.getElementById('interviewer-self-video');
   const avatar = document.getElementById('interviewer-self-avatar');
-
-  if (state.interviewerCamOn) {
-    if (video) video.style.display = 'block';
-    if (avatar) avatar.style.display = 'none';
-  } else {
-    if (video) video.style.display = 'none';
-    if (avatar) {
-      const initials = String(state.profile.name || 'I').trim()[0].toUpperCase();
-      avatar.textContent = initials;
+  if (video && avatar) {
+    if (state.interviewerCamOn) {
+      video.style.display = 'block';
+      avatar.style.display = 'none';
+      if (currentRoom) currentRoom.localParticipant.setCameraEnabled(true);
+    } else {
+      video.style.display = 'none';
       avatar.style.display = 'flex';
+      if (currentRoom) currentRoom.localParticipant.setCameraEnabled(false);
     }
   }
 
@@ -1052,6 +1051,9 @@ function toggleInterviewerMic() {
 
   state.interviewerMicOn = !state.interviewerMicOn;
   audioTracks.forEach(track => { track.enabled = state.interviewerMicOn; });
+  if (currentRoom) {
+    currentRoom.localParticipant.setMicrophoneEnabled(state.interviewerMicOn);
+  }
 
   updateMediaButtonStates();
 }
@@ -1061,6 +1063,7 @@ async function toggleInterviewerScreen() {
     // Stop screen share
     state.interviewerScreenStream.getTracks().forEach(track => track.stop());
     state.interviewerScreenStream = null;
+    if (currentRoom) currentRoom.localParticipant.setScreenShareEnabled(false);
 
     // Restore camera to PiP if cam was on
     const video = document.getElementById('interviewer-self-video');
@@ -1075,6 +1078,7 @@ async function toggleInterviewerScreen() {
   try {
     const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
     state.interviewerScreenStream = screenStream;
+    if (currentRoom) currentRoom.localParticipant.setScreenShareEnabled(true);
 
     // Show screen share in the PiP window
     const video = document.getElementById('interviewer-self-video');
@@ -1089,6 +1093,7 @@ async function toggleInterviewerScreen() {
     // When user stops sharing via browser UI
     screenStream.getVideoTracks()[0].addEventListener('ended', () => {
       state.interviewerScreenStream = null;
+      if (currentRoom) currentRoom.localParticipant.setScreenShareEnabled(false);
       const vid = document.getElementById('interviewer-self-video');
       if (vid && state.interviewerStream) {
         vid.srcObject = state.interviewerStream;
@@ -1426,32 +1431,12 @@ function runLiveProctorSyncLoop() {
       if (waitingOverlay) waitingOverlay.style.display = 'none';
       if (hud) hud.style.display = 'flex';
 
-      // --- Jitsi Integration ---
-      const jitsiContainer = document.getElementById('interviewer-jitsi-container');
-      if (jitsiContainer && typeof JitsiMeetExternalAPI !== 'undefined' && !jitsiApiInstance) {
-        jitsiContainer.innerHTML = '';
-        jitsiApiInstance = new JitsiMeetExternalAPI("meet.guifi.net", {
-          roomName: `ekvue_interview_${state.liveSessionId}`,
-          parentNode: jitsiContainer,
-          width: '100%',
-          height: '100%',
-          userInfo: {
-            displayName: state.profile?.name || 'Interviewer'
-          },
-          configOverwrite: {
-            startWithAudioMuted: false,
-            startWithVideoMuted: false,
-            prejoinPageEnabled: false,
-            prejoinConfig: { enabled: false },
-            disableDeepLinking: true,
-            analytics: { disabled: true }
-          },
-          interfaceConfigOverwrite: {
-            DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
-            SHOW_JITSI_WATERMARK: false,
-            SHOW_WATERMARK_FOR_GUESTS: false
-          }
-        });
+      // --- LiveKit Integration ---
+      const localVideoContainer = document.getElementById('local-video');
+      const remoteVideosContainer = document.getElementById('remote-videos');
+      
+      if (localVideoContainer && typeof LivekitClient !== 'undefined' && !currentRoom) {
+        initLiveKitRoom(state.liveSessionId);
       }
 
       // Stream proctor metrics to HUD
@@ -1505,9 +1490,9 @@ function runLiveProctorSyncLoop() {
       if (hud) hud.style.display = 'none';
 
       // Cleanup stream if status goes back to waiting
-      if (jitsiApiInstance) {
-        jitsiApiInstance.dispose();
-        jitsiApiInstance = null;
+      if (currentRoom) {
+        currentRoom.disconnect();
+        currentRoom = null;
       }
     }
 
@@ -3531,4 +3516,80 @@ window.addEventListener('storage', (e) => {
   }
 });
 
+
+
+async function initLiveKitRoom(roomId) {
+  console.log('[LiveKit] Connecting to Room on Interviewer side');
+  const localVideoContainer = document.getElementById('local-video');
+  const remoteVideosContainer = document.getElementById('remote-videos');
+  if (!localVideoContainer || !remoteVideosContainer || typeof LivekitClient === 'undefined') return;
+
+  try {
+    const res = await fetch('/api/livekit/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        roomName: 'ekvue_interview_' + roomId,
+        participantName: state.profile?.name || 'Interviewer'
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+
+    const room = new LivekitClient.Room({
+      adaptiveStream: true,
+      dynacast: true,
+    });
+    currentRoom = room;
+
+    room.on(LivekitClient.RoomEvent.TrackSubscribed, (track, publication, participant) => {
+      const element = track.attach();
+      element.style.width = '100%';
+      element.style.height = '100%';
+      element.style.objectFit = 'contain';
+      element.dataset.sid = track.sid;
+      
+      const wrapper = document.createElement('div');
+      wrapper.id = track.sid;
+      wrapper.style.position = 'relative';
+      wrapper.style.width = track.source === LivekitClient.Track.Source.ScreenShare ? '100%' : '50%';
+      wrapper.style.height = track.source === LivekitClient.Track.Source.ScreenShare ? '100%' : '50%';
+      wrapper.appendChild(element);
+      
+      remoteVideosContainer.appendChild(wrapper);
+    });
+
+    room.on(LivekitClient.RoomEvent.TrackUnsubscribed, (track, publication, participant) => {
+      track.detach();
+      const wrapper = document.getElementById(track.sid);
+      if (wrapper) wrapper.remove();
+    });
+
+    room.on(LivekitClient.RoomEvent.LocalTrackPublished, (publication, participant) => {
+      if (publication.track.kind === 'video' && publication.track.source === LivekitClient.Track.Source.Camera) {
+        const element = publication.track.attach();
+        element.style.width = '100%';
+        element.style.height = '100%';
+        element.style.objectFit = 'cover';
+        localVideoContainer.innerHTML = '';
+        localVideoContainer.appendChild(element);
+      }
+    });
+
+    room.on(LivekitClient.RoomEvent.LocalTrackUnpublished, (publication, participant) => {
+      if (publication.track.kind === 'video' && publication.track.source === LivekitClient.Track.Source.Camera) {
+        localVideoContainer.innerHTML = '';
+      }
+    });
+
+    await room.connect(data.url, data.token);
+    console.log('Connected to LiveKit Room', room.name);
+
+    await room.localParticipant.enableCameraAndMicrophone();
+    if (!state.interviewerCamOn) room.localParticipant.setCameraEnabled(false);
+    if (!state.interviewerMicOn) room.localParticipant.setMicrophoneEnabled(false);
+  } catch (error) {
+    console.error('Failed to connect to LiveKit', error);
+  }
+}
 

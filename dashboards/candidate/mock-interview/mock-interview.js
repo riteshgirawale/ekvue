@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Live Coding Board loaded');
   
-  // Jitsi API Object
-  let jitsiApiInstance = null;
+  // LiveKit Room Object
+  let currentRoom = null;
   
   // Elements
   const mainVideo = document.getElementById('mainVideo');
@@ -224,13 +224,14 @@ document.addEventListener('DOMContentLoaded', () => {
       lobbyWrapper.classList.add('hidden');
       liveBoardWrapper.classList.remove('hidden');
       
-      // Stop local camera to free device for Jitsi
+      // Connect to LiveKit Room
+      initLiveKitRoom(meetingId);
+
+      // Stop local camera to free device
       if (localStream) {
         localStream.getTracks().forEach(t => t.stop());
         localStream = null;
       }
-      
-      initJitsiMeet();
     });
   }
 
@@ -243,12 +244,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!isVideoEnabled) {
       bottomCam.classList.remove('active-state');
       bottomCam.style.color = '#fff';
+      if (currentRoom) currentRoom.localParticipant.setCameraEnabled(false);
       mainVideo.style.opacity = '0';
       if (cameraOffPlaceholder) cameraOffPlaceholder.classList.remove('hidden');
       if (boundingBox) boundingBox.classList.add('hidden');
     } else {
       bottomCam.classList.add('active-state');
       bottomCam.style.color = 'var(--color-emerald)';
+      if (currentRoom) currentRoom.localParticipant.setCameraEnabled(true);
       mainVideo.style.opacity = '1';
       if (cameraOffPlaceholder) cameraOffPlaceholder.classList.add('hidden');
       if (boundingBox) boundingBox.classList.remove('hidden');
@@ -272,16 +275,41 @@ document.addEventListener('DOMContentLoaded', () => {
       bottomMic.classList.remove('active-state');
       bottomMic.style.color = '#fff';
       if (micLevelContainer) micLevelContainer.classList.add('muted');
+      if (currentRoom) currentRoom.localParticipant.setMicrophoneEnabled(false);
     } else {
       bottomMic.classList.add('active-state');
       bottomMic.style.color = 'var(--color-emerald)';
       if (micLevelContainer) micLevelContainer.classList.remove('muted');
+      if (currentRoom) currentRoom.localParticipant.setMicrophoneEnabled(true);
     }
 
     if (localStream) {
       localStream.getAudioTracks().forEach(t => t.enabled = isAudioEnabled);
     }
   });
+
+  const bottomShareScreen = document.getElementById('bottomShareScreen');
+  let isSharingScreen = false;
+  if (bottomShareScreen) {
+    bottomShareScreen.addEventListener('click', async () => {
+      if (!currentRoom) return;
+      try {
+        if (isSharingScreen) {
+          await currentRoom.localParticipant.setScreenShareEnabled(false);
+          isSharingScreen = false;
+          bottomShareScreen.classList.remove('active-state');
+          bottomShareScreen.style.color = '#fff';
+        } else {
+          await currentRoom.localParticipant.setScreenShareEnabled(true);
+          isSharingScreen = true;
+          bottomShareScreen.classList.add('active-state');
+          bottomShareScreen.style.color = 'var(--color-emerald)';
+        }
+      } catch (e) {
+        console.error('Screen sharing error', e);
+      }
+    });
+  }
 
   // End Call
   const endCall = () => {
@@ -703,35 +731,85 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- Jitsi Meeting Initialization ---
+  // --- LiveKit Meeting Initialization ---
 
-  function initJitsiMeet() {
-    console.log('[Jitsi] Initializing Meeting on Candidate side');
-    
-    const jitsiContainer = document.getElementById('jitsi-container');
-    if (!jitsiContainer || typeof JitsiMeetExternalAPI === 'undefined') return;
+  async function initLiveKitRoom(roomId) {
+    console.log('[LiveKit] Connecting to Room on Candidate side');
+    const localVideoContainer = document.getElementById('local-video');
+    const remoteVideosContainer = document.getElementById('remote-videos');
+    if (!localVideoContainer || !remoteVideosContainer || typeof LivekitClient === 'undefined') return;
 
-    jitsiApiInstance = new JitsiMeetExternalAPI("meet.guifi.net", {
-      roomName: `ekvue_interview_${meetingId}`,
-      parentNode: jitsiContainer,
-      width: '100%',
-      height: '100%',
-      userInfo: {
-        displayName: 'Candidate'
-      },
-      configOverwrite: {
-        startWithAudioMuted: false,
-        startWithVideoMuted: false,
-        prejoinPageEnabled: false,
-        prejoinConfig: { enabled: false },
-        disableDeepLinking: true,
-        analytics: { disabled: true }
-      },
-      interfaceConfigOverwrite: {
-        DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
-        SHOW_JITSI_WATERMARK: false,
-        SHOW_WATERMARK_FOR_GUESTS: false
-      }
-    });
+    try {
+      // 1. Fetch Token
+      const res = await fetch('/api/livekit/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          roomName: `ekvue_interview_${roomId}`,
+          participantName: 'Candidate'
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      // 2. Create Room
+      const room = new LivekitClient.Room({
+        adaptiveStream: true,
+        dynacast: true,
+      });
+      currentRoom = room;
+
+      // 3. Handle Tracks
+      room.on(LivekitClient.RoomEvent.TrackSubscribed, (track, publication, participant) => {
+        const element = track.attach();
+        element.style.width = '100%';
+        element.style.height = '100%';
+        element.style.objectFit = 'contain';
+        element.dataset.sid = track.sid;
+        
+        const wrapper = document.createElement('div');
+        wrapper.id = track.sid;
+        wrapper.style.position = 'relative';
+        wrapper.style.width = track.source === LivekitClient.Track.Source.ScreenShare ? '100%' : '50%';
+        wrapper.style.height = track.source === LivekitClient.Track.Source.ScreenShare ? '100%' : '50%';
+        wrapper.appendChild(element);
+        
+        remoteVideosContainer.appendChild(wrapper);
+      });
+
+      room.on(LivekitClient.RoomEvent.TrackUnsubscribed, (track, publication, participant) => {
+        track.detach();
+        const wrapper = document.getElementById(track.sid);
+        if (wrapper) wrapper.remove();
+      });
+
+      room.on(LivekitClient.RoomEvent.LocalTrackPublished, (publication, participant) => {
+        if (publication.track.kind === 'video' && publication.track.source === LivekitClient.Track.Source.Camera) {
+          const element = publication.track.attach();
+          element.style.width = '100%';
+          element.style.height = '100%';
+          element.style.objectFit = 'cover';
+          localVideoContainer.innerHTML = '';
+          localVideoContainer.appendChild(element);
+        }
+      });
+
+      room.on(LivekitClient.RoomEvent.LocalTrackUnpublished, (publication, participant) => {
+        if (publication.track.kind === 'video' && publication.track.source === LivekitClient.Track.Source.Camera) {
+          localVideoContainer.innerHTML = '';
+        }
+      });
+
+      // 4. Connect to Room
+      await room.connect(data.url, data.token);
+      console.log('Connected to LiveKit Room', room.name);
+
+      // 5. Publish local camera and mic
+      await room.localParticipant.enableCameraAndMicrophone();
+
+    } catch (error) {
+      console.error('Failed to connect to LiveKit', error);
+      alert('Failed to connect to video server. Please refresh.');
+    }
   }
 });

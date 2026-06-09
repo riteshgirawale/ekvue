@@ -13,6 +13,7 @@ const Notification = require('./models/Notification');
 const Scorecard = require('./models/Scorecard');
 
 const path = require('path');
+const { AccessToken } = require('livekit-server-sdk');
 
 const app = express();
 const server = http.createServer(app);
@@ -391,6 +392,38 @@ app.post('/api/generate-challenge', async (req, res) => {
 
     const data = await response.json();
     res.status(response.status).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==========================================
+// LIVEKIT TOKEN API
+// ==========================================
+app.post('/api/livekit/token', async (req, res) => {
+  const { roomName, participantName } = req.body;
+  if (!roomName || !participantName) {
+    return res.status(400).json({ error: 'roomName and participantName are required' });
+  }
+
+  const apiKey = process.env.LIVEKIT_API_KEY;
+  const apiSecret = process.env.LIVEKIT_API_SECRET;
+  const url = process.env.LIVEKIT_URL;
+
+  if (!apiKey || !apiSecret || !url) {
+    return res.status(500).json({ error: 'LiveKit credentials missing on server' });
+  }
+
+  try {
+    const at = new AccessToken(apiKey, apiSecret, {
+      identity: participantName,
+      name: participantName,
+    });
+    
+    at.addGrant({ roomJoin: true, room: roomName });
+    
+    const token = await at.toJwt();
+    res.json({ token, url });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
