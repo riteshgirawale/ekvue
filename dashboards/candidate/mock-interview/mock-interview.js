@@ -61,11 +61,25 @@ document.addEventListener('DOMContentLoaded', () => {
   async function initCamera() {
     try {
       localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      if (mainVideo) mainVideo.srcObject = localStream;
-      // Set pipVideo only when WebRTC remote stream connects
-      if (lobbyPreviewVideo) lobbyPreviewVideo.srcObject = localStream;
     } catch (err) {
-      console.error('Camera access denied or unavailable', err);
+      console.warn('Video+Audio failed, trying video only:', err.message);
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        isAudioEnabled = false;
+      } catch (err2) {
+        console.warn('Video-only failed, trying audio only:', err2.message);
+        try {
+          localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          isVideoEnabled = false;
+        } catch (err3) {
+          console.error('All media requests failed:', err3.message);
+        }
+      }
+    }
+
+    if (localStream) {
+      if (mainVideo) mainVideo.srcObject = localStream;
+      if (lobbyPreviewVideo) lobbyPreviewVideo.srcObject = localStream;
     }
   }
 
@@ -117,17 +131,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     faceDetection.onResults(onFaceDetectionResults);
 
-    camera = new Camera(mainVideo, {
-      onFrame: async () => {
-        if (mainVideo.videoWidth > 0 && isVideoEnabled) {
+    let lastVideoTime = -1;
+    async function processVideo() {
+      if (!isVideoEnabled || mainVideo.paused || mainVideo.ended) {
+        requestAnimationFrame(processVideo);
+        return;
+      }
+      
+      if (mainVideo.currentTime !== lastVideoTime && mainVideo.videoWidth > 0) {
+        lastVideoTime = mainVideo.currentTime;
+        try {
           await faceDetection.send({image: mainVideo});
-        }
-      },
-      width: 640,
-      height: 480
-    });
+        } catch (e) {}
+      }
+      requestAnimationFrame(processVideo);
+    }
     
-    camera.start();
+    // Start processing once video has data
+    if (mainVideo.readyState >= 2) {
+      processVideo();
+    } else {
+      mainVideo.addEventListener('loadeddata', processVideo);
+    }
   }
 
   function onFaceDetectionResults(results) {
