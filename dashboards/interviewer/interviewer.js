@@ -1351,11 +1351,15 @@ function runLiveProctorSyncLoop() {
 
   if (state.liveSyncIntervalId) clearInterval(state.liveSyncIntervalId);
 
+  let isLiveSyncing = false;
   state.liveSyncIntervalId = setInterval(async () => {
     if (!state.liveActive) {
       clearInterval(state.liveSyncIntervalId);
       return;
     }
+    if (isLiveSyncing) return;
+    isLiveSyncing = true;
+    try {
 
     // Read meetings
     let meetings = [];
@@ -1513,7 +1517,9 @@ function runLiveProctorSyncLoop() {
     if (meeting.chatLogs) {
       syncInterviewerChatLogs(meeting.chatLogs);
     }
-
+    } finally {
+      isLiveSyncing = false;
+    }
   }, 800);
 }
 

@@ -580,7 +580,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Background check polling (Cross-browser Sync)
+  let isBackgroundSyncing = false;
   async function backgroundSyncLoop() {
+    if (isBackgroundSyncing) return;
+    isBackgroundSyncing = true;
     try {
       const raw = localStorage.getItem('ekvueLiveInterviews');
       const meetings = raw ? JSON.parse(raw) : [];
@@ -619,6 +622,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch (e) {
       console.error('[SYNC] Error in background sync', e);
+    } finally {
+      isBackgroundSyncing = false;
     }
   }
 
@@ -750,6 +755,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const addedInterviewerIce = new Set();
+  let lastProcessedAnswerTimestamp = 0;
+
   function checkSignalingSignals() {
     try {
       const raw = localStorage.getItem('ekvueLiveInterviews');
@@ -759,23 +766,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const sig = meeting.signaling;
 
-      // If we have an Answer and haven't set it yet
-      if (sig.interviewerAnswer && pc && pc.signalingState === 'have-local-offer') {
-        console.log('[WebRTC] Setting Remote Description (Interviewer Answer)');
-        pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: sig.interviewerAnswer.sdp }))
-          .then(() => {
-            // Apply queued remote ICE candidates
-            if (sig.interviewerCandidates) {
-              sig.interviewerCandidates.forEach(cand => {
-                const candStr = cand.candidate;
-                if (!addedInterviewerIce.has(candStr)) {
-                  pc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
-                  addedInterviewerIce.add(candStr);
-                }
-              });
-            }
-          })
-          .catch(e => console.error('[WebRTC] Error setting answer:', e));
+      // Handle reconnects: If interviewer refreshed, they send a new answer timestamp.
+      if (sig.interviewerAnswer && sig.interviewerAnswer.timestamp > lastProcessedAnswerTimestamp) {
+        if (pc && lastProcessedAnswerTimestamp > 0) {
+          console.log('[WebRTC] Interviewer reconnected. Re-initializing peer connection...');
+          pc.close();
+          pc = null;
+          addedInterviewerIce.clear();
+          lastProcessedAnswerTimestamp = 0;
+          initWebRTCPeer();
+          return;
+        }
+
+        // If we have an Answer and haven't set it yet
+        if (pc && pc.signalingState === 'have-local-offer') {
+          console.log('[WebRTC] Setting Remote Description (Interviewer Answer)');
+          lastProcessedAnswerTimestamp = sig.interviewerAnswer.timestamp;
+          pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: sig.interviewerAnswer.sdp }))
+            .then(() => {
+              // Apply queued remote ICE candidates
+              if (sig.interviewerCandidates) {
+                sig.interviewerCandidates.forEach(cand => {
+                  const candStr = cand.candidate;
+                  if (!addedInterviewerIce.has(candStr)) {
+                    pc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
+                    addedInterviewerIce.add(candStr);
+                  }
+                });
+              }
+            })
+            .catch(e => console.error('[WebRTC] Error setting answer:', e));
+        }
       } else if (sig.interviewerCandidates && pc && pc.remoteDescription) {
         sig.interviewerCandidates.forEach(cand => {
           const candStr = cand.candidate;
