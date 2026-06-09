@@ -302,6 +302,7 @@ function initNetworkSync() {
   };
   
   connectSocket();
+}
 
 // Global setItem Interceptor to broadcast local updates instantly
 try {
