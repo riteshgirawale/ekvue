@@ -3601,7 +3601,7 @@ async function initLiveKitRoom(roomId) {
       const element = track.attach();
       element.style.width = '100%';
       element.style.height = '100%';
-      element.style.objectFit = 'contain';
+      element.style.objectFit = 'cover';
       element.dataset.sid = track.sid;
       
       const wrapper = document.createElement('div');
