@@ -3552,8 +3552,8 @@ async function initLiveKitRoom(roomId) {
       const wrapper = document.createElement('div');
       wrapper.id = track.sid;
       wrapper.style.position = 'relative';
-      wrapper.style.width = track.source === 'screen_share' ? '100%' : '50%';
-      wrapper.style.height = track.source === 'screen_share' ? '100%' : '50%';
+      wrapper.style.width = publication.source === 'screen_share' ? '100%' : '50%';
+      wrapper.style.height = publication.source === 'screen_share' ? '100%' : '50%';
       wrapper.appendChild(element);
       
       remoteVideosContainer.appendChild(wrapper);
@@ -3566,7 +3566,7 @@ async function initLiveKitRoom(roomId) {
     });
 
     room.on(LiveKit.RoomEvent.LocalTrackPublished, (publication, participant) => {
-      if (publication.track.kind === 'video' && publication.track.source === 'camera') {
+      if (publication.track.kind === 'video' && publication.source === 'camera') {
         const video = document.getElementById('interviewer-self-video');
         if (video) {
           publication.track.attach(video);
@@ -3576,7 +3576,7 @@ async function initLiveKitRoom(roomId) {
     });
 
     room.on(LiveKit.RoomEvent.LocalTrackUnpublished, (publication, participant) => {
-      if (publication.track.kind === 'video' && publication.track.source === 'camera') {
+      if (publication.track.kind === 'video' && publication.source === 'camera') {
         localVideoContainer.innerHTML = '';
       }
     });
