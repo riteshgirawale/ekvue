@@ -1,8 +1,44 @@
+// Dynamic Error Boundary for easier candidate debugging
+window.addEventListener('error', (e) => {
+  console.error("EKVUE Candidate Dashboard Error:", e.error || e.message);
+  const debugEl = document.getElementById('candidate-error-boundary') || document.createElement('div');
+  debugEl.id = 'candidate-error-boundary';
+  debugEl.style.cssText = "position:fixed; bottom:15px; right:15px; background:rgba(239,68,68,0.95); color:white; padding:12px 16px; border-radius:10px; z-index:99999; font-size:12.5px; font-family:monospace; max-width:420px; word-break:break-all; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2)";
+  
+  const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  debugEl.innerHTML = `<strong>Candidate Dashboard Error:</strong><br>${esc(e.message)}<br><small style="color:rgba(255,255,255,0.7)">at ${esc(e.filename)}:${e.lineno}</small>`;
+  document.body.appendChild(debugEl);
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Live Coding Board loaded');
   
   // LiveKit Room Object
   let currentRoom = null;
+
+  function updateDiagnosticStatus(msg, isError = false) {
+    console.log(`[Diagnostic] ${msg}`);
+    const videoSection = document.querySelector('.video-section');
+    if (!videoSection) return;
+    
+    let hud = document.getElementById('livekit-diagnostic-hud');
+    if (!hud) {
+      hud = document.createElement('div');
+      hud.id = 'livekit-diagnostic-hud';
+      hud.style.cssText = "position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 6px 10px; font-family: monospace; font-size: 11px; color: #10b981; z-index: 100; pointer-events: none; max-width: 90%; word-break: break-all; box-shadow: 0 4px 12px rgba(0,0,0,0.5);";
+      videoSection.appendChild(hud);
+    }
+    
+    if (isError) {
+      hud.style.color = '#ef4444';
+      hud.style.borderColor = 'rgba(239,68,68,0.4)';
+      hud.innerHTML = `⚠️ <strong>Error:</strong> ${msg}`;
+    } else {
+      hud.style.color = '#10b981';
+      hud.style.borderColor = 'rgba(16,185,129,0.4)';
+      hud.innerHTML = `ℹ️ <strong>LiveKit:</strong> ${msg}`;
+    }
+  }
   
   // Elements
   const mainVideo = document.getElementById('mainVideo');
@@ -224,10 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
       lobbyWrapper.classList.add('hidden');
       liveBoardWrapper.classList.remove('hidden');
       
-      // Connect to LiveKit Room
-      initLiveKitRoom(meetingId);
-
-      // Stop local camera to free device
+      // Stop local camera to free device BEFORE starting LiveKit
       if (localStream) {
         localStream.getTracks().forEach(t => t.stop());
         localStream = null;
@@ -236,6 +269,37 @@ document.addEventListener('DOMContentLoaded', () => {
       const lpv = document.getElementById('lobbyPreviewVideo');
       if (mv) mv.srcObject = null;
       if (lpv) lpv.srcObject = null;
+
+      // Update meeting status to Active so interviewer knows candidate joined
+      try {
+        const raw = localStorage.getItem('ekvueLiveInterviews');
+        let meetings = raw ? JSON.parse(raw) : [];
+        let meeting = meetings.find(m => m.meetingId === meetingId);
+        if (!meeting) {
+          meeting = {
+            meetingId: meetingId,
+            status: 'Active',
+            lastUpdated: new Date().toISOString()
+          };
+          meetings.push(meeting);
+        } else {
+          meeting.status = 'Active';
+          meeting.lastUpdated = new Date().toISOString();
+        }
+        localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
+        
+        // Immediately sync to backend
+        fetch('/api/live-meeting', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(meeting)
+        }).catch(()=>{});
+      } catch (e) {
+        console.error('Failed to update status to Active', e);
+      }
+
+      // Connect to LiveKit Room
+      initLiveKitRoom(meetingId);
     });
   }
 
@@ -249,14 +313,14 @@ document.addEventListener('DOMContentLoaded', () => {
       bottomCam.classList.remove('active-state');
       bottomCam.style.color = '#fff';
       if (currentRoom) currentRoom.localParticipant.setCameraEnabled(false);
-      mainVideo.style.opacity = '0';
+      if (mainVideo) mainVideo.style.opacity = '0';
       if (cameraOffPlaceholder) cameraOffPlaceholder.classList.remove('hidden');
       if (boundingBox) boundingBox.classList.add('hidden');
     } else {
       bottomCam.classList.add('active-state');
       bottomCam.style.color = 'var(--color-emerald)';
       if (currentRoom) currentRoom.localParticipant.setCameraEnabled(true);
-      mainVideo.style.opacity = '1';
+      if (mainVideo) mainVideo.style.opacity = '1';
       if (cameraOffPlaceholder) cameraOffPlaceholder.classList.add('hidden');
       if (boundingBox) boundingBox.classList.remove('hidden');
     }
@@ -650,12 +714,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (res.ok) {
           const serverMeeting = await res.json();
           if (!meeting || new Date(serverMeeting.lastUpdated) > new Date(meeting.lastUpdated || 0)) {
+            // Prevent status downgrade
+            let mergedStatus = serverMeeting.status;
+            if (meeting) {
+              if (meeting.status === 'Completed') mergedStatus = 'Completed';
+              else if (meeting.status === 'Active' && serverMeeting.status === 'Launched') mergedStatus = 'Active';
+            }
+
             // Apply server state
             const idx = meetings.findIndex(m => m.meetingId === meetingId);
             if (idx > -1) {
-              meetings[idx] = { ...meetings[idx], ...serverMeeting };
+              meetings[idx] = { ...meetings[idx], ...serverMeeting, status: mergedStatus };
             } else {
-              meetings.push(serverMeeting);
+              meetings.push({ ...serverMeeting, status: mergedStatus });
             }
             localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
             loadChatMessages();
@@ -739,12 +810,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function initLiveKitRoom(roomId) {
     console.log('[LiveKit] Connecting to Room on Candidate side');
+    updateDiagnosticStatus('Initializing LiveKit Room...');
     const localVideoContainer = document.getElementById('local-video');
     const remoteVideosContainer = document.getElementById('remote-videos');
-    if (!localVideoContainer || !remoteVideosContainer || typeof LiveKit === 'undefined') return;
+    if (!localVideoContainer || !remoteVideosContainer || typeof LiveKit === 'undefined') {
+      updateDiagnosticStatus('Error: Missing video containers or LiveKit SDK is not loaded.', true);
+      return;
+    }
 
     try {
       // 1. Fetch Token
+      updateDiagnosticStatus('Fetching session token...');
       const res = await fetch('/api/livekit/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -754,7 +830,9 @@ document.addEventListener('DOMContentLoaded', () => {
         })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) throw new Error(data.error || 'Server returned error fetching token');
+
+      updateDiagnosticStatus('Token received. Connecting to LiveKit Server...');
 
       // 2. Create Room
       const room = new LiveKit.Room({
@@ -765,6 +843,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // 3. Handle Tracks
       room.on(LiveKit.RoomEvent.TrackSubscribed, (track, publication, participant) => {
+        updateDiagnosticStatus(`Subscribed to remote track from ${participant.identity}`);
         const element = track.attach();
         element.style.width = '100%';
         element.style.height = '100%';
@@ -782,38 +861,77 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       room.on(LiveKit.RoomEvent.TrackUnsubscribed, (track, publication, participant) => {
+        updateDiagnosticStatus(`Unsubscribed from remote track`);
         track.detach();
         const wrapper = document.getElementById(track.sid);
         if (wrapper) wrapper.remove();
       });
 
       room.on(LiveKit.RoomEvent.LocalTrackPublished, (publication, participant) => {
-        if (publication.track.kind === 'video' && publication.source === 'camera') {
+        if (publication.track && publication.track.kind === 'video' && publication.source === 'camera') {
           const element = publication.track.attach();
           element.style.width = '100%';
           element.style.height = '100%';
           element.style.objectFit = 'cover';
           localVideoContainer.innerHTML = '';
           localVideoContainer.appendChild(element);
+          updateDiagnosticStatus('Local camera track attached.');
         }
       });
 
       room.on(LiveKit.RoomEvent.LocalTrackUnpublished, (publication, participant) => {
-        if (publication.track.kind === 'video' && publication.source === 'camera') {
+        if (publication.track && publication.track.kind === 'video' && publication.source === 'camera') {
           localVideoContainer.innerHTML = '';
+          updateDiagnosticStatus('Local camera track unpublished.');
         }
       });
 
       // 4. Connect to Room
       await room.connect(data.url, data.token);
-      console.log('Connected to LiveKit Room', room.name);
+      updateDiagnosticStatus(`Connected to Room: ${room.name}! Publishing media...`);
 
-      // 5. Publish local camera and mic
-      await room.localParticipant.enableCameraAndMicrophone();
+      // 5. Publish local camera and mic robustly
+      try {
+        if (isVideoEnabled) {
+          const pub = await room.localParticipant.setCameraEnabled(true);
+          if (pub && pub.track) {
+            const element = pub.track.attach();
+            element.style.width = '100%';
+            element.style.height = '100%';
+            element.style.objectFit = 'cover';
+            localVideoContainer.innerHTML = '';
+            localVideoContainer.appendChild(element);
+            updateDiagnosticStatus('Local camera published & attached.');
+          } else {
+            updateDiagnosticStatus('Local camera published (awaiting track).');
+          }
+        } else {
+          await room.localParticipant.setCameraEnabled(false);
+          updateDiagnosticStatus('Local camera disabled.');
+        }
+      } catch (e) {
+        console.warn('Failed to publish candidate camera:', e);
+        updateDiagnosticStatus(`Failed to publish camera: ${e.message}`, true);
+      }
+
+      try {
+        if (isAudioEnabled) {
+          await room.localParticipant.setMicrophoneEnabled(true);
+          updateDiagnosticStatus('Local microphone published.');
+        } else {
+          await room.localParticipant.setMicrophoneEnabled(false);
+          updateDiagnosticStatus('Local microphone disabled.');
+        }
+      } catch (e) {
+        console.warn('Failed to publish candidate mic:', e);
+        updateDiagnosticStatus(`Failed to publish mic: ${e.message}`, true);
+      }
+
+      updateDiagnosticStatus('Fully Connected & Sync Active.');
 
     } catch (error) {
       console.error('Failed to connect to LiveKit', error);
-      alert('Failed to connect to video server. Please refresh.');
+      updateDiagnosticStatus(`Failed to connect to LiveKit: ${error.message}`, true);
     }
   }
 });

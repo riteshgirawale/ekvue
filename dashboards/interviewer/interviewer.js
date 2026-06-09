@@ -75,6 +75,30 @@ let fetchedCandidates = [];
 // --- LiveKit Global Object ---
 let currentRoom = null;
 
+function updateDiagnosticStatus(msg, isError = false) {
+  console.log(`[Diagnostic] ${msg}`);
+  const videoContainer = document.querySelector('.video-container');
+  if (!videoContainer) return;
+  
+  let hud = document.getElementById('livekit-diagnostic-hud');
+  if (!hud) {
+    hud = document.createElement('div');
+    hud.id = 'livekit-diagnostic-hud';
+    hud.style.cssText = "position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 6px 10px; font-family: monospace; font-size: 11px; color: #10b981; z-index: 100; pointer-events: none; max-width: 90%; word-break: break-all; box-shadow: 0 4px 12px rgba(0,0,0,0.5);";
+    videoContainer.appendChild(hud);
+  }
+  
+  if (isError) {
+    hud.style.color = '#ef4444';
+    hud.style.borderColor = 'rgba(239,68,68,0.4)';
+    hud.innerHTML = `⚠️ <strong>Error:</strong> ${msg}`;
+  } else {
+    hud.style.color = '#10b981';
+    hud.style.borderColor = 'rgba(16,185,129,0.4)';
+    hud.innerHTML = `ℹ️ <strong>LiveKit:</strong> ${msg}`;
+  }
+}
+
 // ==========================================
 // CANONICAL PRE-POPULATION DEMO DATASETS
 // ==========================================
@@ -1380,8 +1404,13 @@ function runLiveProctorSyncLoop() {
       if (res.ok) {
         const serverMeeting = await res.json();
         if (new Date(serverMeeting.lastUpdated) > new Date(meeting.lastUpdated || 0)) {
+          // Prevent status downgrade
+          let mergedStatus = serverMeeting.status;
+          if (meeting.status === 'Completed') mergedStatus = 'Completed';
+          else if (meeting.status === 'Active' && serverMeeting.status === 'Launched') mergedStatus = 'Active';
+
           // Merge server state into local state
-          meeting = { ...meeting, ...serverMeeting };
+          meeting = { ...meeting, ...serverMeeting, status: mergedStatus };
           const idx = meetings.findIndex(m => m.meetingId === state.liveSessionId);
           meetings[idx] = meeting;
           localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
@@ -1911,6 +1940,15 @@ function setupLiveRoomListeners() {
         meeting.status = 'Completed';
         meeting.lastUpdated = new Date().toISOString();
         localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
+
+        // Sync to backend immediately so candidate page redirects
+        try {
+          fetch('/api/live-meeting', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(meeting)
+          }).catch(()=>{});
+        } catch(e){}
       }
 
       // Store liveSessionId as selected scorecard session before clearing live state in exitLiveRoom
@@ -3520,11 +3558,16 @@ window.addEventListener('storage', (e) => {
 
 async function initLiveKitRoom(roomId) {
   console.log('[LiveKit] Connecting to Room on Interviewer side');
+  updateDiagnosticStatus('Initializing LiveKit Room...');
   const localVideoContainer = document.getElementById('local-video');
   const remoteVideosContainer = document.getElementById('remote-videos');
-  if (!localVideoContainer || !remoteVideosContainer || typeof LiveKit === 'undefined') return;
+  if (!localVideoContainer || !remoteVideosContainer || typeof LiveKit === 'undefined') {
+    updateDiagnosticStatus('Error: Missing video containers or LiveKit SDK is not loaded.', true);
+    return;
+  }
 
   try {
+    updateDiagnosticStatus('Fetching session token...');
     const res = await fetch('/api/livekit/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -3534,7 +3577,9 @@ async function initLiveKitRoom(roomId) {
       })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
+    if (!res.ok) throw new Error(data.error || 'Server returned error fetching token');
+
+    updateDiagnosticStatus('Token received. Connecting to LiveKit Server...');
 
     const room = new LiveKit.Room({
       adaptiveStream: true,
@@ -3543,6 +3588,7 @@ async function initLiveKitRoom(roomId) {
     currentRoom = room;
 
     room.on(LiveKit.RoomEvent.TrackSubscribed, (track, publication, participant) => {
+      updateDiagnosticStatus(`Subscribed to remote track from ${participant.identity}`);
       const element = track.attach();
       element.style.width = '100%';
       element.style.height = '100%';
@@ -3560,29 +3606,32 @@ async function initLiveKitRoom(roomId) {
     });
 
     room.on(LiveKit.RoomEvent.TrackUnsubscribed, (track, publication, participant) => {
+      updateDiagnosticStatus(`Unsubscribed from remote track`);
       track.detach();
       const wrapper = document.getElementById(track.sid);
       if (wrapper) wrapper.remove();
     });
 
     room.on(LiveKit.RoomEvent.LocalTrackPublished, (publication, participant) => {
-      if (publication.track.kind === 'video' && publication.source === 'camera') {
+      if (publication.track && publication.track.kind === 'video' && publication.source === 'camera') {
         const video = document.getElementById('interviewer-self-video');
         if (video) {
           publication.track.attach(video);
           video.style.display = 'block';
+          updateDiagnosticStatus('Local camera track attached.');
         }
       }
     });
 
     room.on(LiveKit.RoomEvent.LocalTrackUnpublished, (publication, participant) => {
-      if (publication.track.kind === 'video' && publication.source === 'camera') {
+      if (publication.track && publication.track.kind === 'video' && publication.source === 'camera') {
         localVideoContainer.innerHTML = '';
+        updateDiagnosticStatus('Local camera track unpublished.');
       }
     });
 
     await room.connect(data.url, data.token);
-    console.log('Connected to LiveKit Room', room.name);
+    updateDiagnosticStatus(`Connected to Room: ${room.name}! Publishing media...`);
 
     // Stop manual stream so LiveKit can exclusively access camera on Windows
     if (state.interviewerStream) {
@@ -3592,11 +3641,44 @@ async function initLiveKitRoom(roomId) {
     const selfVid = document.getElementById('interviewer-self-video');
     if (selfVid) selfVid.srcObject = null;
 
-    await room.localParticipant.enableCameraAndMicrophone();
-    if (!state.interviewerCamOn) room.localParticipant.setCameraEnabled(false);
-    if (!state.interviewerMicOn) room.localParticipant.setMicrophoneEnabled(false);
+    // Publish local camera and mic robustly
+    try {
+      if (state.interviewerCamOn !== false) {
+        const pub = await room.localParticipant.setCameraEnabled(true);
+        if (pub && pub.track) {
+          const video = document.getElementById('interviewer-self-video');
+          if (video) {
+            pub.track.attach(video);
+            video.style.display = 'block';
+            updateDiagnosticStatus('Local camera published & attached.');
+          }
+        }
+      } else {
+        await room.localParticipant.setCameraEnabled(false);
+        updateDiagnosticStatus('Local camera disabled.');
+      }
+    } catch(e) { 
+      console.warn('Failed to publish interviewer camera:', e); 
+      updateDiagnosticStatus(`Failed to publish camera: ${e.message}`, true);
+    }
+
+    try {
+      if (state.interviewerMicOn !== false) {
+        await room.localParticipant.setMicrophoneEnabled(true);
+        updateDiagnosticStatus('Local microphone published.');
+      } else {
+        await room.localParticipant.setMicrophoneEnabled(false);
+        updateDiagnosticStatus('Local microphone disabled.');
+      }
+    } catch(e) { 
+      console.warn('Failed to publish interviewer mic:', e); 
+      updateDiagnosticStatus(`Failed to publish mic: ${e.message}`, true);
+    }
+
+    updateDiagnosticStatus('Fully Connected & Sync Active.');
   } catch (error) {
     console.error('Failed to connect to LiveKit', error);
+    updateDiagnosticStatus(`Failed to connect to LiveKit: ${error.message}`, true);
   }
 }
 

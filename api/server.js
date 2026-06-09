@@ -402,7 +402,10 @@ app.post('/api/generate-challenge', async (req, res) => {
 // ==========================================
 app.post('/api/livekit/token', async (req, res) => {
   const { roomName, participantName } = req.body;
+  console.log(`[LiveKit Token API] Request received for room: "${roomName}", participant: "${participantName}"`);
+  
   if (!roomName || !participantName) {
+    console.warn('[LiveKit Token API] Missing roomName or participantName');
     return res.status(400).json({ error: 'roomName and participantName are required' });
   }
 
@@ -411,6 +414,7 @@ app.post('/api/livekit/token', async (req, res) => {
   const url = process.env.LIVEKIT_URL;
 
   if (!apiKey || !apiSecret || !url) {
+    console.error('[LiveKit Token API] Credentials missing in process.env');
     return res.status(500).json({ error: 'LiveKit credentials missing on server' });
   }
 
@@ -423,8 +427,10 @@ app.post('/api/livekit/token', async (req, res) => {
     at.addGrant({ roomJoin: true, room: roomName });
     
     const token = await at.toJwt();
+    console.log(`[LiveKit Token API] Token successfully generated for room: "${roomName}"`);
     res.json({ token, url });
   } catch (err) {
+    console.error('[LiveKit Token API] Error generating token:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
@@ -490,7 +496,15 @@ app.post('/api/live-meeting', (req, res) => {
     sig.interviewerCandidates = mergedIce;
   }
 
-  const merged = { ...existing, ...data, signaling: sig, chatLogs: mergedChatLogs };
+  // Prevent status downgrades (Completed > Active > Launched)
+  let finalStatus = data.status || existing.status;
+  if (existing.status === 'Completed') {
+    finalStatus = 'Completed';
+  } else if (existing.status === 'Active' && data.status === 'Launched') {
+    finalStatus = 'Active';
+  }
+
+  const merged = { ...existing, ...data, status: finalStatus, signaling: sig, chatLogs: mergedChatLogs };
   merged.lastUpdated = new Date().toISOString();
   
   liveMeetings.set(data.meetingId, merged);
