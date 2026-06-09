@@ -3540,6 +3540,16 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
         ]
       });
 
+      webrtcPc.onconnectionstatechange = () => {
+        console.log('[WebRTC] Connection State Changed:', webrtcPc.connectionState);
+      };
+      webrtcPc.onsignalingstatechange = () => {
+        console.log('[WebRTC] Signaling State Changed:', webrtcPc.signalingState);
+      };
+      webrtcPc.oniceconnectionstatechange = () => {
+        console.log('[WebRTC] ICE Connection State Changed:', webrtcPc.iceConnectionState);
+      };
+
       // Add interviewer camera tracks
       if (localInterviewerStream) {
         localInterviewerStream.getTracks().forEach(track => webrtcPc.addTrack(track, localInterviewerStream));
@@ -3564,7 +3574,10 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
       // Gather ICE candidates
       webrtcPc.onicecandidate = (event) => {
         if (event.candidate) {
+          console.log('[WebRTC] Gathered Interviewer ICE Candidate:', event.candidate.candidate);
           saveInterviewerSignal(meetingId, { type: 'interviewer-ice', candidate: event.candidate });
+        } else {
+          console.log('[WebRTC] Interviewer ICE Gathering Complete');
         }
       };
 
@@ -3608,7 +3621,9 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
           
           await webrtcPc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: sig.candidateOffer.sdp }));
           
+          console.log('[WebRTC] Creating Interviewer SDP Answer...');
           const answer = await webrtcPc.createAnswer();
+          console.log('[WebRTC] Interviewer SDP Answer created successfully');
           await webrtcPc.setLocalDescription(answer);
           
           saveInterviewerSignal(meetingId, { type: 'answer', sdp: answer.sdp });
@@ -3619,6 +3634,7 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
               if (cand.connectionId !== currentCandidateConnectionId) return;
               const candStr = cand.candidate;
               if (!addedCandidateIce.has(candStr)) {
+                console.log('[WebRTC] Applying Candidate ICE Candidate:', candStr);
                 webrtcPc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
                 addedCandidateIce.add(candStr);
               }
@@ -3666,15 +3682,14 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
       const raw = localStorage.getItem('ekvueLiveInterviews');
       const meetings = raw ? JSON.parse(raw) : [];
       const meeting = meetings.find(m => m.meetingId === meetingId);
-      if (!meeting || !meeting.signaling) return;
+      if (!meeting || !meeting.signaling || !meeting.signaling.candidateCandidates) return;
 
-      const sig = meeting.signaling;
-
-      if (sig.candidateCandidates && webrtcPc && webrtcPc.remoteDescription) {
-        sig.candidateCandidates.forEach(cand => {
+      if (webrtcPc && webrtcPc.remoteDescription) {
+        meeting.signaling.candidateCandidates.forEach(cand => {
           if (cand.connectionId !== currentCandidateConnectionId) return;
           const candStr = cand.candidate;
           if (!addedCandidateIce.has(candStr)) {
+            console.log('[WebRTC] Applying Candidate ICE Candidate:', candStr);
             webrtcPc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
             addedCandidateIce.add(candStr);
           }

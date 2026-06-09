@@ -725,6 +725,16 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
       });
 
+      pc.onconnectionstatechange = () => {
+        console.log('[WebRTC] Connection State Changed:', pc.connectionState);
+      };
+      pc.onsignalingstatechange = () => {
+        console.log('[WebRTC] Signaling State Changed:', pc.signalingState);
+      };
+      pc.oniceconnectionstatechange = () => {
+        console.log('[WebRTC] ICE Connection State Changed:', pc.iceConnectionState);
+      };
+
       // Add local stream tracks (Candidate camera)
       if (localStream) {
         localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
@@ -742,12 +752,17 @@ document.addEventListener('DOMContentLoaded', () => {
       // Gather ICE candidates
       pc.onicecandidate = (event) => {
         if (event.candidate) {
+          console.log('[WebRTC] Gathered Candidate ICE Candidate:', event.candidate.candidate);
           saveCandidateSignal({ type: 'candidate-ice', candidate: event.candidate });
+        } else {
+          console.log('[WebRTC] Candidate ICE Gathering Complete');
         }
       };
 
       // Create and save Offer
+      console.log('[WebRTC] Creating Candidate SDP Offer...');
       const offer = await pc.createOffer();
+      console.log('[WebRTC] Candidate SDP Offer created successfully');
       await pc.setLocalDescription(offer);
       saveCandidateSignal({ type: 'offer', sdp: offer.sdp });
 
@@ -820,6 +835,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   if (cand.connectionId !== webrtcConnectionId) return;
                   const candStr = cand.candidate;
                   if (!addedInterviewerIce.has(candStr)) {
+                    console.log('[WebRTC] Applying Interviewer ICE Candidate:', candStr);
                     pc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
                     addedInterviewerIce.add(candStr);
                   }
@@ -833,6 +849,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (cand.connectionId !== webrtcConnectionId) return;
           const candStr = cand.candidate;
           if (!addedInterviewerIce.has(candStr)) {
+            console.log('[WebRTC] Applying Interviewer ICE Candidate:', candStr);
             pc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
             addedInterviewerIce.add(candStr);
           }
