@@ -733,9 +733,12 @@ function enterLiveRoom(session) {
   document.getElementById('session-live-simulator-panel').style.display = 'flex';
 
   // Setup Candidates names
-  document.getElementById('liveCandidateLabel').textContent = `${session.candidateName} Stream`;
-  document.getElementById('liveCandidateAvatar').textContent = String(session.candidateName).trim()[0].toUpperCase();
-  document.getElementById('liveHostAvatar').textContent = String(state.profile.name).trim()[0].toUpperCase();
+  const liveLabelEl = document.getElementById('liveCandidateLabel');
+  if (liveLabelEl) liveLabelEl.textContent = `${session.candidateName} Stream`;
+  const liveAvatarEl = document.getElementById('liveCandidateAvatar');
+  if (liveAvatarEl) liveAvatarEl.textContent = String(session.candidateName).trim()[0].toUpperCase();
+  const hostAvatarEl = document.getElementById('liveHostAvatar');
+  if (hostAvatarEl) hostAvatarEl.textContent = String(state.profile.name).trim()[0].toUpperCase();
 
   // Load Notes
   document.getElementById('liveNotesInput').value = state.liveNotes;
