@@ -709,40 +709,48 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- WebRTC Peer Connection for Real-Time Camera Exchange ---
 
 
-  let webrtcConnectionId = null;
+  let socket = null;
 
   async function initWebRTCPeer() {
     console.log('[WebRTC] Initializing Peer Connection on Candidate side');
-    webrtcConnectionId = Math.random().toString(36).substring(2, 12);
     
+    // Connect Socket.IO
+    socket = io();
+    
+    socket.on('connect', () => {
+      console.log("Socket Connected", socket.id);
+      console.log("User Role:", "Candidate");
+      console.log("Joining room:", meetingId);
+      console.log("User joined room:", socket.id);
+      socket.emit('join-room', meetingId, 'Candidate');
+    });
+
     try {
       pc = new RTCPeerConnection({
         iceServers: [
           { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:global.stun.twilio.com:3478' },
-          { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-          { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' }
+          { urls: 'stun:global.stun.twilio.com:3478' }
         ]
       });
 
       pc.onconnectionstatechange = () => {
-        console.log('[WebRTC] Connection State Changed:', pc.connectionState);
-      };
-      pc.onsignalingstatechange = () => {
-        console.log('[WebRTC] Signaling State Changed:', pc.signalingState);
+        console.log("Connection State:", pc.connectionState);
       };
       pc.oniceconnectionstatechange = () => {
-        console.log('[WebRTC] ICE Connection State Changed:', pc.iceConnectionState);
+        console.log("ICE State:", pc.iceConnectionState);
       };
 
       // Add local stream tracks (Candidate camera)
       if (localStream) {
-        localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+        localStream.getTracks().forEach(track => {
+          console.log("Track Added", track.kind);
+          pc.addTrack(track, localStream);
+        });
       }
 
       // On remote track (Interviewer camera received), set to pipVideo!
       pc.ontrack = (event) => {
-        console.log('[WebRTC] Received remote stream (Interviewer camera)');
+        console.log("Remote Stream Received", event.streams);
         if (pipVideo) {
           pipVideo.srcObject = event.streams[0];
           pipVideo.play().catch(() => {});
@@ -752,109 +760,47 @@ document.addEventListener('DOMContentLoaded', () => {
       // Gather ICE candidates
       pc.onicecandidate = (event) => {
         if (event.candidate) {
-          console.log('[WebRTC] Gathered Candidate ICE Candidate:', event.candidate.candidate);
-          saveCandidateSignal({ type: 'candidate-ice', candidate: event.candidate });
-        } else {
-          console.log('[WebRTC] Candidate ICE Gathering Complete');
+          console.log("ICE Generated");
+          console.log("ICE Sent");
+          socket.emit('webrtc-ice', meetingId, event.candidate);
         }
       };
 
       // Create and save Offer
-      console.log('[WebRTC] Creating Candidate SDP Offer...');
+      console.log("Creating Offer");
       const offer = await pc.createOffer();
-      console.log('[WebRTC] Candidate SDP Offer created successfully');
       await pc.setLocalDescription(offer);
-      saveCandidateSignal({ type: 'offer', sdp: offer.sdp });
+      console.log("Offer Sent");
+      
+      socket.emit('webrtc-offer', meetingId, offer);
+
+      // Listen for Answer from Interviewer
+      socket.on('webrtc-answer', async (answer) => {
+        console.log("Answer Received");
+        if (pc.signalingState === 'have-local-offer') {
+          await pc.setRemoteDescription(new RTCSessionDescription(answer));
+        }
+      });
+
+      // Listen for ICE from Interviewer
+      socket.on('webrtc-ice', async (candidate) => {
+        console.log("ICE Received");
+        if (pc.remoteDescription) {
+          await pc.addIceCandidate(new RTCIceCandidate(candidate)).catch(e => {});
+          console.log("ICE Added");
+        }
+      });
 
     } catch (err) {
       console.error('[WebRTC] Error initializing peer connection on candidate:', err);
     }
   }
 
-  function saveCandidateSignal(signal) {
-    try {
-      const raw = localStorage.getItem('ekvueLiveInterviews');
-      let meetings = raw ? JSON.parse(raw) : [];
-      let meeting = meetings.find(m => m.meetingId === meetingId);
-      if (!meeting) return;
-      
-      if (!meeting.signaling) meeting.signaling = {};
-      
-      if (signal.type === 'offer') {
-        meeting.signaling.candidateOffer = { sdp: signal.sdp, timestamp: Date.now(), connectionId: webrtcConnectionId };
-      } else if (signal.type === 'candidate-ice') {
-        if (!meeting.signaling.candidateCandidates) meeting.signaling.candidateCandidates = [];
-        const exists = meeting.signaling.candidateCandidates.some(c => c.candidate === signal.candidate.candidate);
-        if (!exists) {
-          const candJson = signal.candidate.toJSON();
-          candJson.connectionId = webrtcConnectionId;
-          meeting.signaling.candidateCandidates.push(candJson);
-        }
-      }
-      
-      meeting.lastUpdated = new Date().toISOString();
-      localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
-    } catch (e) {
-      console.error('[WebRTC] Failed to save candidate signal', e);
-    }
+  function saveCandidateSignal() {
+    // Deprecated in favor of Socket.IO
   }
 
-  const addedInterviewerIce = new Set();
-  let lastProcessedAnswerTimestamp = 0;
-
   function checkSignalingSignals() {
-    try {
-      const raw = localStorage.getItem('ekvueLiveInterviews');
-      const meetings = raw ? JSON.parse(raw) : [];
-      const meeting = meetings.find(m => m.meetingId === meetingId);
-      if (!meeting || !meeting.signaling) return;
-
-      const sig = meeting.signaling;
-
-      // Handle reconnects: If interviewer refreshed, they send a new answer timestamp.
-      if (sig.interviewerAnswer && sig.interviewerAnswer.connectionId === webrtcConnectionId && sig.interviewerAnswer.timestamp > lastProcessedAnswerTimestamp) {
-        if (pc && lastProcessedAnswerTimestamp > 0) {
-          console.log('[WebRTC] Interviewer reconnected. Re-initializing peer connection...');
-          pc.close();
-          pc = null;
-          addedInterviewerIce.clear();
-          lastProcessedAnswerTimestamp = 0;
-          initWebRTCPeer();
-          return;
-        }
-
-        // If we have an Answer and haven't set it yet
-        if (pc && pc.signalingState === 'have-local-offer') {
-          console.log('[WebRTC] Setting Remote Description (Interviewer Answer)');
-          lastProcessedAnswerTimestamp = sig.interviewerAnswer.timestamp;
-          pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: sig.interviewerAnswer.sdp }))
-            .then(() => {
-              // Apply queued remote ICE candidates
-              if (sig.interviewerCandidates) {
-                sig.interviewerCandidates.forEach(cand => {
-                  if (cand.connectionId !== webrtcConnectionId) return;
-                  const candStr = cand.candidate;
-                  if (!addedInterviewerIce.has(candStr)) {
-                    console.log('[WebRTC] Applying Interviewer ICE Candidate:', candStr);
-                    pc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
-                    addedInterviewerIce.add(candStr);
-                  }
-                });
-              }
-            })
-            .catch(e => console.error('[WebRTC] Error setting answer:', e));
-        }
-      } else if (sig.interviewerCandidates && pc && pc.remoteDescription) {
-        sig.interviewerCandidates.forEach(cand => {
-          if (cand.connectionId !== webrtcConnectionId) return;
-          const candStr = cand.candidate;
-          if (!addedInterviewerIce.has(candStr)) {
-            console.log('[WebRTC] Applying Interviewer ICE Candidate:', candStr);
-            pc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
-            addedInterviewerIce.add(candStr);
-          }
-        });
-      }
-    } catch (e) {}
+    // Deprecated in favor of Socket.IO
   }
 });
