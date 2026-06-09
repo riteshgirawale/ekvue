@@ -3413,6 +3413,23 @@ function init() {
   } catch (err) {
     console.error("Failed to render initial view:", err);
   }
+
+  // 11. Async fetch real jobs from Backend to ensure 100% functionality and remove cached mock data
+  try {
+    fetch('/api/jobs')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          state.jobs = data;
+          localStorage.setItem(COMPANY_JOBS_KEY, JSON.stringify(data));
+          // If the jobs view is active or the user clicks it, it will now render original DB jobs!
+          if (state.activeView === 'jobs') {
+            renderJobsWorkspace();
+          }
+        }
+      })
+      .catch(err => console.warn('Failed to fetch real jobs:', err));
+  } catch (err) {}
 }
 
 async function populateCandidatesDatalist() {
