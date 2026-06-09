@@ -3534,9 +3534,9 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
       webrtcPc = new RTCPeerConnection({
         iceServers: [
           { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:global.stun.twilio.com:3478' },
           { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-          { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-          { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+          { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' }
         ]
       });
 
@@ -3577,6 +3577,7 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
   }
 
   let lastProcessedOfferTimestamp = 0;
+  let currentCandidateConnectionId = null;
 
   async function checkAndProcessOffer(meetingId) {
     try {
@@ -3589,6 +3590,8 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
 
       // Handle reconnects: If candidate refreshed, they send a new offer timestamp.
       if (sig.candidateOffer.timestamp > lastProcessedOfferTimestamp) {
+        currentCandidateConnectionId = sig.candidateOffer.connectionId;
+        
         if (webrtcPc && lastProcessedOfferTimestamp > 0) {
           console.log('[WebRTC] Candidate reconnected. Re-initializing peer connection...');
           webrtcPc.close();
@@ -3613,6 +3616,7 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
           // Apply remote ICE candidates immediately
           if (sig.candidateCandidates) {
             sig.candidateCandidates.forEach(cand => {
+              if (cand.connectionId !== currentCandidateConnectionId) return;
               const candStr = cand.candidate;
               if (!addedCandidateIce.has(candStr)) {
                 webrtcPc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
@@ -3637,12 +3641,14 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
       if (!meeting.signaling) meeting.signaling = {};
       
       if (signal.type === 'answer') {
-        meeting.signaling.interviewerAnswer = { sdp: signal.sdp, timestamp: Date.now() };
+        meeting.signaling.interviewerAnswer = { sdp: signal.sdp, timestamp: Date.now(), connectionId: currentCandidateConnectionId };
       } else if (signal.type === 'interviewer-ice') {
         if (!meeting.signaling.interviewerCandidates) meeting.signaling.interviewerCandidates = [];
         const exists = meeting.signaling.interviewerCandidates.some(c => c.candidate === signal.candidate.candidate);
         if (!exists) {
-          meeting.signaling.interviewerCandidates.push(signal.candidate.toJSON());
+          const candJson = signal.candidate.toJSON();
+          candJson.connectionId = currentCandidateConnectionId;
+          meeting.signaling.interviewerCandidates.push(candJson);
         }
       }
       
@@ -3666,6 +3672,7 @@ async function initInterviewerWebRTC(meetingId, localInterviewerStream) {
 
       if (sig.candidateCandidates && webrtcPc && webrtcPc.remoteDescription) {
         sig.candidateCandidates.forEach(cand => {
+          if (cand.connectionId !== currentCandidateConnectionId) return;
           const candStr = cand.candidate;
           if (!addedCandidateIce.has(candStr)) {
             webrtcPc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});

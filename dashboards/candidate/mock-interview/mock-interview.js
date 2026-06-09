@@ -684,16 +684,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- WebRTC Peer Connection for Real-Time Camera Exchange ---
 
 
+  let webrtcConnectionId = null;
+
   async function initWebRTCPeer() {
     console.log('[WebRTC] Initializing Peer Connection on Candidate side');
+    webrtcConnectionId = Math.random().toString(36).substring(2, 12);
     
     try {
       pc = new RTCPeerConnection({
         iceServers: [
           { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:global.stun.twilio.com:3478' },
           { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-          { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-          { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+          { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' }
         ]
       });
 
@@ -738,12 +741,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!meeting.signaling) meeting.signaling = {};
       
       if (signal.type === 'offer') {
-        meeting.signaling.candidateOffer = { sdp: signal.sdp, timestamp: Date.now() };
+        meeting.signaling.candidateOffer = { sdp: signal.sdp, timestamp: Date.now(), connectionId: webrtcConnectionId };
       } else if (signal.type === 'candidate-ice') {
         if (!meeting.signaling.candidateCandidates) meeting.signaling.candidateCandidates = [];
         const exists = meeting.signaling.candidateCandidates.some(c => c.candidate === signal.candidate.candidate);
         if (!exists) {
-          meeting.signaling.candidateCandidates.push(signal.candidate.toJSON());
+          const candJson = signal.candidate.toJSON();
+          candJson.connectionId = webrtcConnectionId;
+          meeting.signaling.candidateCandidates.push(candJson);
         }
       }
       
@@ -767,7 +772,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const sig = meeting.signaling;
 
       // Handle reconnects: If interviewer refreshed, they send a new answer timestamp.
-      if (sig.interviewerAnswer && sig.interviewerAnswer.timestamp > lastProcessedAnswerTimestamp) {
+      if (sig.interviewerAnswer && sig.interviewerAnswer.connectionId === webrtcConnectionId && sig.interviewerAnswer.timestamp > lastProcessedAnswerTimestamp) {
         if (pc && lastProcessedAnswerTimestamp > 0) {
           console.log('[WebRTC] Interviewer reconnected. Re-initializing peer connection...');
           pc.close();
@@ -787,6 +792,7 @@ document.addEventListener('DOMContentLoaded', () => {
               // Apply queued remote ICE candidates
               if (sig.interviewerCandidates) {
                 sig.interviewerCandidates.forEach(cand => {
+                  if (cand.connectionId !== webrtcConnectionId) return;
                   const candStr = cand.candidate;
                   if (!addedInterviewerIce.has(candStr)) {
                     pc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
@@ -799,6 +805,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       } else if (sig.interviewerCandidates && pc && pc.remoteDescription) {
         sig.interviewerCandidates.forEach(cand => {
+          if (cand.connectionId !== webrtcConnectionId) return;
           const candStr = cand.candidate;
           if (!addedInterviewerIce.has(candStr)) {
             pc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
