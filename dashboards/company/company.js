@@ -739,7 +739,7 @@ function renderJobsList() {
   const locFilter = document.getElementById('job-location-filter')?.value || '';
 
   const filtered = state.jobPostings.filter((j) => {
-    const title = (j.jobTitle || '').toLowerCase();
+    const title = (j.jobTitle || j.title || '').toLowerCase();
     const desc = (j.description || '').toLowerCase();
     const loc = j.location || '';
     
@@ -761,7 +761,7 @@ function renderJobsList() {
     el.className = `workspace-problem-item ${isActive ? 'active' : ''}`;
     el.innerHTML = `
       <div class="top">
-        <span class="p-title">${escapeHtml(j.jobTitle)}</span>
+        <span class="p-title">${escapeHtml(j.jobTitle || j.title || 'Untitled Role')}</span>
         <span class="badge ${j.status === 'Active' ? 'easy' : 'medium'}">${j.status}</span>
       </div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px">
@@ -804,7 +804,7 @@ function selectWorkspaceJob(job) {
   }
 
   if (editBtn) editBtn.style.display = 'inline-block';
-  if (titleEl) titleEl.textContent = job.jobTitle;
+  if (titleEl) titleEl.textContent = job.jobTitle || job.title || 'Untitled Role';
   if (metaEl) {
     const loc = job.location || 'Remote';
     const type = job.employmentType || 'Full-time';

@@ -2610,7 +2610,7 @@ function renderJobsSidebar() {
   const statusVal = statusFilter ? statusFilter.value : 'all';
 
   const filtered = state.jobs.filter(j => {
-    const matchesSearch = (j.jobTitle || '').toLowerCase().includes(query) || (j.description || '').toLowerCase().includes(query);
+    const matchesSearch = (j.jobTitle || j.title || '').toLowerCase().includes(query) || (j.description || '').toLowerCase().includes(query);
     const matchesStatus = statusVal === 'all' || j.status === statusVal;
     return matchesSearch && matchesStatus;
   });
@@ -2635,7 +2635,7 @@ function renderJobsSidebar() {
 
     card.innerHTML = `
       <div class="top">
-        <span class="p-title">${escapeHtml(job.jobTitle || 'Untitled Role')}</span>
+        <span class="p-title">${escapeHtml(job.jobTitle || job.title || 'Untitled Role')}</span>
         <span style="font-size:10px; font-weight:800;">${statusDot} ${escapeHtml(job.status || 'Active')}</span>
       </div>
       <div class="p-meta" style="display:flex; justify-content:space-between; margin-top:2px;">
@@ -2749,7 +2749,7 @@ function renderJobDetails() {
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
             <span style="font-size:10px; font-weight:800; text-transform:uppercase; padding:3px 8px; border-radius:50px; ${appStatusStyle}">${escapeHtml(displayStatus)}</span>
-            ${!isHired && !isNoHire ? `<button class="btn small" style="padding:4px 10px; font-size:10px; background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.3); border-radius:6px; cursor:pointer;" onclick="openCandidateScheduleModal('${escapeHtml(app.candidateName)}', '${escapeHtml(app.candidateEmail)}', '${escapeHtml(current.jobTitle)}')">📅 Schedule</button>` : ''}
+            ${!isHired && !isNoHire ? `<button class="btn small" style="padding:4px 10px; font-size:10px; background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.3); border-radius:6px; cursor:pointer;" onclick="openCandidateScheduleModal('${escapeHtml(app.candidateName)}', '${escapeHtml(app.candidateEmail)}', '${escapeHtml(current.jobTitle || current.title)}')">📅 Schedule</button>` : ''}
           </div>
         </div>
       `;
@@ -2763,7 +2763,7 @@ function renderJobDetails() {
   detailsContent.innerHTML = `
     <div class="header-row" style="border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:18px;">
       <div>
-        <h2 style="font-size:22px; color:white; font-weight:800; margin-bottom:4px;">${escapeHtml(current.jobTitle || 'Untitled Position')}</h2>
+        <h2 style="font-size:22px; color:white; font-weight:800; margin-bottom:4px;">${escapeHtml(current.jobTitle || current.title || 'Untitled Position')}</h2>
         <div class="muted" style="font-size:12px;">📍 ${escapeHtml(current.location || 'Location')} • Posted on ${dateStr}</div>
       </div>
       <span class="badge ${statusClass}">${escapeHtml(current.status || 'Active')}</span>

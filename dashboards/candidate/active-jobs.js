@@ -483,7 +483,11 @@ function ActiveJobsDashboard() {
     // Removed mock items injection logic here
     
     // Only display 'Active' statuses
-    const activeListings = allJobs.filter(j => j.status === 'Active');
+    const activeListings = allJobs.filter(j => j.status === 'Active').map(j => ({
+      ...j,
+      jobTitle: j.jobTitle || j.title || 'Untitled Position',
+      employmentType: j.employmentType || j.type || 'Full-time'
+    }));
     setJobs(activeListings);
     
     // Set selected job dynamically if none is selected
