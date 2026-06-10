@@ -730,8 +730,12 @@ function renderJobsList() {
   const locFilter = document.getElementById('job-location-filter')?.value || '';
 
   const filtered = state.jobPostings.filter((j) => {
-    const matchesSearch = j.jobTitle.toLowerCase().includes(searchQuery) || j.description.toLowerCase().includes(searchQuery);
-    const matchesLoc = !locFilter || j.location.includes(locFilter);
+    const title = (j.jobTitle || '').toLowerCase();
+    const desc = (j.description || '').toLowerCase();
+    const loc = j.location || '';
+    
+    const matchesSearch = title.includes(searchQuery) || desc.includes(searchQuery);
+    const matchesLoc = !locFilter || loc.includes(locFilter);
     return matchesSearch && matchesLoc;
   });
 
@@ -1999,10 +2003,10 @@ function renderDashboardCreatedJobs() {
 // ==========================================
 // CENTRAL INITIALIZATION ROUTINE
 // ==========================================
-function init() {
+async function init() {
   // 1. Load state safely
   try {
-    loadStateFromStorage();
+    await loadStateFromStorage();
   } catch (err) {
     console.error("Failed to load state from storage:", err);
   }
