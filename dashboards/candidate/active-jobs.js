@@ -585,7 +585,7 @@ function ActiveJobsDashboard() {
     // 3. Notify recruiter / company accounts about new application
     try {
       const accounts = JSON.parse(localStorage.getItem('ekvueAccounts') || '[]');
-      const recruiters = accounts.filter(acc => acc.role === 'Company');
+      const recruiters = accounts.filter(acc => acc.role === 'Company' || acc.role === 'Interviewer');
       const notifications = JSON.parse(localStorage.getItem('ekvueNotifications') || '[]');
       recruiters.forEach((rec) => {
         notifications.unshift({
