@@ -1006,11 +1006,17 @@ function renderApplicantsList(jobId) {
     const timeAgo = getRelativeTime(app.appliedAt);
     const status = app.status || 'Applied';
 
-    // Find scorecard for this candidate (match by email)
-    const sc = scorecards.find(s =>
-      s.email && app.candidateEmail &&
-      s.email.toLowerCase() === app.candidateEmail.toLowerCase()
-    );
+    const job = state.jobPostings.find(j => j.id === jobId) || loadList('ekvueCompanyItems').find(j => j.id === jobId) || {};
+
+    // Find scorecard strictly for this candidate AND THIS specific job role
+    const sc = scorecards.find(s => {
+      if (!s.email || !app.candidateEmail || s.email.toLowerCase() !== app.candidateEmail.toLowerCase()) return false;
+      const sess = schedules.find(x => x.id === s.sessionId) || loadList('ekvueCompanySchedules').find(x => x.id === s.sessionId);
+      if (!sess) return false;
+      const targetTitle = (job.jobTitle || job.title || '').toLowerCase().trim();
+      const sessTitle = (sess.sessionType || '').toLowerCase().trim();
+      return targetTitle && sessTitle === targetTitle;
+    });
 
     const isHired = sc && (sc.recommendation === 'Hire' || sc.recommendation === 'Strong Hire');
     const isRejected = sc && sc.recommendation === 'No Hire';
