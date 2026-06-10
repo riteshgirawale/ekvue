@@ -684,14 +684,50 @@ function renderLiveInterviewView() {
             <strong style="color:white; font-size:14px;">${escapeHtml(sess.candidateName)}</strong>
             <div class="muted" style="font-size:11.5px; margin-top:2px;">Round: ${escapeHtml(sess.sessionType)} | Scheduled: ${escapeHtml(sess.date)} (${escapeHtml(sess.time)}) ${sess.duration ? `| Duration: ${escapeHtml(sess.duration)} mins` : ''}</div>
           </div>
-          <button class="btn primary small" id="launch-lobby-sess-${sess.id}" style="background:linear-gradient(90deg, #10b981, #059669); border-color:rgba(16,185,129,0.3); font-weight:800; font-size:11.5px; padding:6px 14px;">Launch Live Room</button>
+          <div style="display:flex; gap:8px;">
+            <button class="btn small" id="delete-lobby-sess-${sess.id}" style="background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.3); font-weight:800; font-size:11.5px; padding:6px 14px; border-radius:6px; cursor:pointer;">Cancel</button>
+            <button class="btn primary small" id="launch-lobby-sess-${sess.id}" style="background:linear-gradient(90deg, #10b981, #059669); border-color:rgba(16,185,129,0.3); font-weight:800; font-size:11.5px; padding:6px 14px; cursor:pointer;">Launch Live Room</button>
+          </div>
         `;
         container.appendChild(row);
 
-        const btn = row.querySelector(`#launch-lobby-sess-${sess.id}`);
-        if (btn) {
-          btn.onclick = () => {
+        const btnLaunch = row.querySelector(`#launch-lobby-sess-${sess.id}`);
+        if (btnLaunch) {
+          btnLaunch.onclick = () => {
             enterLiveRoom(sess);
+          };
+        }
+
+        const btnDelete = row.querySelector(`#delete-lobby-sess-${sess.id}`);
+        if (btnDelete) {
+          btnDelete.onclick = () => {
+            if (!confirm(`Are you sure you want to cancel the interview with ${sess.candidateName}?`)) return;
+            
+            // Remove from interviewer state
+            state.sessions = state.sessions.filter(s => s.id !== sess.id);
+            saveStateSessions();
+
+            // Remove from global network live interviews
+            try {
+              const live = loadList('ekvueLiveInterviews').filter(m => m.meetingId !== sess.id);
+              saveList('ekvueLiveInterviews', live);
+              window.dispatchEvent(new StorageEvent('storage', {
+                key: 'ekvueLiveInterviews',
+                newValue: JSON.stringify(live)
+              }));
+            } catch(e) {}
+
+            // Notify candidate
+            addNotification(
+              sess.candidateEmail || lookupCandidateEmail(sess.candidateName),
+              "Interview Canceled",
+              `Your interview for "${sess.sessionType}" scheduled on ${sess.date} at ${sess.time} has been canceled.`,
+              "canceled",
+              { meetingId: sess.id }
+            );
+
+            // Re-render
+            renderLiveLobby();
           };
         }
       });

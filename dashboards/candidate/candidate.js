@@ -1894,7 +1894,44 @@ function updateMockRoomAvailability() {
         statusEl.style.background = 'rgba(251,191,36,0.06)';
         statusEl.style.borderColor = 'rgba(251,191,36,0.2)';
         statusEl.style.color = '#fde68a';
-        statusEl.innerHTML = `<span style="font-size:8px;">🟡</span> Session scheduled by <strong>${scheduledMeeting.interviewerName || 'interviewer'}</strong> — waiting for them to go live`;
+        statusEl.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div><span style="font-size:8px;">🟡</span> Session scheduled by <strong>${escapeHtml(scheduledMeeting.interviewerName || 'interviewer')}</strong> — waiting for them to go live</div>
+            <button id="candidate-cancel-meeting-btn" class="btn small" style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); color:#f87171; padding:4px 10px; font-size:10px; border-radius:4px; cursor:pointer;">Cancel Interview</button>
+          </div>
+        `;
+        
+        // Ensure button click is registered
+        setTimeout(() => {
+          const cancelBtn = document.getElementById('candidate-cancel-meeting-btn');
+          if (cancelBtn) {
+            cancelBtn.onclick = () => {
+              if (!confirm('Are you sure you want to cancel your upcoming interview?')) return;
+              
+              const myNameStr = state.user?.name || state.user?.fullName || 'Candidate';
+              
+              // Remove from live interviews
+              try {
+                const live = JSON.parse(localStorage.getItem('ekvueLiveInterviews') || '[]');
+                const filteredLive = live.filter(m => m.meetingId !== scheduledMeeting.meetingId && m.id !== scheduledMeeting.id);
+                localStorage.setItem('ekvueLiveInterviews', JSON.stringify(filteredLive));
+                window.dispatchEvent(new StorageEvent('storage', { key: 'ekvueLiveInterviews', newValue: JSON.stringify(filteredLive) }));
+              } catch(e) {}
+
+              // Notify the interviewer
+              addNotification(
+                scheduledMeeting.interviewerEmail || 'interviewer@ekvue.com',
+                "Candidate Canceled Interview",
+                `${myNameStr} has canceled their upcoming "${scheduledMeeting.sessionType || 'Technical Interview'}" session with you.`,
+                "canceled",
+                { meetingId: scheduledMeeting.meetingId || scheduledMeeting.id }
+              );
+
+              // Re-render
+              updateMockRoomAvailability();
+            };
+          }
+        }, 50);
       } else {
         statusEl.style.background = 'rgba(239,68,68,0.06)';
         statusEl.style.borderColor = 'rgba(239,68,68,0.15)';
