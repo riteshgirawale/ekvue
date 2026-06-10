@@ -68,6 +68,10 @@ function switchView(viewId) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } catch (e) {}
 
+  if (viewId === 'post-job' && !window.editingJobId) {
+    document.getElementById('postJobForm')?.reset();
+  }
+
   // Hook view render routines defensively with robust isolated try-catch boundaries
   try {
     if (viewId === 'post-job') {
@@ -401,7 +405,7 @@ function saveJob(status) {
 
   // Construct Expanded Job Posting Object
   const newJob = {
-    id: uid('job'),
+    id: window.editingJobId || uid('job'),
     role: 'Company',
     jobTitle: title,
     location: `${city}, ${country}`,
@@ -452,9 +456,12 @@ function saveJob(status) {
 
   newJob.companyEmail = state.user?.email || '';
 
+  const method = window.editingJobId ? 'PUT' : 'POST';
+  const endpoint = window.editingJobId ? `/api/jobs/${window.editingJobId}` : '/api/jobs';
+
   // Save to database (MongoDB)
-  fetch('/api/jobs', {
-    method: 'POST',
+  fetch(endpoint, {
+    method: method,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(newJob)
   }).then(async () => {
@@ -464,9 +471,11 @@ function saveJob(status) {
     updateKpiWidgets();
     renderJobsList();
     
-    // Select the new job
+    // Select the updated job
     activeJob = state.jobPostings.find(j => j.id === newJob.id) || newJob;
     selectWorkspaceJob(activeJob);
+    window.editingJobId = null;
+    document.getElementById('postJobForm')?.reset();
     switchView('jobs');
   }).catch(()=>{});
 
@@ -780,11 +789,13 @@ function selectWorkspaceJob(job) {
   const statApplied = document.getElementById('job-stat-applied');
   const statInterview = document.getElementById('job-stat-interview');
   const statOffer = document.getElementById('job-stat-offer');
+  const editBtn = document.getElementById('edit-job-btn');
 
   if (!job) {
     if (titleEl) titleEl.textContent = 'No Jobs Posted';
     if (metaEl) metaEl.textContent = '';
     if (statusEl) statusEl.style.display = 'none';
+    if (editBtn) editBtn.style.display = 'none';
     if (descEl) descEl.textContent = 'Please post a new job under Dashboard shortcuts to manage.';
     if (statApplied) statApplied.textContent = '-';
     if (statInterview) statInterview.textContent = '-';
@@ -792,6 +803,7 @@ function selectWorkspaceJob(job) {
     return;
   }
 
+  if (editBtn) editBtn.style.display = 'inline-block';
   if (titleEl) titleEl.textContent = job.jobTitle;
   if (metaEl) {
     const loc = job.location || 'Remote';
@@ -1947,6 +1959,57 @@ function initThemeSelector() {
     };
   });
 }
+
+window.editWorkspaceJob = function() {
+  if (!activeJob) return;
+  
+  // Populate the form fields with activeJob data
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val || '';
+  };
+  
+  setVal('pj-title', activeJob.jobTitle);
+  setVal('pj-department', activeJob.department);
+  setVal('pj-employment-type', activeJob.employmentType);
+  setVal('pj-work-mode', activeJob.workMode);
+  setVal('pj-experience', activeJob.experienceRequired);
+  setVal('pj-description', activeJob.description);
+  setVal('pj-responsibilities', activeJob.responsibilities);
+  setVal('pj-skills', activeJob.skillsRequired);
+  setVal('pj-preferred-skills', activeJob.skillsPreferred);
+  setVal('pj-salary', activeJob.salary);
+  setVal('pj-bonus', activeJob.bonus);
+  setVal('pj-benefits', activeJob.benefits);
+  setVal('pj-country', activeJob.country);
+  setVal('pj-state', activeJob.state);
+  setVal('pj-city', activeJob.city);
+  setVal('pj-work-location', activeJob.workLocation);
+  setVal('pj-education', activeJob.education);
+  setVal('pj-exp-min', activeJob.expYearsMin);
+  setVal('pj-exp-max', activeJob.expYearsMax);
+  setVal('pj-certifications', activeJob.certifications);
+  setVal('pj-deadline', activeJob.deadline);
+  setVal('pj-max-applicants', activeJob.maxApplicants);
+  
+  const setCheck = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.checked = !!val;
+  };
+  setCheck('pj-resume-required', activeJob.resumeRequired);
+  setCheck('pj-portfolio-required', activeJob.portfolioRequired);
+  setCheck('pj-github-required', activeJob.githubRequired);
+  
+  setVal('pj-hr-name', activeJob.hrName);
+  setVal('pj-hr-email', activeJob.hrEmail);
+  setVal('pj-hr-phone', activeJob.hrPhone);
+  
+  // Set editingJobId to preserve the ID during saveJob
+  window.editingJobId = activeJob.id;
+  
+  // Switch to post job view
+  switchView('post-job');
+};
 
 // ==========================================
 // KEEP COMPATIBILITY WITH ORIGINAL CRUD
