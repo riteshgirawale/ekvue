@@ -274,9 +274,13 @@ app.post('/api/users', async (req, res) => {
 app.post('/api/login', async (req, res) => {
   const { email, password, role } = req.body;
   try {
-    const user = await User.findOne({ email, role });
+    const query = { email: new RegExp('^' + email + '$', 'i') };
+    if (role) {
+      query.role = role;
+    }
+    const user = await User.findOne(query);
     if (!user) {
-      return res.status(401).json({ success: false, error: 'No account found for this role.' });
+      return res.status(401).json({ success: false, error: role ? 'No account found for this role.' : 'No registered account found.' });
     }
     if (user.password !== password) {
       return res.status(401).json({ success: false, error: 'Incorrect password.' });

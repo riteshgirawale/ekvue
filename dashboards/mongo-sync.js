@@ -1,4 +1,3 @@
-
 /**
  * MongoDB Optimistic Sync Wrapper
  * This script intercepts localStorage and syncs data to the MongoDB backend automatically.
@@ -11,10 +10,10 @@ const API_BASE = '/api';
 async function initialSync() {
   try {
     const [users, jobs, interviews, apps] = await Promise.all([
-      fetch(\\/users\).then(r => r.json()),
-      fetch(\\/jobs\).then(r => r.json()),
-      fetch(\\/interviews\).then(r => r.json()),
-      fetch(\\/applications\).then(r => r.json())
+      fetch(`${API_BASE}/users`).then(r => r.json()),
+      fetch(`${API_BASE}/jobs`).then(r => r.json()),
+      fetch(`${API_BASE}/interviews`).then(r => r.json()),
+      fetch(`${API_BASE}/applications`).then(r => r.json())
     ]);
 
     // Populate localStorage so the synchronous app logic works flawlessly
@@ -40,7 +39,7 @@ localStorage.setItem = function(key, value) {
       const accounts = JSON.parse(value);
       const latest = accounts[accounts.length - 1]; // Naive sync for new account
       if (latest) {
-        fetch(\\/users\, {
+        fetch(`${API_BASE}/users`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(latest)
@@ -48,12 +47,9 @@ localStorage.setItem = function(key, value) {
       }
     } else if (key === 'ekvueCompanyJobs') {
       const jobs = JSON.parse(value);
-      // For a prototype, just bulk update the latest job (or all)
-      // Since the app updates the whole array, we'll sync the latest one added/modified.
-      // A more robust implementation would diff the array.
       const latest = jobs[jobs.length - 1];
       if (latest && latest.id) {
-         fetch(\\/jobs\, {
+         fetch(`${API_BASE}/jobs`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(latest)
@@ -63,7 +59,7 @@ localStorage.setItem = function(key, value) {
       const schedules = JSON.parse(value);
       const latest = schedules[schedules.length - 1];
       if (latest && latest.id) {
-         fetch(\\/interviews\, {
+         fetch(`${API_BASE}/interviews`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(latest)
