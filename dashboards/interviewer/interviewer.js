@@ -727,7 +727,7 @@ function renderLiveInterviewView() {
             );
 
             // Re-render
-            renderLiveLobby();
+            renderLiveInterviewView();
           };
         }
       });
