@@ -6,6 +6,9 @@
     <title>Interviewer Dashboard | EKVUE</title>
     <!-- Add Cache Buster to stylesheet -->
     <link rel="stylesheet" href="../dashboard.css?v=1.0.8" />
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
   </head>
   <body>
@@ -26,6 +29,7 @@
             <a href="#" data-view="sessions"><span class="dot"></span>Sessions</a>
             <a href="#" data-view="live-interview"><span class="dot"></span>Candidate Interview</a>
             <a href="#" data-view="jobs"><span class="dot"></span>Active Jobs</a>
+            <a href="#" data-view="candidates"><span class="dot"></span>Candidates</a>
             <a href="#" data-view="questions"><span class="dot"></span>Question Bank</a>
             <a href="#" data-view="scorecards"><span class="dot"></span>Scorecards</a>
             <a href="#" data-view="reports"><span class="dot"></span>Reports</a>
@@ -46,6 +50,7 @@
               <a href="#" data-view="sessions">Sessions</a>
               <a href="#" data-view="live-interview">Candidate Interview</a>
               <a href="#" data-view="jobs">Active Jobs</a>
+              <a href="#" data-view="candidates">Candidates</a>
               <a href="#" data-view="scorecards">Scorecards</a>
               <a href="#" data-view="reports">Reports</a>
             </div>
@@ -765,6 +770,11 @@
             </div>
           </div>
 
+          <!-- SPA VIEW: 8. CANDIDATES (React Root) -->
+          <div id="view-candidates" class="view-content">
+            <div id="candidates-react-root"></div>
+          </div>
+
           <!-- SPA VIEW: 6. PROFILE SETTINGS -->
           <div id="view-settings" class="view-content">
             <section class="grid">
@@ -874,6 +884,7 @@
     <!-- Datalist for candidate selection autocomplete -->
     <datalist id="registered-candidates-datalist"></datalist>
 
+    <script type="text/babel" src="../company/candidates.jsx"></script>
     <script type="module" src="./interviewer.js?v=1.0.9-hud"></script>
   </body>
 </html>
