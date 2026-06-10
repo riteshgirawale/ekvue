@@ -3868,6 +3868,7 @@ function initNotificationsCenter() {
       if (typeof state !== 'undefined' && state.user && state.user.email) {
           myEmail = state.user.email.toLowerCase().trim();
       } else {
+          // fallback if state isn't there
           const userRaw = localStorage.getItem('ekvueCurrentUser') || sessionStorage.getItem('ekvueSession');
           if (userRaw) {
              const usr = JSON.parse(userRaw);
@@ -3885,8 +3886,10 @@ function initNotificationsCenter() {
     });
   }
 
+  // Initial draw
   renderNotifications();
   
+  // Listen for storage changes to update live
   window.addEventListener('storage', (e) => {
     if (e.key === 'ekvueNotifications') {
       renderNotifications();
@@ -3934,8 +3937,11 @@ async function renderNotifications() {
     if (res.ok) {
       myNotifs = await res.json();
     }
-  } catch (err) {}
+  } catch (err) {
+    console.error('Failed to fetch notifications from MongoDB:', err);
+  }
 
+  // Count unread
   const unreadCount = myNotifs.filter(n => !n.read).length;
   if (badge) {
     if (unreadCount > 0) {
@@ -3949,22 +3955,22 @@ async function renderNotifications() {
   listContainer.innerHTML = '';
 
   if (myNotifs.length === 0) {
-    listContainer.innerHTML = `<div style="padding: 24px; text-align: center; color: var(--muted); font-size: 12px;">No notifications yet.</div>`;
+    listContainer.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--muted); font-size: 12px;">No notifications yet.</div>';
     return;
   }
 
   myNotifs.forEach(notif => {
     const item = document.createElement('div');
     item.className = 'notif-item';
-    item.style.cssText = `
+    item.style.cssText = \`
       padding: 12px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
       cursor: pointer;
       display: flex;
       gap: 10px;
       transition: all 0.2s ease;
-      background: ${notif.read ? 'transparent' : 'rgba(168, 85, 247, 0.06)'};
-    `;
+      background: \${notif.read ? 'transparent' : 'rgba(168, 85, 247, 0.06)'};
+    \`;
 
     item.addEventListener('mouseenter', () => {
       item.style.background = 'rgba(255, 255, 255, 0.02)';
@@ -3984,6 +3990,7 @@ async function renderNotifications() {
       </div>
     `;
 
+    // Click handler
     item.addEventListener('click', async (e) => {
       e.stopPropagation();
       try {
