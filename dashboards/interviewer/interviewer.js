@@ -3897,7 +3897,7 @@ function initNotificationsCenter() {
   });
 }
 
-function escapeHtml(unsafe) {
+function escapeHtmlNotif(unsafe) {
   if (!unsafe) return '';
   return unsafe
        .toString()
@@ -3981,14 +3981,14 @@ async function renderNotifications() {
 
     const notifIcon = notif.type === 'application' ? '📩' : (notif.type === 'canceled' ? '❌' : '🔔');
 
-    item.innerHTML = \`
-      <span style="font-size: 16px; flex-shrink: 0; margin-top: 2px;">\${notifIcon}</span>
+    item.innerHTML = `
+      <span style="font-size: 16px; flex-shrink: 0; margin-top: 2px;">${notifIcon}</span>
       <div style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1;">
-        <span style="font-size: 12px; font-weight: \${notif.read ? '700' : '800'}; color: \${notif.read ? '#cbd5e1' : 'white'};">\${escapeHtml(notif.title)}</span>
-        <span style="font-size: 11px; color: var(--muted); line-height: 1.4;">\${escapeHtml(notif.message)}</span>
-        <span style="font-size: 9px; color: #64748b; font-family: monospace; margin-top: 2px;">\${new Date(notif.createdAt).toLocaleTimeString()}</span>
+        <span style="font-size: 12px; font-weight: ${notif.read ? '700' : '800'}; color: ${notif.read ? '#cbd5e1' : 'white'};">${escapeHtmlNotif(notif.title)}</span>
+        <span style="font-size: 11px; color: var(--muted); line-height: 1.4;">${escapeHtmlNotif(notif.message)}</span>
+        <span style="font-size: 9px; color: #64748b; font-family: monospace; margin-top: 2px;">${new Date(notif.createdAt).toLocaleTimeString()}</span>
       </div>
-    \`;
+    `;
 
     // Click handler
     item.addEventListener('click', async (e) => {

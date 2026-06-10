@@ -2359,7 +2359,6 @@ function initNotificationsCenter() {
       if (typeof state !== 'undefined' && state.user && state.user.email) {
           myEmail = state.user.email.toLowerCase().trim();
       } else {
-          // fallback if state isn't there
           const userRaw = localStorage.getItem('ekvueCurrentUser') || sessionStorage.getItem('ekvueSession');
           if (userRaw) {
              const usr = JSON.parse(userRaw);
@@ -2377,10 +2376,8 @@ function initNotificationsCenter() {
     });
   }
 
-  // Initial draw
   renderNotifications();
   
-  // Listen for storage changes to update live
   window.addEventListener('storage', (e) => {
     if (e.key === 'ekvueNotifications') {
       renderNotifications();
@@ -2388,7 +2385,7 @@ function initNotificationsCenter() {
   });
 }
 
-function escapeHtml(unsafe) {
+function escapeHtmlNotif(unsafe) {
   if (!unsafe) return '';
   return unsafe
        .toString()
@@ -2428,11 +2425,8 @@ async function renderNotifications() {
     if (res.ok) {
       myNotifs = await res.json();
     }
-  } catch (err) {
-    console.error('Failed to fetch notifications from MongoDB:', err);
-  }
+  } catch (err) {}
 
-  // Count unread
   const unreadCount = myNotifs.filter(n => !n.read).length;
   if (badge) {
     if (unreadCount > 0) {
@@ -2446,22 +2440,22 @@ async function renderNotifications() {
   listContainer.innerHTML = '';
 
   if (myNotifs.length === 0) {
-    listContainer.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--muted); font-size: 12px;">No notifications yet.</div>';
+    listContainer.innerHTML = `<div style="padding: 24px; text-align: center; color: var(--muted); font-size: 12px;">No notifications yet.</div>`;
     return;
   }
 
   myNotifs.forEach(notif => {
     const item = document.createElement('div');
     item.className = 'notif-item';
-    item.style.cssText = \`
+    item.style.cssText = `
       padding: 12px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
       cursor: pointer;
       display: flex;
       gap: 10px;
       transition: all 0.2s ease;
-      background: \${notif.read ? 'transparent' : 'rgba(168, 85, 247, 0.06)'};
-    \`;
+      background: ${notif.read ? 'transparent' : 'rgba(168, 85, 247, 0.06)'};
+    `;
 
     item.addEventListener('mouseenter', () => {
       item.style.background = 'rgba(255, 255, 255, 0.02)';
@@ -2472,16 +2466,15 @@ async function renderNotifications() {
 
     const notifIcon = notif.type === 'application' ? '📩' : (notif.type === 'canceled' ? '❌' : '🔔');
 
-    item.innerHTML = \`
-      <span style="font-size: 16px; flex-shrink: 0; margin-top: 2px;">\${notifIcon}</span>
+    item.innerHTML = `
+      <span style="font-size: 16px; flex-shrink: 0; margin-top: 2px;">${notifIcon}</span>
       <div style="display: flex; flex-direction: column; gap: 3px; flex-grow: 1;">
-        <span style="font-size: 12px; font-weight: \${notif.read ? '700' : '800'}; color: \${notif.read ? '#cbd5e1' : 'white'};">\${escapeHtml(notif.title)}</span>
-        <span style="font-size: 11px; color: var(--muted); line-height: 1.4;">\${escapeHtml(notif.message)}</span>
-        <span style="font-size: 9px; color: #64748b; font-family: monospace; margin-top: 2px;">\${new Date(notif.createdAt).toLocaleTimeString()}</span>
+        <span style="font-size: 12px; font-weight: ${notif.read ? '700' : '800'}; color: ${notif.read ? '#cbd5e1' : 'white'};">${escapeHtmlNotif(notif.title)}</span>
+        <span style="font-size: 11px; color: var(--muted); line-height: 1.4;">${escapeHtmlNotif(notif.message)}</span>
+        <span style="font-size: 9px; color: #64748b; font-family: monospace; margin-top: 2px;">${new Date(notif.createdAt).toLocaleTimeString()}</span>
       </div>
-    \`;
+    `;
 
-    // Click handler
     item.addEventListener('click', async (e) => {
       e.stopPropagation();
       try {
