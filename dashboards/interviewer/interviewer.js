@@ -2715,18 +2715,36 @@ function renderJobDetails() {
       const initials = (app.candidateName || 'C').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
       const appDate = app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : 'N/A';
 
-      // Find scorecard for this candidate
-      const sc = allScorecards.find(s => s.email && app.candidateEmail && s.email.toLowerCase() === app.candidateEmail.toLowerCase());
+      // Find scorecard strictly for this candidate AND THIS specific job role
+      const sc = allScorecards.find(s => {
+        if (!s.email || !app.candidateEmail || s.email.toLowerCase() !== app.candidateEmail.toLowerCase()) return false;
+        const sess = state.sessions.find(x => x.id === s.sessionId) || loadList('ekvueCompanySchedules').find(x => x.id === s.sessionId);
+        if (!sess) return false;
+        const targetTitle = (current.jobTitle || current.title || '').toLowerCase().trim();
+        const sessTitle = (sess.sessionType || '').toLowerCase().trim();
+        return targetTitle && sessTitle === targetTitle;
+      });
+
       const isHired = sc && (sc.recommendation === 'Hire' || sc.recommendation === 'Strong Hire');
       const isNoHire = sc && sc.recommendation === 'No Hire';
 
-      const displayStatus = isHired ? 'Hired' : (isNoHire ? 'Not Selected' : (app.status || 'Applied'));
+      // Check if an upcoming interview is already scheduled but not yet graded
+      const isInterviewing = !sc && state.sessions.some(sess => {
+        const targetTitle = (current.jobTitle || current.title || '').toLowerCase().trim();
+        const sessTitle = (sess.sessionType || '').toLowerCase().trim();
+        return sess.candidateEmail && app.candidateEmail && 
+               sess.candidateEmail.toLowerCase() === app.candidateEmail.toLowerCase() && 
+               targetTitle && sessTitle === targetTitle;
+      });
+
+      const displayStatus = isHired ? 'Hired' : (isNoHire ? 'Not Selected' : (isInterviewing ? 'Interviewing' : (app.status || 'Applied')));
 
       let appStatusStyle = 'color:#60a5fa; background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.15);';
       if (displayStatus === 'Hired') appStatusStyle = 'color:#10b981; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25);';
       else if (displayStatus === 'Shortlisted') appStatusStyle = 'color:#34d399; background:rgba(52,211,153,0.06); border:1px solid rgba(52,211,153,0.15);';
       else if (displayStatus === 'Rejected' || displayStatus === 'Not Selected') appStatusStyle = 'color:#f87171; background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.15);';
       else if (displayStatus === 'Under Review') appStatusStyle = 'color:#fbbf24; background:rgba(251,191,36,0.06); border:1px solid rgba(251,191,36,0.15);';
+      else if (displayStatus === 'Interviewing') appStatusStyle = 'color:#c084fc; background:rgba(168,85,247,0.06); border:1px solid rgba(168,85,247,0.15);';
 
       // Scorecard info line
       let scLine = '';
