@@ -820,7 +820,53 @@ function selectWorkspaceJob(job) {
     statusEl.className = `badge ${badgeClass}`;
   }
   if (descEl) {
-    let richDetailsHtml = '';
+    let richDetailsHtml = `
+      <style>
+        .job-details-premium {
+          background: rgba(11, 17, 41, 0.6) !important;
+          border: 1px solid rgba(99, 102, 241, 0.25) !important;
+          box-shadow: 0 15px 35px rgba(0,0,0,0.4) !important;
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-radius: 16px;
+          padding: 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+          color: white;
+          margin-top: 16px;
+        }
+        .job-details-premium h4 {
+          color: white;
+          font-size: 12px;
+          text-transform: uppercase;
+          border-left: 3px solid var(--primary);
+          padding-left: 8px;
+          margin: 0 0 8px 0;
+          font-weight: 800;
+          letter-spacing: 0.5px;
+        }
+        .job-details-premium .glass-panel {
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          border-radius: 10px;
+          padding: 12px;
+        }
+        .job-details-premium .stat-box {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+        .job-details-premium .stat-label {
+          color: var(--muted);
+          font-weight: 800;
+          text-transform: uppercase;
+          font-size: 9px;
+          letter-spacing: 0.5px;
+        }
+      </style>
+      <div class="job-details-premium">
+    `;
     
     // Compensation & Overview Grid
     let salaryRangeStr = 'Competitive';
@@ -831,28 +877,38 @@ function selectWorkspaceJob(job) {
     }
     
     richDetailsHtml += `
-      <div style="display:grid; grid-template-columns:1.2fr 0.8fr; gap:12px; margin: 12px 0 16px 0; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.05); padding:12px; border-radius:10px;">
-        <div>
-          <small style="color:var(--muted); font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:2px;">Annual Compensation</small>
-          <div style="font-size:14px; color:#34d399; font-weight:800;">${escapeHtml(salaryRangeStr)}</div>
-          <small style="color:var(--muted); font-size:10.5px; display:block; margin-top:2px;">${escapeHtml(job.bonus || 'Standard bonus CTC')}</small>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div class="glass-panel stat-box" style="background: rgba(16, 185, 129, 0.03); border-color: rgba(16, 185, 129, 0.15);">
+          <span class="stat-label">Annual Compensation</span>
+          <strong style="color: #34d399; font-size: 15px; font-weight: 800;">💵 ${escapeHtml(salaryRangeStr)}</strong>
+          <small style="color:var(--muted); font-size:11px; margin-top:2px;">${escapeHtml(job.bonus || 'Standard bonus CTC')}</small>
         </div>
-        <div>
-          <small style="color:var(--muted); font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:2px;">Department & Level</small>
-          <div style="font-size:12.5px; color:white; font-weight:700;">${escapeHtml(job.department || 'Engineering')}</div>
-          <small style="color:var(--muted); font-size:11px; display:block; margin-top:2px;">${escapeHtml(job.experienceRequired || 'Mid Level')}</small>
+        <div class="glass-panel stat-box" style="background: rgba(99, 102, 241, 0.03); border-color: rgba(99, 102, 241, 0.15);">
+          <span class="stat-label">Department & Level</span>
+          <strong style="color: #a5b4fc; font-size: 14px; font-weight: 800;">🏢 ${escapeHtml(job.department || 'Engineering')}</strong>
+          <small style="color:var(--muted); font-size:11px; margin-top:2px;">🎓 ${escapeHtml(job.experienceRequired || 'Mid Level')}</small>
         </div>
       </div>
     `;
 
+    // Overview
+    if (job.description) {
+      richDetailsHtml += `
+        <div>
+          <h4>Role Overview</h4>
+          <p style="font-size:13px; line-height:1.6; color:#cbd5e1; margin:0; white-space:pre-wrap; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); padding:14px; border-radius:10px;">${escapeHtml(job.description)}</p>
+        </div>
+      `;
+    }
+
     // Skills Required Row
     if (job.skillsRequired) {
       richDetailsHtml += `
-        <div style="margin-bottom:16px;">
-          <small style="color:var(--muted); font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:6px;">Technical Skills Required</small>
-          <div style="display:flex; flex-wrap:wrap; gap:6px;">
-            ${job.skillsRequired.split(',').map(s => `<span style="font-size:11px; background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15); border-radius:6px; padding:3px 10px; color:#a5b4fc; font-weight:700;">${escapeHtml(s.trim())}</span>`).join('')}
-            ${job.skillsPreferred ? job.skillsPreferred.split(',').map(s => `<span style="font-size:11px; background:rgba(168,85,247,0.04); border:1px solid rgba(168,85,247,0.15); border-radius:6px; padding:3px 8px; color:#c084fc; font-style:italic;">${escapeHtml(s.trim())}</span>`).join('') : ''}
+        <div>
+          <h4>Technical Skills Required</h4>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:4px;">
+            ${job.skillsRequired.split(',').map(s => `<span style="font-size:11.5px; background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.25); border-radius:8px; padding:4px 12px; color:#c7d2fe; font-weight:700;">${escapeHtml(s.trim())}</span>`).join('')}
+            ${job.skillsPreferred ? job.skillsPreferred.split(',').map(s => `<span style="font-size:11.5px; background:rgba(168,85,247,0.06); border:1px solid rgba(168,85,247,0.2); border-radius:8px; padding:4px 12px; color:#d8b4fe; font-style:italic;">${escapeHtml(s.trim())}</span>`).join('') : ''}
           </div>
         </div>
       `;
@@ -861,38 +917,42 @@ function selectWorkspaceJob(job) {
     // Responsibilities List
     if (job.responsibilities) {
       richDetailsHtml += `
-        <div style="margin-bottom:16px;">
-          <small style="color:var(--muted); font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:4px;">Key Responsibilities</small>
-          <div style="font-size:12.5px; line-height:1.55; color:#cbd5e1; white-space:pre-wrap; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.04); padding:10px; border-radius:8px;">${escapeHtml(job.responsibilities)}</div>
+        <div>
+          <h4>Key Responsibilities</h4>
+          <div style="font-size:13px; line-height:1.6; color:#cbd5e1; white-space:pre-wrap; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); padding:14px; border-radius:10px;">${escapeHtml(job.responsibilities)}</div>
         </div>
       `;
     }
-
-
 
     // HR contact block
     if (job.hrName) {
       richDetailsHtml += `
-        <div style="margin-bottom:16px; border-top:1px dashed rgba(255,255,255,0.06); padding-top:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-          <div>
-            <small style="color:var(--muted); font-size:9.5px; font-weight:800; text-transform:uppercase;">Contact Recruiter</small>
-            <div style="font-size:12.5px; font-weight:700; color:white;">${escapeHtml(job.hrName)}</div>
+        <div style="border-top:1px dashed rgba(255,255,255,0.1); padding-top:16px; margin-top:4px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+          <div class="stat-box">
+            <span class="stat-label">Contact Recruiter</span>
+            <div style="font-size:13.5px; font-weight:800; color:white;">👤 ${escapeHtml(job.hrName)}</div>
           </div>
-          <div style="text-align:right;">
-            <small style="color:var(--muted); font-size:9.5px; font-weight:800; text-transform:uppercase;">HR Email</small>
-            <div style="font-size:12px; color:#cbd5e1;"><a href="mailto:${escapeHtml(job.hrEmail)}" style="color:#6366f1; text-decoration:none;">${escapeHtml(job.hrEmail)}</a></div>
+          <div class="stat-box" style="text-align:right;">
+            <span class="stat-label">HR Email</span>
+            <div style="font-size:13px; font-weight:600;"><a href="mailto:${escapeHtml(job.hrEmail)}" style="color:#818cf8; text-decoration:none;">✉️ ${escapeHtml(job.hrEmail)}</a></div>
           </div>
         </div>
       `;
     }
 
-    descEl.innerHTML = `
-      ${richDetailsHtml}
-      <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.06);">
-        <small style="color:var(--muted); font-size:9.5px; font-weight:800; text-transform:uppercase; display:block; margin-bottom:4px;">Role Overview</small>
-        <p style="white-space:pre-wrap; font-size:13px; line-height:1.6; color:#94a3b8; margin:0;">${escapeHtml(job.description)}</p>
-      </div>
-    `;
+    richDetailsHtml += `</div>`;
+
+    // Clear old simple UI layout by replacing it entirely
+    const parentCard = descEl.closest('.problem-statement-card');
+    if (parentCard) {
+      parentCard.style.background = 'transparent';
+      parentCard.style.border = 'none';
+      parentCard.style.padding = '0';
+      parentCard.style.boxShadow = 'none';
+    }
+    
+    // Hide the old "Job Description" header inside the desc container
+    descEl.innerHTML = richDetailsHtml;
   }
 
   // Compute real applied count from application records
