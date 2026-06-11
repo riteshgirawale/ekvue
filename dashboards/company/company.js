@@ -2508,30 +2508,58 @@ document.addEventListener('DOMContentLoaded', initNotificationsCenter);
 // ----------------------------------------------------
 
 const locationDatabase = {
-  'India': {
-    'Maharashtra': ['Mumbai', 'Pune', 'Nagpur', 'Nashik', 'Thane', 'Aurangabad', 'Solapur', 'Amravati', 'Kolhapur', 'Navi Mumbai'],
-    'Karnataka': ['Bengaluru', 'Mysuru', 'Mangaluru', 'Hubballi', 'Belagavi'],
-    'Delhi': ['New Delhi', 'North Delhi', 'South Delhi', 'Dwarka'],
-    'Tamil Nadu': ['Chennai', 'Coimbatore', 'Madurai', 'Tiruchirappalli'],
-    'Gujarat': ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot', 'Gandhinagar'],
-    'Telangana': ['Hyderabad', 'Warangal', 'Nizamabad'],
-    'West Bengal': ['Kolkata', 'Howrah', 'Darjeeling', 'Siliguri'],
-    'Uttar Pradesh': ['Lucknow', 'Kanpur', 'Agra', 'Varanasi', 'Noida', 'Ghaziabad']
+  "India": {
+    "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool", "Rajahmundry", "Tirupati", "Kakinada", "Kadapa", "Anantapur"],
+    "Arunachal Pradesh": ["Itanagar", "Naharlagun", "Pasighat", "Roing", "Tezu", "Ziro", "Bomdila", "Tawang"],
+    "Assam": ["Guwahati", "Silchar", "Dibrugarh", "Jorhat", "Nagaon", "Tinsukia", "Tezpur", "Bongaigaon", "Diphu"],
+    "Bihar": ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia", "Darbhanga", "Ara", "Begusarai", "Katihar", "Chhapra"],
+    "Chhattisgarh": ["Raipur", "Bhilai", "Bilaspur", "Korba", "Rajnandgaon", "Raigarh", "Jagdalpur", "Ambikapur", "Dhamtari"],
+    "Goa": ["Panaji", "Margao", "Vasco da Gama", "Mapusa", "Ponda", "Bicholim", "Curchorem"],
+    "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Gandhinagar", "Junagadh", "Gandhidham", "Anand"],
+    "Haryana": ["Faridabad", "Gurugram", "Panipat", "Ambala", "Yamunanagar", "Rohtak", "Hisar", "Karnal", "Sonipat", "Panchkula"],
+    "Himachal Pradesh": ["Shimla", "Mandi", "Solan", "Dharamshala", "Palampur", "Baddi", "Nahan", "Paonta Sahib", "Sundarnagar"],
+    "Jharkhand": ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro Steel City", "Deoghar", "Phusro", "Hazaribagh", "Giridih", "Ramgarh"],
+    "Karnataka": ["Bengaluru", "Mysuru", "Hubballi", "Mangaluru", "Belagavi", "Davangere", "Ballari", "Vijayapura", "Shivamogga", "Tumakuru"],
+    "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Kollam", "Thrissur", "Alappuzha", "Palakkad", "Kannur", "Kottayam", "Manjeri"],
+    "Madhya Pradesh": ["Indore", "Bhopal", "Jabalpur", "Gwalior", "Ujjain", "Sagar", "Dewas", "Satna", "Ratlam", "Rewa"],
+    "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Thane", "Aurangabad", "Solapur", "Amravati", "Kolhapur", "Navi Mumbai", "Jalgaon", "Akola", "Latur", "Dhule"],
+    "Manipur": ["Imphal", "Thoubal", "Kakching", "Churachandpur", "Bishnupur", "Senapati", "Ukhrul"],
+    "Meghalaya": ["Shillong", "Tura", "Nongstoin", "Jowai", "Baghmara", "Williamnagar", "Resubelpara"],
+    "Mizoram": ["Aizawl", "Lunglei", "Saiha", "Champhai", "Kolasib", "Serchhip", "Lawngtlai"],
+    "Nagaland": ["Kohima", "Dimapur", "Mokokchung", "Tuensang", "Wokha", "Zunheboto", "Kiphire"],
+    "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Brahmapur", "Sambalpur", "Puri", "Balasore", "Bhadrak", "Baripada", "Jharsuguda"],
+    "Punjab": ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda", "Ajitgarh (Mohali)", "Hoshiarpur", "Batala", "Pathankot", "Moga"],
+    "Rajasthan": ["Jaipur", "Jodhpur", "Kota", "Bikaner", "Ajmer", "Udaipur", "Bhilwara", "Alwar", "Bharatpur", "Sikar"],
+    "Sikkim": ["Gangtok", "Namchi", "Gyalshing", "Mangan", "Singtam", "Rangpo", "Jorethang"],
+    "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli", "Tiruppur", "Ranipet", "Vellore", "Thoothukkudi"],
+    "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Ramagundam", "Khammam", "Mahbubnagar", "Nalgonda", "Adilabad", "Suryapet"],
+    "Tripura": ["Agartala", "Udaipur", "Dharmanagar", "Pratapgarh", "Kailasahar", "Belonia", "Khowai"],
+    "Uttar Pradesh": ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Varanasi", "Meerut", "Prayagraj", "Bareilly", "Aligarh", "Moradabad", "Noida"],
+    "Uttarakhand": ["Dehradun", "Haridwar", "Roorkee", "Haldwani", "Rudrapur", "Kashipur", "Rishikesh", "Pantnagar"],
+    "West Bengal": ["Kolkata", "Asansol", "Siliguri", "Durgapur", "Bardhaman", "English Bazar", "Baharampur", "Habra", "Kharagpur", "Shantipur"],
+    "Andaman and Nicobar Islands": ["Port Blair"],
+    "Chandigarh": ["Chandigarh"],
+    "Dadra and Nagar Haveli and Daman and Diu": ["Daman", "Diu", "Silvassa"],
+    "Delhi": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi", "Dwarka"],
+    "Jammu and Kashmir": ["Srinagar", "Jammu", "Anantnag", "Baramulla", "Kathua"],
+    "Ladakh": ["Leh", "Kargil"],
+    "Lakshadweep": ["Kavaratti", "Agatti", "Amini", "Andrott"],
+    "Puducherry": ["Pondicherry", "Ozhukarai", "Karaikal", "Yanam", "Mahe"]
   },
-  'United States': {
-    'California': ['San Francisco', 'Los Angeles', 'San Diego', 'San Jose'],
-    'New York': ['New York City', 'Buffalo', 'Rochester'],
-    'Texas': ['Austin', 'Houston', 'Dallas', 'San Antonio'],
-    'Washington': ['Seattle', 'Bellevue', 'Redmond']
+  "United States": {
+    "California": ["San Francisco", "Los Angeles", "San Diego", "San Jose"],
+    "New York": ["New York City", "Buffalo", "Rochester"],
+    "Texas": ["Austin", "Houston", "Dallas", "San Antonio"],
+    "Washington": ["Seattle", "Bellevue", "Redmond"]
   },
-  'United Kingdom': {
-    'England': ['London', 'Manchester', 'Birmingham', 'Bristol'],
-    'Scotland': ['Edinburgh', 'Glasgow', 'Aberdeen']
+  "United Kingdom": {
+    "England": ["London", "Manchester", "Birmingham", "Bristol"],
+    "Scotland": ["Edinburgh", "Glasgow", "Aberdeen"]
   },
-  'Canada': {
-    'Ontario': ['Toronto', 'Ottawa', 'Waterloo', 'Mississauga'],
-    'British Columbia': ['Vancouver', 'Victoria', 'Surrey'],
-    'Quebec': ['Montreal', 'Quebec City']
+  "Canada": {
+    "Ontario": ["Toronto", "Ottawa", "Waterloo", "Mississauga"],
+    "British Columbia": ["Vancouver", "Victoria", "Surrey"],
+    "Quebec": ["Montreal", "Quebec City"]
   }
 };
 
