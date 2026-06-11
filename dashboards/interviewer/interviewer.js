@@ -24,7 +24,7 @@ import {
 } from '../utils.js';
 
 // Local storage key binders
-let LIVE_INTERVIEWS_KEY = LIVE_INTERVIEWS_KEY;
+let LIVE_INTERVIEWS_KEY = 'ekvueLiveInterviews';
 let SESSION_KEY = LS_KEYS.interviewerItems; // ekvueInterviewerItems
 const COMPANY_SCHEDULES_KEY = 'ekvueCompanySchedules'; // sync with recruiters
 let QUESTIONS_KEY = 'ekvueInterviewerQuestions';
