@@ -690,3 +690,40 @@ document.addEventListener('DOMContentLoaded', () => {
   renderProblem(currentProblemIndex);
   startCountdown(5 * 60);
 });
+
+// ----------------------------------------------------
+// WATCH DEMO VIDEO MODAL LOGIC
+// ----------------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+  const watchDemoBtn = document.getElementById('watch-demo-btn');
+  const videoModal = document.getElementById('video-demo-modal');
+  const closeVideoModal = document.getElementById('close-video-modal');
+  const demoVideoPlayer = document.getElementById('demo-video-player');
+
+  if (watchDemoBtn && videoModal && closeVideoModal && demoVideoPlayer) {
+    watchDemoBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      videoModal.style.display = 'flex';
+      // Trigger reflow for smooth animation
+      void videoModal.offsetWidth;
+      videoModal.style.opacity = '1';
+      demoVideoPlayer.play().catch(err => console.log('Autoplay prevented by browser', err));
+    });
+
+    closeVideoModal.addEventListener('click', () => {
+      videoModal.style.opacity = '0';
+      demoVideoPlayer.pause();
+      demoVideoPlayer.currentTime = 0;
+      setTimeout(() => {
+        videoModal.style.display = 'none';
+      }, 300);
+    });
+    
+    // Close on clicking outside the video player
+    videoModal.addEventListener('click', (e) => {
+      if (e.target === videoModal) {
+        closeVideoModal.click();
+      }
+    });
+  }
+});

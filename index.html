@@ -34,7 +34,7 @@
         <p class="hero-description">Live coding, video interviews, scheduling, and AI-generated reports — all in one seamless platform.</p>
         <div class="hero-actions">
           <a class="button button-primary" href="login/index.html?forceLogin=1">Start Free Trial</a>
-          <a class="button button-secondary" href="#demo">Watch Demo</a>
+          <a class="button button-secondary" href="#demo" id="watch-demo-btn">Watch Demo</a>
         </div>
         <div class="hero-footnote">
           <span>No credit card required</span>
@@ -293,7 +293,17 @@ console.log(twoSum([2,7,11,15], 9));</textarea>
       </div>
     </div>
   </div>
-  <script src="scripts.js?v=1.0.4"></script>
+  <div id="video-demo-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 10000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease;">
+    <button id="close-video-modal" style="position: absolute; top: 30px; right: 40px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; font-size: 32px; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: all 0.2s;">&times;</button>
+    <div style="position: relative; width: 85%; max-width: 1200px; aspect-ratio: 16/9; background: #050505; border-radius: 16px; box-shadow: 0 40px 100px rgba(0,0,0,0.9); border: 1px solid rgba(255,255,255,0.15); overflow: hidden;">
+      <video id="demo-video-player" controls style="width: 100%; height: 100%; object-fit: cover;">
+        <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+        Your browser does not support the video tag. Please upload demo.mp4 to assets/videos/
+      </video>
+    </div>
+  </div>
+
+  <script src="scripts.js?v=1.0.8"></script>
   <!-- Global Help Assistant Chatbot -->
   <script src="help-chatbot.js?v=1.0.4" type="module"></script>
   <!-- AI Resume Analyzer Module Loader -->
