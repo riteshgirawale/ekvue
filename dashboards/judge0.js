@@ -83,12 +83,12 @@ export async function executeWithJudge0(sourceCode, language, stdin = '', timeLi
 
     if (!response.ok) {
       const errText = await response.text();
-      throw new Error(`OnlineCompiler API error (${response.status}): ${errText}`);
+      throw new Error(`EKVUE Engine error (${response.status}): ${errText}`);
     }
 
     const result = await response.json();
     if (!result) {
-      throw new Error('No execution result returned from OnlineCompiler API.');
+      throw new Error('No execution result returned from EKVUE Engine.');
     }
 
     const stdout = result.output || '';

@@ -907,7 +907,7 @@ async function runWorkspaceCode(isSubmit = false) {
   const activeLang = langSelect ? langSelect.value : 'javascript';
 
   consoleEl.className = 'card console-output-card';
-  consoleEl.innerHTML = `<span style="color:#fbbf24">⏳ Compiling ${activeLang} with OnlineCompiler API...</span>`;
+  consoleEl.innerHTML = `<span style="color:#fbbf24">⏳ Compiling ${activeLang} with EKVUE Engine...</span>`;
 
   if (!codeVal.trim()) {
     consoleEl.className = 'card console-output-card error';

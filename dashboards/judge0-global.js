@@ -52,12 +52,12 @@
 
       if (!response.ok) {
         var errText = await response.text();
-        throw new Error('OnlineCompiler API error (' + response.status + '): ' + errText);
+        throw new Error('EKVUE Engine error (' + response.status + '): ' + errText);
       }
 
       var result = await response.json();
       if (!result) {
-        throw new Error('No execution result returned from OnlineCompiler API.');
+        throw new Error('No execution result returned from EKVUE Engine.');
       }
 
       var stdout = result.output || '';

@@ -549,7 +549,7 @@ async function executeCode() {
   const langSelect = document.getElementById('lang-select');
   const activeLang = langSelect ? langSelect.value : 'javascript';
 
-  logOutput(`⏳ Compiling with OnlineCompiler API (${activeLang})...`);
+  logOutput(`⏳ Compiling with EKVUE Engine (${activeLang})...`);
 
   const homepageCompilers = {
     'javascript': 'typescript-deno',
