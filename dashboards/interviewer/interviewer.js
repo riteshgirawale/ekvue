@@ -24,13 +24,14 @@ import {
 } from '../utils.js';
 
 // Local storage key binders
-const SESSION_KEY = LS_KEYS.interviewerItems; // ekvueInterviewerItems
+let LIVE_INTERVIEWS_KEY = LIVE_INTERVIEWS_KEY;
+let SESSION_KEY = LS_KEYS.interviewerItems; // ekvueInterviewerItems
 const COMPANY_SCHEDULES_KEY = 'ekvueCompanySchedules'; // sync with recruiters
-const QUESTIONS_KEY = 'ekvueInterviewerQuestions';
-const SCORECARDS_KEY = 'ekvueInterviewerScorecards';
+let QUESTIONS_KEY = 'ekvueInterviewerQuestions';
+let SCORECARDS_KEY = 'ekvueInterviewerScorecards';
 const COMPANY_JOBS_KEY = 'ekvueCompanyItems';
-const THEME_KEY = 'ekvueSelectedTheme';
-const PROFILE_KEY = 'ekvueInterviewerProfile';
+let THEME_KEY = 'ekvueSelectedTheme';
+let PROFILE_KEY = 'ekvueInterviewerProfile';
 
 // Local Centralized State
 const state = {
@@ -184,6 +185,16 @@ function loadStateFromStorage() {
   }
 
   // Theme
+
+  // ISOLATE DATA PER USER
+  const userPrefix = state.user.email ? '_' + state.user.email.replace(/[^a-zA-Z0-9]/g, '_') : '';
+  SESSION_KEY = LS_KEYS.interviewerItems + userPrefix;
+  QUESTIONS_KEY = 'ekvueInterviewerQuestions' + userPrefix;
+  SCORECARDS_KEY = 'ekvueInterviewerScorecards' + userPrefix;
+  PROFILE_KEY = 'ekvueInterviewerProfile' + userPrefix;
+  THEME_KEY = 'ekvueSelectedTheme' + userPrefix;
+  LIVE_INTERVIEWS_KEY = 'ekvueLiveInterviews' + userPrefix;
+
   state.selectedTheme = localStorage.getItem(THEME_KEY) || 'default';
   document.body.setAttribute('data-theme', state.selectedTheme);
 
@@ -229,7 +240,7 @@ function loadStateFromStorage() {
     
     const isNameMatch = isExactNameMatch || isSubstringMatch || (myWords.length > 0 && schedWords.length > 0 && (myWords.some(w => schedWords.includes(w)) || schedWords.some(w => myWords.includes(w))));
     const isEmailMatch = comp.interviewerEmail && state.user && comp.interviewerEmail.toLowerCase() === state.user.email.toLowerCase();
-    const isForMe = true; // PROTOTYPE FIX: Show all schedules so any scheduled interview appears in the dashboard
+    const isForMe = isNameMatch || isEmailMatch;
     
     const compCandidate = comp.candidate || comp.candidateName || 'Assigned Candidate';
     if (isForMe && !merged.some((s) => s.id === comp.id)) {
@@ -709,10 +720,10 @@ function renderLiveInterviewView() {
 
             // Remove from global network live interviews
             try {
-              const live = loadList('ekvueLiveInterviews').filter(m => m.meetingId !== sess.id);
-              saveList('ekvueLiveInterviews', live);
+              const live = loadList(LIVE_INTERVIEWS_KEY).filter(m => m.meetingId !== sess.id);
+              saveList(LIVE_INTERVIEWS_KEY, live);
               window.dispatchEvent(new StorageEvent('storage', {
-                key: 'ekvueLiveInterviews',
+                key: LIVE_INTERVIEWS_KEY,
                 newValue: JSON.stringify(live)
               }));
             } catch(e) {}
@@ -916,7 +927,7 @@ function enterLiveRoom(session) {
   const cEmail = session.candidateEmail || lookupCandidateEmail(session.candidateName);
   let meetings = [];
   try {
-    const raw = localStorage.getItem('ekvueLiveInterviews');
+    const raw = localStorage.getItem(LIVE_INTERVIEWS_KEY);
     meetings = raw ? JSON.parse(raw) : [];
     if (!Array.isArray(meetings)) meetings = [];
   } catch {
@@ -957,7 +968,7 @@ function enterLiveRoom(session) {
   } else {
     meetings.push(handshakeRecord);
   }
-  localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
+  localStorage.setItem(LIVE_INTERVIEWS_KEY, JSON.stringify(meetings));
 
   // Sync to backend server for cross-browser/cross-laptop live interview handshake
   try {
@@ -1408,7 +1419,7 @@ function pushQuestionToIde(qId) {
     // Clear in shared record too
     let meetings = [];
     try {
-      const raw = localStorage.getItem('ekvueLiveInterviews');
+      const raw = localStorage.getItem(LIVE_INTERVIEWS_KEY);
       meetings = raw ? JSON.parse(raw) : [];
       if (!Array.isArray(meetings)) meetings = [];
     } catch {}
@@ -1416,7 +1427,7 @@ function pushQuestionToIde(qId) {
     if (meeting) {
       meeting.pushedChallenge = null;
       meeting.lastUpdated = new Date().toISOString();
-      localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
+      localStorage.setItem(LIVE_INTERVIEWS_KEY, JSON.stringify(meetings));
     }
     ideBody.innerHTML = `<pre style="color:#64748b">// Monitor cleared. Push a challenge to monitor candidate...</pre>`;
     return;
@@ -1425,7 +1436,7 @@ function pushQuestionToIde(qId) {
   // Update shared meeting record with pushed challenge details
   let meetings = [];
   try {
-    const raw = localStorage.getItem('ekvueLiveInterviews');
+    const raw = localStorage.getItem(LIVE_INTERVIEWS_KEY);
     meetings = raw ? JSON.parse(raw) : [];
     if (!Array.isArray(meetings)) meetings = [];
   } catch {}
@@ -1441,7 +1452,7 @@ function pushQuestionToIde(qId) {
       template: question.codeTemplate
     };
     meeting.lastUpdated = new Date().toISOString();
-    localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
+    localStorage.setItem(LIVE_INTERVIEWS_KEY, JSON.stringify(meetings));
   }
 
   if (ideStatus) {
@@ -1501,7 +1512,7 @@ function runLiveProctorSyncLoop() {
     // Read meetings
     let meetings = [];
     try {
-      const raw = localStorage.getItem('ekvueLiveInterviews');
+      const raw = localStorage.getItem(LIVE_INTERVIEWS_KEY);
       meetings = raw ? JSON.parse(raw) : [];
       if (!Array.isArray(meetings)) meetings = [];
     } catch {
@@ -1526,7 +1537,7 @@ function runLiveProctorSyncLoop() {
           meeting = { ...meeting, ...serverMeeting, status: mergedStatus };
           const idx = meetings.findIndex(m => m.meetingId === state.liveSessionId);
           meetings[idx] = meeting;
-          localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
+          localStorage.setItem(LIVE_INTERVIEWS_KEY, JSON.stringify(meetings));
         }
       }
     } catch (e) { /* silently continue offline */ }
@@ -1557,7 +1568,7 @@ function runLiveProctorSyncLoop() {
 
     // Write real-time interviewer heartbeat to handshake record
     meeting.lastUpdated = new Date().toISOString();
-    localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
+    localStorage.setItem(LIVE_INTERVIEWS_KEY, JSON.stringify(meetings));
 
     // Sync heartbeat and full state to backend for cross-laptop candidate detection
     try {
@@ -1685,7 +1696,7 @@ function handleInterviewerSendChat() {
 
   let meetings = [];
   try {
-    const raw = localStorage.getItem('ekvueLiveInterviews');
+    const raw = localStorage.getItem(LIVE_INTERVIEWS_KEY);
     meetings = raw ? JSON.parse(raw) : [];
     if (!Array.isArray(meetings)) meetings = [];
   } catch {
@@ -1697,7 +1708,7 @@ function handleInterviewerSendChat() {
     if (!meeting.chatLogs) meeting.chatLogs = [];
     meeting.chatLogs.push({ sender: 'interviewer', text: text });
     meeting.lastUpdated = new Date().toISOString();
-    localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
+    localStorage.setItem(LIVE_INTERVIEWS_KEY, JSON.stringify(meetings));
     
     if (inputEl) inputEl.value = '';
     // The polling loop will redraw instantly!
@@ -1879,7 +1890,7 @@ async function runCandidateCodeInterviewer() {
   // Read meeting data
   let meetings = [];
   try {
-    const raw = localStorage.getItem('ekvueLiveInterviews');
+    const raw = localStorage.getItem(LIVE_INTERVIEWS_KEY);
     meetings = raw ? JSON.parse(raw) : [];
     if (!Array.isArray(meetings)) meetings = [];
   } catch { meetings = []; }
@@ -1975,7 +1986,7 @@ async function runCandidateCodeInterviewer() {
 
     // Save compile metrics to meeting handshake
     try {
-      const raw = localStorage.getItem('ekvueLiveInterviews');
+      const raw = localStorage.getItem(LIVE_INTERVIEWS_KEY);
       let meetings = raw ? JSON.parse(raw) : [];
       let mItem = meetings.find(m => m.meetingId === state.liveSessionId);
       if (mItem) {
@@ -1987,7 +1998,7 @@ async function runCandidateCodeInterviewer() {
           memory: result.memory
         };
         mItem.lastUpdated = new Date().toISOString();
-        localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
+        localStorage.setItem(LIVE_INTERVIEWS_KEY, JSON.stringify(meetings));
       }
     } catch(e){}
 
@@ -2041,7 +2052,7 @@ function setupLiveRoomListeners() {
       // Update shared record state so candidate knows it's completed
       let meetings = [];
       try {
-        const raw = localStorage.getItem('ekvueLiveInterviews');
+        const raw = localStorage.getItem(LIVE_INTERVIEWS_KEY);
         meetings = raw ? JSON.parse(raw) : [];
         if (!Array.isArray(meetings)) meetings = [];
       } catch {
@@ -2052,7 +2063,7 @@ function setupLiveRoomListeners() {
       if (meeting) {
         meeting.status = 'Completed';
         meeting.lastUpdated = new Date().toISOString();
-        localStorage.setItem('ekvueLiveInterviews', JSON.stringify(meetings));
+        localStorage.setItem(LIVE_INTERVIEWS_KEY, JSON.stringify(meetings));
 
         // Sync to backend immediately so candidate page redirects
         try {
@@ -2412,7 +2423,7 @@ function renderScorecardBuilder() {
   // Check if we can pre-populate ratings based on compiler performance
   let prefillRatings = {};
   try {
-    const raw = localStorage.getItem('ekvueLiveInterviews');
+    const raw = localStorage.getItem(LIVE_INTERVIEWS_KEY);
     const meetings = raw ? JSON.parse(raw) : [];
     const mItem = meetings.find(m => m.meetingId === current.id);
     if (mItem && mItem.compilerStats) {
@@ -3618,11 +3629,11 @@ window.openCandidateScheduleModal = function(candidateName, candidateEmail, jobT
       createdAt: newSess.createdAt
     };
     try {
-      const liveMeetings = loadList('ekvueLiveInterviews');
+      const liveMeetings = loadList(LIVE_INTERVIEWS_KEY);
       liveMeetings.push(liveEntry);
-      saveList('ekvueLiveInterviews', liveMeetings);
+      saveList(LIVE_INTERVIEWS_KEY, liveMeetings);
       window.dispatchEvent(new StorageEvent('storage', {
-        key: 'ekvueLiveInterviews',
+        key: LIVE_INTERVIEWS_KEY,
         newValue: JSON.stringify(liveMeetings)
       }));
     } catch(err) { console.error('Failed to save to live interviews', err); }
@@ -3654,7 +3665,7 @@ window.addEventListener('storage', (e) => {
     if (state.liveActive && state.liveSessionId) {
       let meetings = [];
       try {
-        const raw = localStorage.getItem('ekvueLiveInterviews');
+        const raw = localStorage.getItem(LIVE_INTERVIEWS_KEY);
         meetings = raw ? JSON.parse(raw) : [];
         if (!Array.isArray(meetings)) meetings = [];
       } catch {}
