@@ -563,11 +563,10 @@ async function executeCode() {
   const compilerId = homepageCompilers[activeLang] || 'typescript-deno';
 
   try {
-    const response = await fetch('https://corsproxy.io/?url=' + encodeURIComponent('https://api.onlinecompiler.io/api/run-code-sync/'), {
+    const response = await fetch('/run-code', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': '1c2fdfdc0cfd60cb8ec188bf659dffe4'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         compiler: compilerId,
