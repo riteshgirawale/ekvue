@@ -701,19 +701,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const demoVideoPlayer = document.getElementById('demo-video-player');
 
   if (watchDemoBtn && videoModal && closeVideoModal && demoVideoPlayer) {
+    const youtubeUrl = "https://www.youtube.com/embed/X1Wyk4QJhyc?autoplay=1&rel=0&modestbranding=1";
+
     watchDemoBtn.addEventListener('click', (e) => {
       e.preventDefault();
       videoModal.style.display = 'flex';
       // Trigger reflow for smooth animation
       void videoModal.offsetWidth;
       videoModal.style.opacity = '1';
-      demoVideoPlayer.play().catch(err => console.log('Autoplay prevented by browser', err));
+      demoVideoPlayer.src = youtubeUrl;
     });
 
     closeVideoModal.addEventListener('click', () => {
       videoModal.style.opacity = '0';
-      demoVideoPlayer.pause();
-      demoVideoPlayer.currentTime = 0;
+      demoVideoPlayer.src = "";
       setTimeout(() => {
         videoModal.style.display = 'none';
       }, 300);
