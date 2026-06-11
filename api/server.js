@@ -31,8 +31,9 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '../')));
 
 // --- MONGODB CONNECTION ---
-if (process.env.MONGO_URI && process.env.MONGO_URI !== 'YOUR_MONGODB_CONNECTION_STRING_HERE') {
-  mongoose.connect(process.env.MONGO_URI)
+const mongoUriFallback = process.env.MONGO_URI || 'mongodb+srv://alexcarter1616_db_user:c2IsLKsKhQ8S000c@ekvue.g9vvwhk.mongodb.net/?appName=EKVUE';
+if (mongoUriFallback && mongoUriFallback !== 'YOUR_MONGODB_CONNECTION_STRING_HERE') {
+  mongoose.connect(mongoUriFallback)
     .then(() => console.log('[SUCCESS] Connected to MongoDB!'))
     .catch((err) => console.error('[ERROR] Failed to connect to MongoDB:', err.message));
 } else {
@@ -436,9 +437,9 @@ app.post('/api/livekit/token', async (req, res) => {
     return res.status(400).json({ error: 'roomName and participantName are required' });
   }
 
-  const apiKey = process.env.LIVEKIT_API_KEY;
-  const apiSecret = process.env.LIVEKIT_API_SECRET;
-  const url = process.env.LIVEKIT_URL;
+  const apiKey = process.env.LIVEKIT_API_KEY || 'APISjtKyyzNmDpC';
+  const apiSecret = process.env.LIVEKIT_API_SECRET || 'Da6mXncnqkIPbBdH24uVufAUoEgx1gLkjaXM6HtAmEL';
+  const url = process.env.LIVEKIT_URL || 'wss://ekuve-hecwi0s4.livekit.cloud';
 
   if (!apiKey || !apiSecret || !url) {
     console.error('[LiveKit Token API] Credentials missing in process.env');
