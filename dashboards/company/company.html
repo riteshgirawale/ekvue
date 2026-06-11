@@ -306,21 +306,13 @@
                       </div>
                       <div class="field">
                         <label for="pj-state">State <span style="color:#ef4444">*</span></label>
-                        <select id="pj-state" class="workspace-select" style="padding:10px 12px; border-radius:12px; background:rgba(2, 6, 23, 0.4);" required>
-                          <option value="Karnataka">Karnataka</option>
-                          <option value="California">California</option>
-                          <option value="London">London</option>
-                          <option value="Ontario">Ontario</option>
-                        </select>
+                        <input id="pj-state" class="workspace-search" list="state-datalist" style="padding:10px 12px; border-radius:12px; background:rgba(2, 6, 23, 0.4); color:white; border:1px solid rgba(255,255,255,0.1); width:100%; box-sizing:border-box;" placeholder="Type or select state" required autocomplete="off" />
+                        <datalist id="state-datalist"></datalist>
                       </div>
                       <div class="field">
                         <label for="pj-city">City <span style="color:#ef4444">*</span></label>
-                        <select id="pj-city" class="workspace-select" style="padding:10px 12px; border-radius:12px; background:rgba(2, 6, 23, 0.4);" required>
-                          <option value="Bengaluru">Bengaluru</option>
-                          <option value="San Francisco">San Francisco</option>
-                          <option value="London">London</option>
-                          <option value="Toronto">Toronto</option>
-                        </select>
+                        <input id="pj-city" class="workspace-search" list="city-datalist" style="padding:10px 12px; border-radius:12px; background:rgba(2, 6, 23, 0.4); color:white; border:1px solid rgba(255,255,255,0.1); width:100%; box-sizing:border-box;" placeholder="Type or select city" required autocomplete="off" />
+                        <datalist id="city-datalist"></datalist>
                       </div>
                       <div class="field">
                         <label for="pj-work-location">Work Location <span style="color:#ef4444">*</span></label>
