@@ -32,10 +32,10 @@ function callSetupResumeAnalyzer(containerId) {
 
 
 const LIST_KEY = LS_KEYS.candidateItems;
-const SOLVED_KEY = 'ekvueSolvedProblems';
-const THEME_KEY = 'ekvueSelectedTheme';
-const PROFILE_KEY = 'ekvueStudentProfile';
-const COMPANIES_KEY = 'ekvueTargetCompanies';
+let SOLVED_KEY = 'ekvueSolvedProblems';
+let THEME_KEY = 'ekvueSelectedTheme';
+let PROFILE_KEY = 'ekvueStudentProfile';
+let COMPANIES_KEY = 'ekvueTargetCompanies';
 
 // curate problem catalog bank
 const PROBLEMS_CATALOG = [
@@ -333,6 +333,13 @@ function loadStateFromStorage() {
     ensureRole(state.user);
     return;
   }
+
+  // Scope all localStorage keys per-user so each candidate gets isolated data
+  const userSuffix = '_' + (state.user.email || '').toLowerCase().replace(/[^a-z0-9]/g, '_');
+  SOLVED_KEY = 'ekvueSolvedProblems' + userSuffix;
+  THEME_KEY = 'ekvueSelectedTheme' + userSuffix;
+  PROFILE_KEY = 'ekvueStudentProfile' + userSuffix;
+  COMPANIES_KEY = 'ekvueTargetCompanies' + userSuffix;
   
   // Solved IDs array
   try {
@@ -1014,7 +1021,7 @@ async function runWorkspaceCode(isSubmit = false) {
           consoleEl.innerHTML = `$ ${activeLang === 'javascript' ? 'node' : 'python3'} solution  (${result.time}s, ${result.memory}KB)\n\n${displayOutput}\n\n🌟 SOLUTION SUBMITTED SUCCESSFULLY!\nStats Updated: Problems Solved +1`;
           if (activeProblem && !state.solvedIds.includes(activeProblem.id)) {
             state.solvedIds.push(activeProblem.id);
-            localStorage.setItem('ekvueSolvedProblems', JSON.stringify(state.solvedIds));
+            localStorage.setItem(SOLVED_KEY, JSON.stringify(state.solvedIds));
             updateKpiWidgets();
             renderRecentActivity();
           }
@@ -1040,7 +1047,7 @@ async function runWorkspaceCode(isSubmit = false) {
         consoleEl.innerHTML = `$ ${runnerCmd} solution  (${result.time}s, ${result.memory}KB)\n\n${output}\n\n🌟 SOLUTION SUBMITTED SUCCESSFULLY!\nStats Updated: Problems Solved +1`;
         if (activeProblem && !state.solvedIds.includes(activeProblem.id)) {
           state.solvedIds.push(activeProblem.id);
-          localStorage.setItem('ekvueSolvedProblems', JSON.stringify(state.solvedIds));
+          localStorage.setItem(SOLVED_KEY, JSON.stringify(state.solvedIds));
           updateKpiWidgets();
           renderRecentActivity();
         }
@@ -2251,9 +2258,6 @@ function renderSettings() {
     if (diffSelect) diffSelect.value = state.user.level || 'Student';
 
     // Populate the Registered Account Details card dynamically from the signup database
-    const accounts = loadList('ekvueAccounts');
-    const myAccount = accounts.find(a => a.email.toLowerCase() === state.user.email.toLowerCase() && a.role === 'Candidate');
-    
     const setEmail = document.getElementById('acc-reg-email');
     const setName = document.getElementById('acc-reg-name');
     const setSchool = document.getElementById('acc-reg-school');
@@ -2261,6 +2265,17 @@ function renderSettings() {
     const setLevel = document.getElementById('acc-reg-level');
     const setDate = document.getElementById('acc-reg-date');
 
+    // First set fallback from session user details
+    if (setEmail) setEmail.textContent = state.user.email || '—';
+    if (setName) setName.textContent = state.user.name || '—';
+    if (setSchool) setSchool.textContent = state.user.school || '—';
+    if (setField) setField.textContent = state.user.studyField || '—';
+    if (setLevel) setLevel.textContent = state.user.level || '—';
+    if (setDate) setDate.textContent = 'Active Session';
+
+    // Try localStorage first
+    const accounts = loadList('ekvueAccounts');
+    const myAccount = accounts.find(a => a.email.toLowerCase() === state.user.email.toLowerCase() && a.role === 'Candidate');
     if (myAccount) {
       if (setEmail) setEmail.textContent = myAccount.email;
       if (setName) setName.textContent = myAccount.name || myAccount.fullName || '—';
@@ -2268,15 +2283,48 @@ function renderSettings() {
       if (setField) setField.textContent = myAccount.studyField || '—';
       if (setLevel) setLevel.textContent = myAccount.level || '—';
       if (setDate) setDate.textContent = myAccount.createdAt ? new Date(myAccount.createdAt).toLocaleDateString() : '—';
-    } else {
-      // Fallback from session user details
-      if (setEmail) setEmail.textContent = state.user.email || '—';
-      if (setName) setName.textContent = state.user.name || '—';
-      if (setSchool) setSchool.textContent = state.user.school || '—';
-      if (setField) setField.textContent = state.user.studyField || '—';
-      if (setLevel) setLevel.textContent = state.user.level || '—';
-      if (setDate) setDate.textContent = 'Active Session';
     }
+
+    // Then fetch from MongoDB to get the latest data for this specific user
+    fetch('/api/users?email=' + encodeURIComponent(state.user.email))
+      .then(r => r.json())
+      .then(users => {
+        const dbUser = Array.isArray(users)
+          ? users.find(u => u.email && u.email.toLowerCase() === state.user.email.toLowerCase() && u.role === 'Candidate')
+          : null;
+        if (dbUser) {
+          if (setEmail) setEmail.textContent = dbUser.email;
+          if (setName) setName.textContent = dbUser.name || dbUser.fullName || '—';
+          if (setSchool) setSchool.textContent = dbUser.school || '—';
+          if (setField) setField.textContent = dbUser.studyField || '—';
+          if (setLevel) setLevel.textContent = dbUser.level || '—';
+          if (setDate) setDate.textContent = dbUser.createdAt ? new Date(dbUser.createdAt).toLocaleDateString() : 'Active Session';
+
+          // Also update the editable form fields if they still have defaults
+          const nameInput = document.getElementById('settings-fullname');
+          const schoolInput = document.getElementById('settings-school');
+          const studyInput = document.getElementById('settings-studyfield');
+          const diffSelect = document.getElementById('settings-difficulty');
+          // Only auto-fill if user has no saved profile yet (first login)
+          const rawProfile = localStorage.getItem(PROFILE_KEY);
+          if (!rawProfile) {
+            if (nameInput) nameInput.value = dbUser.name || dbUser.fullName || '';
+            if (schoolInput) schoolInput.value = dbUser.school || '';
+            if (studyInput) studyInput.value = dbUser.studyField || '';
+            if (diffSelect) diffSelect.value = dbUser.level || 'Student';
+            // Update state too
+            state.user.name = dbUser.name || dbUser.fullName || state.user.name;
+            state.user.school = dbUser.school || '';
+            state.user.studyField = dbUser.studyField || '';
+            // Update welcome line
+            const welcomeLine = document.getElementById('welcomeLine');
+            if (welcomeLine) welcomeLine.textContent = `Welcome back, ${state.user.name || 'Student'}!`;
+            const avatar = document.getElementById('avatar');
+            if (avatar) avatar.textContent = getInitials(state.user.name);
+          }
+        }
+      })
+      .catch(err => console.warn('[Settings] Failed to fetch user from MongoDB:', err));
   }
 
   if (profileForm) {

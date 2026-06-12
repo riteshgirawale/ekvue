@@ -250,7 +250,14 @@ app.post('/run-code', async (req, res) => {
 // 1. Users API
 app.get('/api/users', async (req, res) => {
   try {
-    const users = await User.find({});
+    const query = {};
+    if (req.query.email) {
+      query.email = new RegExp('^' + req.query.email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$', 'i');
+    }
+    if (req.query.role) {
+      query.role = req.query.role;
+    }
+    const users = await User.find(query);
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
